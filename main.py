@@ -1,4 +1,6 @@
 from disk_string import DiskString
+from protocol_handler import ProtocolHandler
+from talk_to_push import TalkToPush
 
 # The main class that will be setup and then will run all interactions
 class Stringer:
@@ -28,12 +30,15 @@ class Stringer:
         @param goalInt  the integer that this stringer will string
         @pre @code{goalInt >= 0}
         """
+
         if goalInt < 0:
             raise ValueError("goalInt should be positive")
         self.goal_int = goalInt
         self.goal_bin = []
         self.to_bin()
         self.string = DiskString(self.goal_bin)
+        self.protocol = ProtocolHandler()
+        self.pusher = TalkToPush()
 
     def to_bin(self):
         """ creates an array containing the binary representation of
@@ -44,9 +49,10 @@ class Stringer:
         @post @code{(sum i; 0 <= i < len(goalBin); A) == self.goalInt}
             where @code{A = a[i]*2**(len(goalBin) - 1 - i)}
         """
+
         goal = self.goal_int
         if goal == 0:
-            goal_bin = [0]
+            self.goal_bin = [0]
         else:
             while goal > 0:
                 if goal % 2 == 1:
@@ -59,10 +65,12 @@ class Stringer:
                     print(goal)
 
     def run(self):
-        """
+        """Runs the setup and main loop of the program
 
         """
+        # TODO implement setup and mainloop
         return
+
 
 if __name__ == '__main__':
     valid_integer = False
