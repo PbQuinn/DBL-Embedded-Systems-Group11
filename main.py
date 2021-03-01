@@ -45,15 +45,18 @@ class Stringer:
             where @code{A = a[i]*2**(len(goalBin) - 1 - i)}
         """
         goal = self.goal_int
-        while goal > 0:
-            if goal % 2 == 1:
-                self.goal_bin.insert(0, 1)
-                goal = goal // 2
-                print(goal)
-            else:
-                self.goal_bin.insert(0, 0)
-                goal = goal // 2
-                print(goal)
+        if goal == 0:
+            goal_bin = [0]
+        else:
+            while goal > 0:
+                if goal % 2 == 1:
+                    self.goal_bin.insert(0, 1)
+                    goal = goal // 2
+                    print(goal)
+                else:
+                    self.goal_bin.insert(0, 0)
+                    goal = goal // 2
+                    print(goal)
 
     def run(self):
         """
