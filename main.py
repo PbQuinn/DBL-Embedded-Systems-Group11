@@ -37,6 +37,7 @@ class Stringer:
         self.goal_bin = []
         self.to_bin()
         self.string = DiskString(self.goal_bin)
+        self.disk_counter = 0
         self.protocol = ProtocolHandler()
         self.pusher = TalkToPush()
 
