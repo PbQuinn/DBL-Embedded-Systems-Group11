@@ -3,6 +3,7 @@ from main import Stringer
 
 
 class TestInit(TestCase):
+
     def test_goalInt(self):
         self.stringer = Stringer(1)
         self.assertEqual(self.stringer.goal_int, 1)
