@@ -1,6 +1,7 @@
 from disk_string import DiskString
 from protocol_handler import ProtocolHandler
-from talk_to_push import TalkToPush
+from talk_to_push import ArduinoDiskPusher
+
 
 # The main class that will be setup and then will run all interactions
 class Stringer:
@@ -23,23 +24,23 @@ class Stringer:
         runs setup and main loop of Stringer instance
     """
 
-    def __init__(self, goalInt):
+    def __init__(self, goal_int, disk_pusher=ArduinoDiskPusher()):
         """
         Creates a new instance of Stringer with goalInt as goal integer
 
-        @param goalInt  the integer that this stringer will string
+        @param goal_int  the integer that this stringer will string
         @pre @code{goalInt >= 0}
         """
 
-        if goalInt < 0:
+        if goal_int < 0:
             raise ValueError("goalInt should be positive")
-        self.goal_int = goalInt
+        self.goal_int = goal_int
         self.goal_bin = []
         self.to_bin()
         self.string = DiskString(self.goal_bin)
         self.disk_counter = 0
         self.protocol = ProtocolHandler()
-        self.pusher = TalkToPush()
+        self.pusher = disk_pusher
 
     def to_bin(self):
         """ creates an array containing the binary representation of
