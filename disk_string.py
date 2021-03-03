@@ -10,7 +10,7 @@ class DiskString:
 
     Methods
     _______
-    next_disk() : int
+    get_next_disk() : int
         returns what color the next disk to be stringed should be
     string_disk(int) : bool
         adds disk to stringed disks, returns if true stringed disk was
@@ -31,7 +31,7 @@ class DiskString:
         self.pattern = pattern
         self.stringed_disks = []
 
-    def next_disk(self):
+    def get_next_disk(self):
         """returns what color the next disk to be stringed should be
 
         @pre @code{len(self.pattern) > 0}
@@ -39,7 +39,8 @@ class DiskString:
             where @code{A = len(self.stringed_disks) % len(self.pattern)}
         """
 
-        pattern_index = len(self.stringed_disks) % len(self.pattern)
+        pattern_index = len(self.pattern) - 1 - \
+                        len(self.stringed_disks) % len(self.pattern)
         disk_color = self.pattern[pattern_index]
         return disk_color
 
@@ -56,7 +57,7 @@ class DiskString:
             where @code{A = stringed_disks[i+1] == old(stringed_disks[i])}
         """
 
-        correct_color = self.next_disk()
+        correct_color = self.get_next_disk()
         self.stringed_disks.insert(0, color)
         return color == correct_color
 
