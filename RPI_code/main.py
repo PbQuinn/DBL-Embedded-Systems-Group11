@@ -67,11 +67,21 @@ class Stringer:
                     print(goal)
 
     def run(self):
-        """Runs the setup and main loop of the program
+        """Runs the main loop of the program
 
         """
-        # TODO implement setup and mainloop
-        return
+        # TODO improve / modify main loop
+        # Main loop:
+        while True:
+            self.pusher.pulse()
+            data = self.pusher.get_data()
+            if (data is not None) and self.protocol.get_permission():
+                self.pusher.close_gate()
+                color = self.pusher.get_color()
+                if color == self.string.get_next_disk():
+                    self.pusher.push_disk()
+                    self.string.string_disk(color)
+                self.pusher.open_gate()
 
 
 if __name__ == '__main__':
@@ -87,6 +97,3 @@ if __name__ == '__main__':
 
     # Test line
     print(my_stringer.goal_bin)
-
-
-
