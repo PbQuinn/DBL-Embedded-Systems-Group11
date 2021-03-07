@@ -133,6 +133,6 @@
  *      for black (with a predefined range).
  * 3). Send confirm ping.
  *
- * Call nr: 200 (SET_BLACK)
- * Expected response: 201 (CONFIRM_SET_BLACK)
+ * Call nr: 202 (SET_BLACK)
+ * Expected response: 203 (CONFIRM_SET_BLACK)
  */
