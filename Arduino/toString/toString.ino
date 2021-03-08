@@ -1,7 +1,7 @@
 //====COMMAND NUMBERS====
 //Gate control:
-const int CLOSE_GATE = 10;
-const int OPEN_GATE = 50;
+const int CLOSE_BLOCKER = 10;
+const int OPEN_BLOCKER = 50;
 const int DO_PUSH = 30;
 //Sensor request:
 const int GET_COLOR = 20;
@@ -10,6 +10,9 @@ const int AFFIRM_DISK = 40;
 const int STRING_DISK = 60;
 //Program state control:
 const int PING = 100;
+const int SET_ERROR_STATE = 102;
+const int EXIT_ERRO_STATE = 104;
+const int GET_ERROR_STATE_INFO = 106;
 //Callibration control:
 const int SET_WHITE = 200;
 const int SET_BLACK = 202;
@@ -24,6 +27,12 @@ const int CONFIRM_STRING_DISK = 61;
 //Program state messages:
 const int UNEXPECTED_ERROR = -1;
 const int PONG = 101;
+const int ERRONG_PING = 103;
+const int CONFIRM_EXIT_ERROR_STATE = 105;
+const int GET_ERROR_STATE_INFO = 106;
+const int START_MESSAGE = 107;
+const int END_MESSGE = 108;
+const int NOT_IN_ERROR_STATE = 109;
 const int CONFIRM_SET_WHITE = 201;
 const int CONFIRM_SET_BLACK = 203;
 //For sensor requests:

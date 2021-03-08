@@ -14,8 +14,8 @@
  * 5). Blocker motor off.
  * 6). Send confirm ping.
  *
- * Call nr: 10 (CLOSE_GATE)
- * Expected response: 11 (CONFIRM_CLOSE_GATE)
+ * Call nr: 10 (CLOSE_BLOCKER)
+ * Expected response: 11 (CONFIRM_CLOSE_BLOCKER)
  */
 
 /** open_blocker()
@@ -28,8 +28,8 @@
  * 3). Blocker motor off.
  * 4). Send confirm ping.
  * 
- * Call nr: 50 (OPEN_GATE)
- * Expected response: 51 (CONFIRM_OPEN_GATE)
+ * Call nr: 50 (OPEN_BLOCKER)
+ * Expected response: 51 (CONFIRM_OPEN_BLOCKER)
  */
 
 /**
@@ -86,7 +86,7 @@
  * - 23 (NEITHER)
  */
 
-/** string_disk
+/** string_disk()
  *
  * Puts a disk lying in at the bottom of a funnel onto the string.
  * Procedure:
@@ -98,7 +98,7 @@
  * Expected response: 61 (CONFIRM_STRING_DISK)
  */
 
-/** ping
+/** ping()
  *
  * Pings the IO hub for a response ping.
  * Procedure:
@@ -108,8 +108,59 @@
  * Call nr: 100 (PING)
  * Expected response: 101 (PONG)
  */
+ 
+/** set_error_state()
+ * Moves the arduino programm into the error state.
+ * Procedure:
+ * 0). Call received.
+ * 1). Enter the errorstate.
+ * 2). Set reason_for_error_state to: 'outside signal'.
+ *
+ * Call nr: 102 (SET_ERROR_STATE)
+ */
+ 
+/** ping_error_state()
+ * Pings to the control software that the system is in an error state.
+ * Procedure:
+ * 0). Timer for error ping experid.
+ * 0'). Message recieved that is not exit_error_state.
+ * 1). Sent error ping.
+ * 2). Reset timer for the error ping.
+ *
+ * Send nr: 103 (ERROR_PING)
+*/
+ 
+/** exit_error_state()
+ * Pings IO hub to exit the error state.
+ * Procedure:
+ * 0). Call recieved.
+ * 1). Restart main loop.
+ * 2). Send confirm ping.
+ *
+ * Send nr: 104 (EXIT_ERROR_STATE)
+ * Expected response: 105 (CONFIRM_EXIT_ERROR_STATE)
+*/
 
-/** set_white
+/** get_error_state_info()
+ * Requests data from the IO hub abouth the error state.
+ * Procedure:
+ * 0). Call recieved.
+ * 1). Check if in error state.
+ * 2). Check shows that IO hub is in the error state.
+ * 3). Send start message ping.
+ * 4). Send information to the control software.
+ * 5). Send end message ping.
+ * Alternative flow
+ * 2'). Check shows that IO hub is not in the error state.
+ * 3'). Send not in error state message.
+ *
+ * Send nr: 106 (GET_ERROR_STATE_INFO)
+ * Expected response: 107 (START_MESSAGE), 108(END_MESSAGE)
+ * Unexpected response: 109 (NOT_IN_ERROR_STATE)
+*/
+ 
+
+/** set_white()
  * Writes the value of what the color sensors currently observe as the
  * value assigned to white.
  * Procedure:
@@ -123,7 +174,7 @@
  * Expected response: 201 (CONFIRM_SET_WHITE)
  */
 
-/** set_black
+/** set_black()
  * Writes the value of what the color sensors currently observe as the
  * value assigned to black.
  * Procedure:
