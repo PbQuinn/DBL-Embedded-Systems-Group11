@@ -1,0 +1,138 @@
+/**
+ * Unexpected error occurrences are marked by error code: -1 (UNEXPECTED_ERROR).
+ */
+
+/** close_blocker()
+ *
+ * Closes the pusher to the point where the blocking part is fully extended.
+ * Procedure:
+ * 0). Call received.
+ * 1). Blocker motor on (direction: close)
+ * 2). Blocker touches front side button sensor.
+ * 3). Blocker motor on (direction: open)
+ * 4). Blocker no longer touches front side button sensor.
+ * 5). Blocker motor off.
+ * 6). Send confirm ping.
+ *
+ * Call nr: 10 (CLOSE_GATE)
+ * Expected response: 11 (CONFIRM_CLOSE_GATE)
+ */
+
+/** open_blocker()
+ * 
+ * Opens the blocker entirely.
+ * Procedure:
+ * 0). Call received.
+ * 1). Blocker motor on (direction: open)
+ * 2). Blocker touches back side button sensor.
+ * 3). Blocker motor off.
+ * 4). Send confirm ping.
+ * 
+ * Call nr: 50 (OPEN_GATE)
+ * Expected response: 51 (CONFIRM_OPEN_GATE)
+ */
+
+/**
+ * do_push()
+ * 
+ * Extends the pushing part of the blocker.
+ * Procedure:
+ * 0). Call received.
+ * 1). Blocker motor on (direction: close).
+ * 2). Blocker touches front side button sensor.
+ * 3). Start timer T.
+ * 4). T expires specified time.
+ * 5). Blocker motor off.
+ * 6). Send confirm ping.
+ * 
+ * Call nr: 30 (DO_PUSH)
+ * Expected response: 31 (CONFIRM_DO_PUSH)
+ */
+
+/**
+ * get_color()
+ *
+ * Requests the color sensor to measure the current disk and determine and
+ * pass the color of this disk.
+ * Procedure:
+ * 0). Call received.
+ * 1). Start scanning.
+ * 2). Determine value of disk.
+ * 3). Fit value in range (black/white/neither)
+ * 4). Send resulting range.
+ *
+ * Call nr: 20 (GET_COLOR)
+ * Expected response: one of the following:
+ * - 21 (WHITE)
+ * - 22 (BLACK)
+ * - 23 (NEITHER)
+ */
+
+/** affirm_disk()
+ *
+ * Requests the secondary color sensor to measure what lies in front of it 
+ * and determine and pass the color of the disk (or empty space).
+ * Procedure:
+ * 0). Call received.
+ * 1). Start scanning.
+ * 2). Determine value of disk.
+ * 3). Fit value in range (black/white/neither)
+ * 4). Send resulting range.
+ * 
+ * Call nr: 40 (AFFIRM_DISK)
+ * Expected response: one of the following:
+ * - 21 (WHITE)
+ * - 22 (BLACK)
+ * - 23 (NEITHER)
+ */
+
+/** string_disk
+ *
+ * Puts a disk lying in at the bottom of a funnel onto the string.
+ * Procedure:
+ * 0). Call received.
+ * 1). Pusher motor executed programmed routine.
+ * 2). Send confirm ping.
+ * 
+ * Call nr: 60 (STRING_DISK)
+ * Expected response: 61 (CONFIRM_STRING_DISK)
+ */
+
+/** ping
+ *
+ * Pings the IO hub for a response ping.
+ * Procedure:
+ * 0). Call received.
+ * 1). Send confirm ping.
+ * 
+ * Call nr: 100 (PING)
+ * Expected response: 101 (PONG)
+ */
+
+/** set_white
+ * Writes the value of what the color sensors currently observe as the
+ * value assigned to white.
+ * Procedure:
+ * 0). Call received.
+ * 1). Color sensors start scanning.
+ * 2). Color sensors store scanned value as base for future measurement
+ *      for white (with a predefined range).
+ * 3). Send confirm ping.
+ * 
+ * Call nr: 200 (SET_WHITE)
+ * Expected response: 201 (CONFIRM_SET_WHITE)
+ */
+
+/** set_black
+ * Writes the value of what the color sensors currently observe as the
+ * value assigned to black.
+ * Procedure:
+ * 0). Call received.
+ * 1). Color sensors start scanning.
+ * 2). Color sensors store scanned value as base for future measurement
+ *      for black (with a predefined range).
+ * 3). Send confirm ping.
+ *
+ * Call nr: 202 (SET_BLACK)
+ * Expected response: 203 (CONFIRM_SET_BLACK)
+ */
