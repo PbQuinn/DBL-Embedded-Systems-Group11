@@ -75,7 +75,7 @@ class Stringer:
         while True:
             self.pusher.pulse()
             data = self.pusher.get_data()
-            if (data is not None) and self.protocol.get_permission():
+            if (data is not None) and self.protocol.can_pickup():
                 self.pusher.close_gate()
                 color = self.pusher.get_color()
                 if color == self.string.get_next_disk():
