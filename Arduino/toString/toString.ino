@@ -16,6 +16,7 @@ const int GET_ERROR_STATE_INFO = 106;
 //Callibration control:
 const int SET_WHITE = 200;
 const int SET_BLACK = 202;
+const int EXIT_SETUP = 204
 
 //====RESPONSE NUMBERS====
 //Action control:
@@ -26,15 +27,17 @@ const int CONFIRM_DO_PUSH = 31;
 const int CONFIRM_STRING_DISK = 61;
 //Program state messages:
 const int UNEXPECTED_ERROR = -1;
+const int ILLEGAL_COMMAND = -2;
+const int UNKNOWN_COMMAND = -3;
 const int PONG = 101;
 const int ERRONG_PING = 103;
 const int CONFIRM_EXIT_ERROR_STATE = 105;
 const int GET_ERROR_STATE_INFO = 106;
 const int START_MESSAGE = 107;
 const int END_MESSGE = 108;
-const int NOT_IN_ERROR_STATE = 109;
 const int CONFIRM_SET_WHITE = 201;
 const int CONFIRM_SET_BLACK = 203;
+const int CONFIRM_EXIT_SETUP = 205;
 //For sensor requests:
 const int WHITE = 21;
 const int BLACK = 22;
@@ -42,16 +45,22 @@ const int NEITHER = 23;
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("Successfully started IO hub");
+  // A timer to check if we are not disconnected
+  unsigned long timer = 0;
+  /* The current state we are in:
+  * 0: the initialisation state 
+  * 1: the working state
+  * 2: the error state
+  */
+  int state = 0;
+  //Serial.println("Successfully started IO hub");
 }
 
 //Communicate to the RPI that we're still operational.
 void check(int issuedCommand) {
   switch (issuedCommand) {
     case PING:
-      Serial.println(PONG);
-      // do some action
-      delay(100);
+      Serial.write(PONG)
       break;
 
     case SET_WHITE:
@@ -121,21 +130,8 @@ void loop() {
 
 //Check if there is a command waiting for me
   if (Serial.available() > 0) {
-    char nextChar = Serial.read();
-    //Have I finished reading this command?
-    if (nextChar == '\n') {
-      Serial.print("SENT: ");
-      Serial.println(value);
-      Serial.print("RECEIVED: ");
-      //Send the command
-      check(value);
-      value = 0;
-      //Otherwise, continue constructing the command issued
-    } else {
-      int intValue = nextChar - '0';
-      value = 10 * value;
-      value = value + intValue;
-    }
+    int message = Serial.read() - '0';
+    check(value);
   }
 
 

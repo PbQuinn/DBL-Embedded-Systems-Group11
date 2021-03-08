@@ -1,5 +1,10 @@
 /**
  * Unexpected error occurrences are marked by error code: -1 (UNEXPECTED_ERROR).
+ * After each message is recieved it will first be chacked if the command
+ * can be exucted in the current state. 
+ * If the command is used in anohter state but not the current state we send an error message.
+ * Error code, -2(ILLEGAL_COMMAND), will be send
+ * If the command is unknown we send error code: -3(UNKNOWN_COMMAND).
  */
 
 /** close_blocker()
@@ -128,7 +133,7 @@
  * 2). Reset timer for the error ping.
  *
  * Send nr: 103 (ERROR_PING)
-*/
+ */
  
 /** exit_error_state()
  * Pings IO hub to exit the error state.
@@ -139,7 +144,7 @@
  *
  * Send nr: 104 (EXIT_ERROR_STATE)
  * Expected response: 105 (CONFIRM_EXIT_ERROR_STATE)
-*/
+ */
 
 /** get_error_state_info()
  * Requests data from the IO hub abouth the error state.
@@ -149,15 +154,11 @@
  * 2). Check shows that IO hub is in the error state.
  * 3). Send start message ping.
  * 4). Send information to the control software.
- * 5). Send end message ping.
- * Alternative flow
- * 2'). Check shows that IO hub is not in the error state.
- * 3'). Send not in error state message.
+ * 5). Send end message ping..
  *
  * Send nr: 106 (GET_ERROR_STATE_INFO)
  * Expected response: 107 (START_MESSAGE), 108(END_MESSAGE)
- * Unexpected response: 109 (NOT_IN_ERROR_STATE)
-*/
+ */
  
 
 /** set_white()
@@ -186,4 +187,15 @@
  *
  * Call nr: 202 (SET_BLACK)
  * Expected response: 203 (CONFIRM_SET_BLACK)
+ */
+ 
+/** exit_setup()
+ * Exit the setup stage en enter the working state of the IO hub.
+ * Procedure:
+ * 0). Call received.
+ * 1). Enter the working state.
+ * 2). Send confirm ping.
+ *
+ * Call nr: 204 (EXIT_SETUP)
+ * Expected response: 205 (CONFIRM_EXIT_SETUP)
  */
