@@ -1,6 +1,6 @@
 /**
  * Unexpected error occurrences are marked by error code: -1 (UNEXPECTED_ERROR).
- * After each message is recieved it will first be chacked if the command
+ * After each message is recieved it will first be checked if the command
  * can be exucted in the current state. 
  * If the command is used in anohter state but not the current state we send an error message.
  * Error code, -2(ILLEGAL_COMMAND), will be send
