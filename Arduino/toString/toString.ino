@@ -48,6 +48,8 @@ const int CONFIRM_EXIT_SETUP = 205;
 const int WHITE = 21;
 const int BLACK = 22;
 const int NEITHER = 23;
+// How often should we recieve Ping messages + some time to avoid false positives in ms.
+const int PING_TIME = 1500;
 // A timer to check if we are not disconnected
 unsigned long timer = 0;
 /* The current state we are in:
@@ -56,6 +58,7 @@ unsigned long timer = 0;
  * 2: the error state
  */
 int state = 0;
+
 
 void setup() {
   Serial.begin(9600);
@@ -118,10 +121,7 @@ void check(int issuedCommand) {
       break;
 
     default:
-      // we get something we did not understand
-      // we should normally send an error message but for now we just ignore it
-    //  Serial.print("unknown action! ");
-     // Serial.println(UNEXPECTED_ERROR);
+      // By the state check this default should not be reachable
       break;
   }
 }
@@ -135,7 +135,7 @@ boolean in(int number, int commands[]){
   return false;    
 }
 
-boolean statecheck(int message) {
+boolean stateCheck(int message) {
   if(state == 0){
     if(in(message,setupmessages)){
       return true;
@@ -169,6 +169,10 @@ boolean statecheck(int message) {
   }
 }
 
+void enterErrorState(){
+  
+}
+
 int value = 0;
 
 void loop() {
@@ -181,12 +185,18 @@ void loop() {
   if (Serial.available() > 0) {
     int message = Serial.read() - '0';
     //first we need to check if the command is valid in the current state if so check it
-    if(statecheck(message)){
+    if(stateCheck(message)){
       check(message);
     }
   }
 
-
+  // if we are working we should check the connection
+  // any furhter working state specific actions should also be placed here
+  if(state = 1){
+    if(millis() - PING_TIME > timer){
+      enterErrorState();
+    }
+  }
 
 
   // TODO: Implement scanning to write to "diskFound"
