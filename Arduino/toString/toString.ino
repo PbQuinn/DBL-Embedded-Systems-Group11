@@ -32,6 +32,7 @@ const int CONFIRM_CLOSE_GATE = 11;
 const int CONFIRM_OPEN_GATE = 51;
 const int CONFIRM_DO_PUSH = 31;
 const int CONFIRM_STRING_DISK = 61;
+const int ERROR_STRING_DISK = 62
 //Program state messages:
 const int UNEXPECTED_ERROR = -1;
 const int ILLEGAL_COMMAND = -2;

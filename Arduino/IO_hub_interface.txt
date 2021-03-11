@@ -14,9 +14,9 @@
  * Closes the pusher to the point where the blocking part is fully extended.
  * Procedure:
  * 0). Call received.
- * 1). Blocker motor on (direction: close)
+ * 1). Blocker motor on until 2 (direction: close)
  * 2). Blocker touches front side button sensor.
- * 3). Blocker motor on (direction: open)
+ * 3). Blocker motor on until 4 (direction: open)
  * 4). Blocker no longer touches front side button sensor.
  * 5). Blocker motor off.
  * 6). Send confirm ping.
@@ -30,7 +30,7 @@
  * Opens the blocker entirely.
  * Procedure:
  * 0). Call received.
- * 1). Blocker motor on (direction: open)
+ * 1). Blocker motor on until 2 (direction: open)
  * 2). Blocker touches back side button sensor.
  * 3). Blocker motor off.
  * 4). Send confirm ping.
@@ -45,7 +45,7 @@
  * Extends the pushing part of the blocker.
  * Procedure:
  * 0). Call received.
- * 1). Blocker motor on (direction: close).
+ * 1). Blocker motor on until 2 (direction: close).
  * 2). Blocker touches front side button sensor.
  * 3). Start timer T.
  * 4). T expires specified time.
@@ -98,11 +98,25 @@
  * Puts a disk lying in at the bottom of a funnel onto the string.
  * Procedure:
  * 0). Call received.
- * 1). Execute the routine for the pusher motor.
- * 2). Send confirm ping.
- * 
+ * 1). Stringer motor on until 2(direction: retract).
+ * 2). Stringer no longer touches button sensor.
+ * 3). Stringer motor on until 4(direction: push)
+ * 4). Disk string confirmation sensor notices disk.
+ * 5). Start timer T.
+ * 6). Stringer motor on until 7(direction: push)
+ * 7). Disk string confirmation sensor notices absense of disk (before timer T expires).
+ * 8). Stringer motor on until 9(direction: retract)
+ * 9). Stringer touches button sensor.
+ * 10). Send confirm ping. 
+ *
+ * Alternative procedure:
+ * 7'). Timer T expires.
+ * 8'). Send error ping.
+ * 9'). Enter error state.
+ *
  * Call nr: 60 (STRING_DISK)
  * Expected response: 61 (CONFIRM_STRING_DISK)
+ * Error ping: 62 (ERROR_STRING_DISK)
  */
 
 /** set_error_state()
@@ -161,7 +175,7 @@
  * 2). Check shows that IO hub is in the error state.
  * 3). Send start message ping.
  * 4). Send information to the control software.
- * 5). Send end message ping..
+ * 5). Send end message ping.
  *
  * Send nr: 106 (GET_ERROR_STATE_INFO)
  * Expected response: 107 (START_MESSAGE), 108(END_MESSAGE)
