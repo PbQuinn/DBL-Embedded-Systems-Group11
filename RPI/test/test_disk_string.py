@@ -1,5 +1,5 @@
 from unittest import TestCase
-from RPI.src.disk_string import Stringer
+from RPI.src.stringer import Stringer
 
 
 class TestInit(TestCase):

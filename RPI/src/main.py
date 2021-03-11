@@ -1,4 +1,4 @@
-from disk_string import Stringer
+from stringer import Stringer
 from protocol_handler import ProtocolHandler
 from talk_to_push import ArduinoDiskPusher
 
