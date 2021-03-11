@@ -88,9 +88,11 @@ void check(int issuedCommand) {
       break;
 
     case STRING_DISK:
-      Serial.println(CONFIRM_STRING_DISK);
-      // do some action
+      digitalWrite(16, HIGH);
+      delay(1000);
+      digitalWrite(11, LOW);
       delay(100);
+      Serial.println(CONFIRM_STRING_DISK);
       break;
 
     default:
