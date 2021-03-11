@@ -1,10 +1,10 @@
-from disk_string import DiskString
+from disk_string import Stringer
 from protocol_handler import ProtocolHandler
 from talk_to_push import ArduinoDiskPusher
 
 
 # The main class that will be setup and then will run all interactions
-class Stringer:
+class Main:
     """The main class consisting of a setup and a main loop
 
     Attributes
@@ -37,7 +37,7 @@ class Stringer:
         self.goal_int = goal_int
         self.goal_bin = []
         self.to_bin()
-        self.string = DiskString(self.goal_bin)
+        self.string = Stringer(self.goal_bin)
         self.disk_counter = 0
         self.protocol = ProtocolHandler()
         self.pusher = disk_pusher
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     while not valid_integer:
         try:
             number = int(input('Enter a positive integer to use:'))
-            my_stringer = Stringer(number)
+            my_stringer = Main(number)
             valid_integer = True
             print('We will use ' + str(number))
         except ValueError:

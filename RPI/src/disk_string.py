@@ -1,4 +1,4 @@
-class DiskString:
+class Stringer:
     """Class representing the string and the disks on it
 
     Attributes
