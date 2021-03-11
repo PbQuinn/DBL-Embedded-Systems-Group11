@@ -16,10 +16,6 @@ class Main:
 
     Methods
     _______
-    to_bin() : void
-        creates an array containing the binary representation of self.goal_int
-        and assigns it to self.goal_bin
-
     run() : void
         runs setup and main loop of Stringer instance
     """
@@ -35,36 +31,10 @@ class Main:
         if goal_int < 0:
             raise ValueError("goalInt should be positive")
         self.goal_int = goal_int
-        self.goal_bin = []
-        self.to_bin()
-        self.string = Stringer(self.goal_bin)
+        self.string = Stringer(goal_int)
         self.disk_counter = 0
         self.protocol = ProtocolHandler()
         self.pusher = disk_pusher
-
-    def to_bin(self):
-        """ creates an array containing the binary representation of
-        self.goal_int and assigns it to self.goal_bin
-
-        @pre @code{self.goalInt >= 0}
-        @modifies self.goalBin
-        @post @code{(sum i; 0 <= i < len(goalBin); A) == self.goalInt}
-            where @code{A = a[i]*2**(len(goalBin) - 1 - i)}
-        """
-
-        goal = self.goal_int
-        if goal == 0:
-            self.goal_bin = [0]
-        else:
-            while goal > 0:
-                if goal % 2 == 1:
-                    self.goal_bin.insert(0, 1)
-                    goal = goal // 2
-                    print(goal)
-                else:
-                    self.goal_bin.insert(0, 0)
-                    goal = goal // 2
-                    print(goal)
 
     def run(self):
         """Runs the main loop of the program
@@ -95,5 +65,3 @@ if __name__ == '__main__':
         except ValueError:
             print('The number should be an integer >= 0')
 
-    # Test line
-    print(my_stringer.goal_bin)

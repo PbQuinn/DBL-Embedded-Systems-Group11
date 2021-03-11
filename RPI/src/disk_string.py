@@ -10,6 +10,9 @@ class Stringer:
 
     Methods
     _______
+    to_bin() : void
+        creates an array containing the binary representation of self.goal_int
+        and assigns it to self.goal_bin
     get_next_disk() : int
         returns what color the next disk to be stringed should be
     string_disk(int) : bool
@@ -19,17 +22,40 @@ class Stringer:
         returns the number of times the pattern has been completed
     """
 
-    def __init__(self, pattern):
+    def __init__(self, goal_int):
         """Creates a new instance of DiskString from a pattern array
 
-        @param pattern  an array containing a pattern of ones and zeroes
+        @param goal_int  integer whose binary representation will be stringed
         @pre @code{len(pattern) > 0 and (forall i; 0 <= i < len(pattern); A)}
             where @code{A = pattern[i] == 0 or pattern[i] == 1}
         """
-        if len(pattern) == 0:
-            raise ValueError("Pattern should have length of at least 1")
-        self.pattern = pattern
+        if goal_int < 0:
+            raise ValueError("Input number should be positive")
+        self.pattern = self.to_bin(goal_int)
         self.stringed_disks = []
+
+    def to_bin(self, goal_int):
+        """ creates an array containing the binary representation of
+        self.goal_int and assigns it to self.goal_bin
+
+        @pre @code{self.goalInt >= 0}
+        @modifies self.goalBin
+        @post @code{(sum i; 0 <= i < len(goalBin); A) == self.goalInt}
+            where @code{A = a[i]*2**(len(goalBin) - 1 - i)}
+        """
+
+        goal_bin = []
+        if goal_int == 0:
+            goal_bin = [0]
+        else:
+            while goal_int > 0:
+                if goal_int % 2 == 1:
+                    goal_bin.insert(0, 1)
+                    goal_int = goal_int // 2
+                else:
+                    goal_bin.insert(0, 0)
+                    goal_int = goal_int // 2
+        return goal_bin
 
     def get_next_disk(self):
         """returns what color the next disk to be stringed should be
