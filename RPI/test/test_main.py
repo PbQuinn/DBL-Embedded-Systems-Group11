@@ -1,5 +1,5 @@
 from unittest import TestCase
-from main import Main
+from RPI.src.main import Main
 
 
 class TestInit(TestCase):

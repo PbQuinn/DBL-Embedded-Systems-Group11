@@ -1,5 +1,5 @@
 from unittest import TestCase
-from disk_string import Stringer
+from RPI.src.disk_string import Stringer
 
 
 class TestInit(TestCase):
@@ -69,9 +69,9 @@ class TestInit(TestCase):
         self.stringer = Stringer(1)
         arr_check = [1]
         check = True
-        if len(arr_check) != len(self.stringer.goal_bin):
+        if len(arr_check) != len(self.stringer.pattern):
             check = False
-        if arr_check[0] != self.stringer.goal_bin[0]:
+        if arr_check[0] != self.stringer.pattern[0]:
             check = False
         self.assertTrue(check)
 
@@ -79,9 +79,9 @@ class TestInit(TestCase):
         self.stringer = Stringer(54)
         arr_check = [1, 1, 0, 1, 1, 0]
         check = True
-        if len(arr_check) != len(self.stringer.goal_bin):
+        if len(arr_check) != len(self.stringer.pattern):
             check = False
         for i in arr_check:
-            if arr_check[i] != self.stringer.goal_bin[i]:
+            if arr_check[i] != self.stringer.pattern[i]:
                 check = False
         self.assertTrue(check)
