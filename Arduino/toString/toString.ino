@@ -122,6 +122,7 @@ void check(int issuedCommand) {
 
     default:
       // By the state check this default should not be reachable
+      Serial.write(UNEXPECTED_ERROR)
       break;
   }
 }
@@ -172,6 +173,8 @@ boolean stateCheck(int message) {
 void enterErrorState(){
   
 }
+
+
 
 int value = 0;
 
