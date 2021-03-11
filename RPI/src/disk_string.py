@@ -23,7 +23,7 @@ class Stringer:
     """
 
     def __init__(self, goal_int):
-        """Creates a new instance of DiskString from a pattern array
+        """creates a new instance of Stringer with a goal_int
 
         @param goal_int  integer whose binary representation will be stringed
         @pre @code{len(pattern) > 0 and (forall i; 0 <= i < len(pattern); A)}
@@ -35,13 +35,12 @@ class Stringer:
         self.stringed_disks = []
 
     def to_bin(self, goal_int):
-        """ creates an array containing the binary representation of
-        self.goal_int and assigns it to self.goal_bin
+        """returns an array containing the binary representation goal_int
 
         @pre @code{self.goalInt >= 0}
         @modifies self.goalBin
-        @post @code{(sum i; 0 <= i < len(goalBin); A) == self.goalInt}
-            where @code{A = a[i]*2**(len(goalBin) - 1 - i)}
+        @post @code{(sum i; 0 <= i < len(goal_bin); A) == old(goal_int)}
+            where @code{A = goal_bin[i]*2**(len(goal_bin) - 1 - i)}
         """
 
         goal_bin = []

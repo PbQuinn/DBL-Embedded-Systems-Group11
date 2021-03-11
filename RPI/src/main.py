@@ -9,7 +9,7 @@ class Main:
 
     Attributes
     __________
-    string : DiskString
+    string : Stringer
         a string object containing information on the already stringed disks
     goal_int : int
         the integer that will be represented in binary using the stringed disks
@@ -22,7 +22,7 @@ class Main:
 
     def __init__(self, goal_int, disk_pusher=ArduinoDiskPusher()):
         """
-        Creates a new instance of Stringer with goalInt as goal integer
+        Creates a new instance of Main with goalInt as goal integer
 
         @param goal_int  the integer that this stringer will string
         @pre @code{goalInt >= 0}
