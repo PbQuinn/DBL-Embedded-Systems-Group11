@@ -7,24 +7,24 @@ class TestInit(TestCase):
     def test_constructor_exception(self):
         self.assertRaises(ValueError, Stringer, -1)
 
-    def test_get_next_disk(self):
+    def test_get_next_color(self):
         # pattern consisting of only 1s, no disks stringed:
         self.stringer = Stringer(1)
-        self.assertEqual(self.stringer.get_next_disk(), 1)
+        self.assertEqual(self.stringer.get_next_color(), 1)
         # pattern consisting of only 0s, no disks stringed
         self.stringer = Stringer(0)
-        self.assertEqual(self.stringer.get_next_disk(), 0)
+        self.assertEqual(self.stringer.get_next_color(), 0)
         # pattern of length 3, one complete iteration:
         self.stringer = Stringer(6)
-        self.assertEqual(self.stringer.get_next_disk(), 0)
+        self.assertEqual(self.stringer.get_next_color(), 0)
         self.stringer.stringed_disks = [0]
-        self.assertEqual(self.stringer.get_next_disk(), 1)
+        self.assertEqual(self.stringer.get_next_color(), 1)
         self.stringer.stringed_disks = [1, 0]
-        self.assertEqual(self.stringer.get_next_disk(), 1)
+        self.assertEqual(self.stringer.get_next_color(), 1)
         self.stringer.stringed_disks = [1, 1, 0]
-        self.assertEqual(self.stringer.get_next_disk(), 0)
+        self.assertEqual(self.stringer.get_next_color(), 0)
 
-    def test_string_disk(self):
+    def test_string_color(self):
         # pattern consisting of only 1s, stringing 1:
         self.stringer = Stringer(1)
         self.is_correct = self.stringer.string_disk(1)

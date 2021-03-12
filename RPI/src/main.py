@@ -48,7 +48,7 @@ class Main:
             if (data is not None) and self.protocol.get_permission():
                 self.pusher.close_gate()
                 color = self.pusher.get_color()
-                if color == self.string.get_next_disk():
+                if color == self.string.get_next_color():
                     self.pusher.push_disk()
                     self.string.string_disk(color)
                 self.pusher.open_gate()

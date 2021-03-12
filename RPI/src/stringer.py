@@ -13,7 +13,7 @@ class Stringer:
     to_bin() : void
         creates an array containing the binary representation of self.goal_int
         and assigns it to self.goal_bin
-    get_next_disk() : int
+    get_next_color() : int
         returns what color the next disk to be stringed should be
     string_disk(int) : bool
         adds disk to stringed disks, returns if true stringed disk was
@@ -58,7 +58,7 @@ class Stringer:
                     goal_int = goal_int // 2
         return goal_bin
 
-    def get_next_disk(self):
+    def get_next_color(self):
         """returns what color the next disk to be stringed should be
 
         @pre @code{len(self.pattern) > 0}
@@ -84,7 +84,7 @@ class Stringer:
             where @code{A = stringed_disks[i+1] == old(stringed_disks[i])}
         """
 
-        correct_color = self.get_next_disk()
+        correct_color = self.get_next_color()
         self.stringed_disks.insert(0, color)
         return color == correct_color
 
@@ -109,6 +109,7 @@ class Stringer:
 
         @param color  color of the disk that will be stringed
         @pre @code{color == 1 or color == 0}
-        @post @code{result == (color == get_next_disk())}
+        @post @code{result == (color == get_next_color())}
         """
-        return color == self.get_next_disk()
+
+        return color == self.get_next_color()
