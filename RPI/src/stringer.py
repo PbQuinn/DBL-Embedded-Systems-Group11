@@ -31,10 +31,10 @@ class Stringer:
         """
         if goal_int < 0:
             raise ValueError("Input number should be positive")
-        self.pattern = self.to_bin(goal_int)
+        self.pattern = self.__to_bin(goal_int)
         self.stringed_disks = []
 
-    def to_bin(self, goal_int):
+    def __to_bin(self, goal_int):
         """returns an array containing the binary representation goal_int
 
         @pre @code{self.goalInt >= 0}
