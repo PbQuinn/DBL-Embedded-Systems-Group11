@@ -15,9 +15,6 @@ class Processor:
 
     Methods
     _______
-    set_stringer() : void
-        Sets the stringer instance
-
     process(string) : string[*]
         Takes input, processes it, and returns output
 
@@ -31,18 +28,10 @@ class Processor:
         Upon corresponding input, returns output
     """
 
-    def __init__(self, protocol_handler, expectation_handler):
+    def __init__(self, stringer, protocol_handler, expectation_handler):
+        self.__stringer = stringer
         self.__protocol_handler = protocol_handler
         self.__expectation_handler = expectation_handler
-        self.__stringer = None
-
-    def set_stringer(self, stringer):
-        """
-        Sets the stringer for this processor object.
-        @param stringer  Stringer to be set
-        """
-
-        self.__stringer = stringer
 
     def process(self, input):
         """
@@ -75,7 +64,7 @@ class Processor:
     def __motion_detected(self):
         """Returns output in case of motion."""
 
-        if not self.__stringer.complete():
+        if not self.__stringer.is_complete():
             # The stringer still needs disks
             self.__expectation_handler.add(b"Confirm Extend Blocker", [b"Retract Blocker"], 10)
             return [b"Extend Blocker", b"Scan Color"]
