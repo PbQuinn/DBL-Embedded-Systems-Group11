@@ -75,7 +75,7 @@ class Processor:
     def __motion_detected(self):
         """Returns output in case of motion."""
 
-        if not self.__stringer.complete():
+        if not self.__stringer.is_complete():
             # The stringer still needs disks
             self.__expectation_handler.add(b"Confirm Extend Blocker", [b"Retract Blocker"], 10)
             return [b"Extend Blocker", b"Scan Color"]
