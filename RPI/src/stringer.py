@@ -20,6 +20,8 @@ class Stringer:
         correct color and false otherwise
     get_iteration() : int
         returns the number of times the pattern has been completed
+    is_complete() : bool
+        returns whether at least one iteration has been completed
     """
 
     def __init__(self, goal_int):
@@ -93,3 +95,11 @@ class Stringer:
         """
 
         return len(self.stringed_disks) // len(self.pattern)
+
+    def is_complete(self):
+        """returns whether at least one iteration has been completed
+
+        @post @code{result == get_iteration > 1}
+        """
+
+        return self.get_iteration() > 0

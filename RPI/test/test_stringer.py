@@ -65,7 +65,7 @@ class TestInit(TestCase):
         self.stringer.stringed_disks = [1, 0, 0]
         self.assertEqual(self.stringer.get_iteration(), 0)
 
-    def test_toBin_trivial(self):
+    def test_to_bin_trivial(self):
         self.stringer = Stringer(1)
         arr_check = [1]
         check = True
@@ -75,7 +75,7 @@ class TestInit(TestCase):
             check = False
         self.assertTrue(check)
 
-    def test_toBin_not_trivial(self):
+    def test_to_bin_not_trivial(self):
         self.stringer = Stringer(54)
         arr_check = [1, 1, 0, 1, 1, 0]
         check = True
@@ -85,3 +85,30 @@ class TestInit(TestCase):
             if arr_check[i] != self.stringer.pattern[i]:
                 check = False
         self.assertTrue(check)
+
+    def test_is_complete_trivial(self):
+        # Empty string, pattern length 1
+        self.stringer = Stringer(1)
+        self.assertFalse(self.stringer.is_complete())
+        # Pattern length 1, completed exactly once
+        self.stringer.string_disk(1)
+        self.assertTrue(self.stringer.is_complete())
+
+    def test_is_complete_not_trivial(self):
+        # Pattern: (10011)_2 = 19
+        self.stringer = Stringer(19)
+        self.assertFalse(self.stringer.is_complete())
+        self.stringer.string_disk(1)
+        self.assertFalse(self.stringer.is_complete())
+        self.stringer.string_disk(1)
+        self.assertFalse(self.stringer.is_complete())
+        self.stringer.string_disk(0)
+        self.assertFalse(self.stringer.is_complete())
+        self.stringer.string_disk(0)
+        self.assertFalse(self.stringer.is_complete())
+        self.stringer.string_disk(1)
+        self.assertTrue(self.stringer.is_complete())
+        # One more disk stringed after completion
+        self.stringer.string_disk(1)
+        self.assertTrue(self.stringer.is_complete())
+
