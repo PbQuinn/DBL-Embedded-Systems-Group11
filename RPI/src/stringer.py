@@ -99,7 +99,16 @@ class Stringer:
     def is_complete(self):
         """returns whether at least one iteration has been completed
 
-        @post @code{result == get_iteration > 1}
+        @post @code{result == (get_iteration > 1)}
         """
 
         return self.get_iteration() > 0
+
+    def should_pickup(self, color):
+        """returns whether the input color matches the next disk in the pattern
+
+        @param color  color of the disk that will be stringed
+        @pre @code{color == 1 or color == 0}
+        @post @code{result == (color == get_next_disk())}
+        """
+        return color == self.get_next_disk()

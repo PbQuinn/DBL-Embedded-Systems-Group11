@@ -112,3 +112,32 @@ class TestInit(TestCase):
         self.stringer.string_disk(1)
         self.assertTrue(self.stringer.is_complete())
 
+    def test_should_pickup_trivial(self):
+        # Empty string, pattern all 1s
+        self.stringer = Stringer(1)
+        self.assertTrue(self.stringer.should_pickup(1))
+        self.assertFalse(self.stringer.should_pickup(0))
+        # Empty string, pattern all 0s
+        self.stringer = Stringer(0)
+        self.assertFalse(self.stringer.should_pickup(1))
+        self.assertTrue(self.stringer.should_pickup(0))
+
+    def test_should_pickup_not_trivial(self):
+        # Pattern: (1101)_2 = 13
+        self.stringer = Stringer(13)
+        self.assertTrue(self.stringer.should_pickup(1))
+        self.assertFalse(self.stringer.should_pickup(0))
+        self.stringer.string_disk(1)
+        self.assertFalse(self.stringer.should_pickup(1))
+        self.assertTrue(self.stringer.should_pickup(0))
+        self.stringer.string_disk(0)
+        self.assertTrue(self.stringer.should_pickup(1))
+        self.assertFalse(self.stringer.should_pickup(0))
+        self.stringer.string_disk(1)
+        self.assertTrue(self.stringer.should_pickup(1))
+        self.assertFalse(self.stringer.should_pickup(0))
+        self.stringer.string_disk(1)
+        self.assertTrue(self.stringer.should_pickup(1))
+        self.assertFalse(self.stringer.should_pickup(0))
+
+
