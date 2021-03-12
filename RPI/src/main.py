@@ -64,4 +64,3 @@ if __name__ == '__main__':
             print('We will use ' + str(number))
         except ValueError:
             print('The number should be an integer >= 0')
-

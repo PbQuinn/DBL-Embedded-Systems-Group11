@@ -50,16 +50,16 @@ class Processor:
         @param input  The input to be processed
         """
 
-        if input == b"Ping":
+        if input == "Ping":
             return self.__ping()
-        elif input == b"Motion Detected":
+        elif input == "Motion Detected":
             return self.__motion_detected()
-        elif input == b"White Detected":
+        elif input == "White Detected":
             return self.__color_detected(0)
-        elif input == b"Black Detected":
+        elif input == "Black Detected":
             return self.__color_detected(1)
         else:
-            return [b"Unknown Message"]
+            return ["Unknown Message"]
 
     def __ping(self):
         """Returns output in case of ping."""
@@ -70,18 +70,18 @@ class Processor:
         if expired_outputs:
             return expired_outputs
         else:
-            return [b"Pong"]
+            return ["Pong"]
 
     def __motion_detected(self):
         """Returns output in case of motion."""
 
         if not self.__stringer.complete():
             # The stringer still needs disks
-            self.__expectation_handler.add(b"Confirm Extend Blocker", [b"Retract Blocker"], 10)
-            return [b"Extend Blocker", b"Scan Color"]
+            self.__expectation_handler.add("Confirm Extend Blocker", ["Retract Blocker"], 10)
+            return ["Extend Blocker", "Scan Color"]
         else:
             # The stringer does not need disks
-            return [b"Ignore"]
+            return ["Ignore"]
 
     def __color_detected(self, color):
         """
@@ -91,11 +91,11 @@ class Processor:
 
         if not self.__stringer.should_pickup(color):
             # We do not want the color
-            self.__expectation_handler.add(b"Confirm Retract Blocker", [b"Extend Blocker"], 10)
-            return [b"Retract Blocker"]
+            self.__expectation_handler.add("Confirm Retract Blocker", ["Extend Blocker"], 10)
+            return ["Retract Blocker"]
         elif not self.__protocol_handler.can_pickup():
             # We are not allowed to pick up a disk
-            return [b"Retract Blocker"]
+            return ["Retract Blocker"]
         else:
             # We want the color and we are allowed to pick up a disk
-            return [b"Push", b"Retract Blocker"]
+            return ["Push", "Retract Blocker"]

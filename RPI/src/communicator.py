@@ -53,15 +53,15 @@ class CommunicatorSimulation(Communicator):
 
     def _communicate(self):
         # Receive
-        msg_receive = self.socket.recv()
-        print("Received: %s" % msg_receive)
+        input = self.socket.recv_string()
+        print("Received: %s" % input)
 
         # Process
-        msg_send = self._processor.process(msg_receive)
+        output = ",".join(self._processor.process(input)).encode()
 
         # Send
-        self.socket.send(msg_send)
-        print("Sent: %s" % msg_send)
+        self.socket.send(output)
+        print("Sent: %s" % output)
 
 
 class CommunicatorRobot(Communicator):
