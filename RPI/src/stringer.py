@@ -22,6 +22,8 @@ class Stringer:
         returns the number of times the pattern has been completed
     is_complete() : bool
         returns whether at least one iteration has been completed
+    should_pickup(int) : bool
+        returns whether the input color matches the next disk in the pattern
     """
 
     def __init__(self, goal_int):
