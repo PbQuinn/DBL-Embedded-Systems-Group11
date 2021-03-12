@@ -1,4 +1,4 @@
 from unittest import TestCase
-from talk_to_push import TalkToPush
+from RPI.src.talk_to_push import DiskPusher
 
 # TODO add test cases for TalkToPush
