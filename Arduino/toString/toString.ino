@@ -1,3 +1,6 @@
+//a libary used for interupts
+#include <TimerOne.h>
+
 //====COMMAND NUMBERS====
 //Gate control:
 const int CLOSE_BLOCKER = 10;
@@ -9,7 +12,7 @@ const int AFFIRM_DISK = 40;
 //Motor control:
 const int STRING_DISK = 60;
 //Program state control:
-const int PING = 100;
+const int PONG = 100;
 const int SET_ERROR_STATE = 102;
 const int EXIT_ERROR_STATE = 104;
 const int GET_ERROR_STATE_INFO = 106;
@@ -19,11 +22,11 @@ const int SET_BLACK = 202;
 const int EXIT_SETUP = 204;
 
 //working state possibilities
-int workmessages[] = {CLOSE_BLOCKER, OPEN_BLOCKER, DO_PUSH, GET_COLOR, AFFIRM_DISK, STRING_DISK, PING, SET_ERROR_STATE};
-int errormessages[] = {EXIT_ERROR_STATE, GET_ERROR_STATE_INFO, PING};
-int setupmessages[] = {SET_WHITE, SET_BLACK, EXIT_SETUP, PING};
+int workmessages[] = {CLOSE_BLOCKER, OPEN_BLOCKER, DO_PUSH, GET_COLOR, AFFIRM_DISK, STRING_DISK, PONG, SET_ERROR_STATE};
+int errormessages[] = {EXIT_ERROR_STATE, GET_ERROR_STATE_INFO, PONG};
+int setupmessages[] = {SET_WHITE, SET_BLACK, EXIT_SETUP, PONG};
 int all[] = {CLOSE_BLOCKER, OPEN_BLOCKER, DO_PUSH, GET_COLOR, AFFIRM_DISK, STRING_DISK,
-            PING, SET_ERROR_STATE,EXIT_ERROR_STATE, GET_ERROR_STATE_INFO, SET_WHITE, SET_BLACK, EXIT_SETUP};
+            PONG, SET_ERROR_STATE,EXIT_ERROR_STATE, GET_ERROR_STATE_INFO, SET_WHITE, SET_BLACK, EXIT_SETUP};
 
 //====RESPONSE NUMBERS====
 //Action control:
@@ -32,12 +35,12 @@ const int CONFIRM_CLOSE_GATE = 11;
 const int CONFIRM_OPEN_GATE = 51;
 const int CONFIRM_DO_PUSH = 31;
 const int CONFIRM_STRING_DISK = 61;
-const int ERROR_STRING_DISK = 62
+const int ERROR_STRING_DISK = 62;
 //Program state messages:
 const int UNEXPECTED_ERROR = -1;
 const int ILLEGAL_COMMAND = -2;
 const int UNKNOWN_COMMAND = -3;
-const int PONG = 101;
+const int PING = 101;
 const int ERRONG_PING = 103;
 const int CONFIRM_EXIT_ERROR_STATE = 105;
 const int START_MESSAGE = 107;
@@ -49,8 +52,7 @@ const int CONFIRM_EXIT_SETUP = 205;
 const int WHITE = 21;
 const int BLACK = 22;
 const int NEITHER = 23;
-// How often should we recieve Ping messages + some time to avoid false positives in ms.
-const int PING_TIME = 1500;
+
 // A timer to check if we are not disconnected
 unsigned long timer = 0;
 /* The current state we are in:
@@ -59,18 +61,34 @@ unsigned long timer = 0;
  * 2: the error state
  */
 int state = 0;
+//A boolean to check wheter we missed an expected response
+boolean expected = false;
 
 
 void setup() {
   Serial.begin(9600);
   //Serial.println("Successfully started IO hub");
+  Timer1.initialize(100000); 
+  Timer1.attachInterrupt( messages );
 }
 
-//Communicate to the RPI that we're still operational.
+
+
+void messages() {
+  //we need to check the message pool
+  // if we are working we should check the connection
+  
+  if(state == 1){
+      Serial.write(PONG);
+  }
+}
+
+
+//check the use cases 
 void check(int issuedCommand) {
   switch (issuedCommand) {
     case PING:
-      Serial.write(PONG);
+      
       break;
 
     case SET_WHITE:
@@ -123,7 +141,7 @@ void check(int issuedCommand) {
 
     default:
       // By the state check this default should not be reachable
-      Serial.write(UNEXPECTED_ERROR)
+      Serial.write(UNEXPECTED_ERROR);
       break;
   }
 }
@@ -194,13 +212,7 @@ void loop() {
     }
   }
 
-  // if we are working we should check the connection
-  // any furhter working state specific actions should also be placed here
-  if(state == 1){
-    if(millis() - PING_TIME > timer){
-      enterErrorState();
-    }
-  }
+  
 
 
   // TODO: Implement scanning to write to "diskFound"
