@@ -5,6 +5,7 @@
  * If the command is used in another state but not the current state we send an error message.
  * Error code, -2(ILLEGAL_COMMAND), will be send
  * If the command is unknown we send error code: -3(UNKNOWN_COMMAND).
+ * Commands need to be placed in a buffer if this buffers overload we send error code: -4(BUFFER_FULL)
  */
 
 // commands used in the working state 
@@ -133,12 +134,17 @@
 
 /** ping()
  *
- * Pings the IO hub for a response ping.
+ * Pings the control software for a response ping.
  * Procedure:
- * 0). Call received.
- * 1). Send confirm ping.
+ * 0). Ping the control software.
+ * 1). Check if we recieve a respnse message.
+ * 2). Response message is recieved.
+ *
+ * alternative flow
+ * 2') Resopnse message is not recieved.
+ * 3') Enter the error state.
  * 
- * Call nr: 100 (PING)
+ * Send nr: 100 (PING)
  * Expected response: 101 (PONG)
  */
  
