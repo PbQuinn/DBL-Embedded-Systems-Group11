@@ -224,13 +224,7 @@ void enterErrorState(){
 }
 
 
-
-int value = 0;
-
 void loop() {
-
-
-
 //Check if there is a command to process
   if(writep != readp){
     int message = que[readp];
