@@ -196,7 +196,7 @@ void loop() {
 
   // if we are working we should check the connection
   // any furhter working state specific actions should also be placed here
-  if(state = 1){
+  if(state == 1){
     if(millis() - PING_TIME > timer){
       enterErrorState();
     }
