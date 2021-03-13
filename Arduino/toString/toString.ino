@@ -40,6 +40,7 @@ const int ERROR_STRING_DISK = 62;
 const int UNEXPECTED_ERROR = -1;
 const int ILLEGAL_COMMAND = -2;
 const int UNKNOWN_COMMAND = -3;
+const int BUFFER_FULL = -4;
 const int PING = 101;
 const int ERRONG_PING = 103;
 const int CONFIRM_EXIT_ERROR_STATE = 105;
@@ -63,6 +64,10 @@ unsigned long timer = 0;
 int state = 0;
 //A boolean to check wheter we missed an expected response
 boolean expected = false;
+//make a circular buffer
+int que[10];
+int readp = 0;
+int writep = 0;
 
 
 void setup() {
@@ -76,10 +81,35 @@ void setup() {
 
 void messages() {
   //we need to check the message pool
-  // if we are working we should check the connection
+  //This if-statement is responsible for taking input
+  //from the serial monitor. The call to check() is what truly
+  //handles the command.
+  while (Serial.available() > 0) {
+    int message = Serial.read() - '0';
+    //first we need to check if the command is pong or entering the error state.
+    //in those cases we need to handle them immediatly else we put the request in the que
+    if(message == PONG){
+      expected = false;
+    }else if(message == SET_ERROR_STATE){
+      enterErrorState();
+    }else{
+      if(writep+ 1 == readp){
+        Serial.write(BUFFER_FULL);
+      }else{
+        que[writep] = message;
+        writep = (writep + 1) % 10;
+      }      
+    }     
+  }
+
+  if(expected){
+    enterErrorState();
+  }
   
+  // if we are working we should check the connection
   if(state == 1){
-      Serial.write(PONG);
+      Serial.write(PING);
+      expected = true;
   }
 }
 
@@ -199,20 +229,16 @@ int value = 0;
 
 void loop() {
 
-//This if-statement is responsible for taking input
-//from the serial monitor. The call to check() is what truly
-//handles the command.
 
-//Check if there is a command waiting for me
-  if (Serial.available() > 0) {
-    int message = Serial.read() - '0';
-    //first we need to check if the command is valid in the current state if so check it
+
+//Check if there is a command to process
+  if(writep != readp){
+    int message = que[readp];
+    readp = (readp + 1) % 10;
     if(stateCheck(message)){
       check(message);
-    }
-  }
-
-  
+    }      
+  }  
 
 
   // TODO: Implement scanning to write to "diskFound"
