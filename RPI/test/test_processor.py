@@ -15,18 +15,18 @@ class TestInit(TestCase):
         for _ in range(9):
             self.assertEqual(self.processor.process(b"Ping"), [b"Pong"])
         # Expired outputs
-        self.assertEqual(self.processor.process(b"Ping"), [[b"Retract Blocker"]])
+        self.assertEqual(self.processor.process(b"Ping"), [b"Pong", [b"Retract Blocker"]])
 
-    def test_process_motion(self):
+    def test_process_motion_detected(self):
         # Uncompleted stringer
         self.stringer = Stringer(0)
         self.processor = Processor(self.stringer, ProtocolHandler(), ExpectationHandler())
-        self.assertEqual(self.processor.process(b"Motion Detected"), [b"Extend Blocker", b"Scan Color"])
+        self.assertEqual(self.processor.process(b"Motion Detected"), [b"Extend Blocker"])
         # Completed stringer
         self.stringer.stringed_disks = [0] * 8
         self.assertEqual(self.processor.process(b"Motion Detected"), [b"Ignore"])
 
-    def test_process_white(self):
+    def test_process_white_detected(self):
         # Unwanted color
         self.processor = Processor(Stringer(1), ProtocolHandler(), ExpectationHandler())
         self.assertEqual(self.processor.process(b"White Detected"), [b"Retract Blocker"])
@@ -38,7 +38,7 @@ class TestInit(TestCase):
         self.protocol.set_allowance(True)
         self.assertEqual(self.processor.process(b"White Detected"), [b"Push", b"Retract Blocker"])
 
-    def test_process_black(self):
+    def test_process_black_detected(self):
         # Unwanted color
         self.processor = Processor(Stringer(0), ProtocolHandler(), ExpectationHandler())
         self.assertEqual(self.processor.process(b"Black Detected"), [b"Retract Blocker"])
@@ -49,6 +49,34 @@ class TestInit(TestCase):
         # Wanted and permission
         self.protocol.set_allowance(True)
         self.assertEqual(self.processor.process(b"Black Detected"), [b"Push", b"Retract Blocker"])
+
+    def test_process_blocker_extended(self):
+        # TODO
+        self.assertEqual(True, False)
+
+    def test_process_blocker_retracted(self):
+        # TODO
+        self.assertEqual(True, False)
+
+    def test_process_pusher_pushed(self):
+        # TODO
+        self.assertEqual(True, False)
+
+    def test_process_disk_stringed(self):
+        # TODO
+        self.assertEqual(True, False)
+
+    def test_process_white_set(self):
+        # TODO
+        self.assertEqual(True, False)
+
+    def test_process_black_set(self):
+        # TODO
+        self.assertEqual(True, False)
+
+    def test_process_error(self):
+        # TODO
+        self.assertEqual(True, False)
 
     def test_process_unknown(self):
         self.processor = Processor(Stringer(69), ProtocolHandler(), ExpectationHandler())
