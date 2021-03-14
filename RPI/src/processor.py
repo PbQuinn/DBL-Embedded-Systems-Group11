@@ -36,9 +36,10 @@ class Processor:
     def process(self, input_):
         """
         Returns output after processing passed input.
-        @param input  The input to be processed
+        @param input_  The input to be processed
         """
 
+        # Main interactions:
         if input_ == b"Ping":
             return self.__ping()
         elif input_ == b"Motion Detected":
@@ -47,6 +48,24 @@ class Processor:
             return self.__color_detected(0)
         elif input_ == b"Black Detected":
             return self.__color_detected(1)
+        elif input_ == b"Blocker Extended":
+            return self.__blocker_extended()
+        elif input_ == b"Blocker Retracted":
+            return self.__blocker_retracted()
+        elif input_ == b"Pusher Pushed":
+            return self.__pusher_pushed()
+        elif input_ == b"Disk Stringed":
+            return self.__disk_stringed()
+
+        # Startup interactions:
+        elif input_ == b"White Set":
+            pass    # TODO implement
+        elif input_ == b"Black Set":
+            pass    # TODO implement
+
+        # Error interactions:
+        elif input_ == b"Error Occurred":
+            pass    # TODO implement
         else:
             return [b"Unknown Message"]
 
@@ -55,11 +74,7 @@ class Processor:
 
         self.__expectation_handler.ping()
         expired_outputs = self.__expectation_handler.get_expired_outputs()
-
-        if expired_outputs:
-            return expired_outputs
-        else:
-            return [b"Pong"]
+        return [b"Pong"] + expired_outputs
 
     def __motion_detected(self):
         """Returns output in case of motion."""
@@ -67,7 +82,7 @@ class Processor:
         if not self.__stringer.is_complete():
             # The stringer still needs disks
             self.__expectation_handler.add(b"Confirm Extend Blocker", [b"Retract Blocker"], 10)
-            return [b"Extend Blocker", b"Scan Color"]
+            return [b"Extend Blocker"]
         else:
             # The stringer does not need disks
             return [b"Ignore"]
@@ -80,7 +95,7 @@ class Processor:
 
         if not self.__stringer.should_pickup(color):
             # We do not want the color
-            self.__expectation_handler.add(b"Confirm Retract Blocker", [b"Extend Blocker"], 10)
+            self.__expectation_handler.add(b"Blocker Retracted", [b"Extend Blocker"], 10)
             return [b"Retract Blocker"]
         elif not self.__protocol_handler.can_pickup():
             # We are not allowed to pick up a disk
@@ -88,3 +103,18 @@ class Processor:
         else:
             # We want the color and we are allowed to pick up a disk
             return [b"Push", b"Retract Blocker"]
+
+    def __blocker_extended(self):
+        if not self.__expectation_handler.is_expecting(b"Blocker Extended"):
+            return [b"Unexpected Message"]
+        else:
+            return [b"Scan Color"]
+
+    def __blocker_retracted(self):
+        pass    # TODO implement
+
+    def __pusher_pushed(self):
+        pass    # TODO implement
+
+    def __disk_stringed(self):
+        pass    # TODO implement
