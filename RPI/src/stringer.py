@@ -10,9 +10,8 @@ class Stringer:
 
     Methods
     _______
-    __to_bin() : void
-        creates an array containing the binary representation of self.goal_int
-        and assigns it to self.goal_bin
+    __to_bin(int) : void
+        creates an array containing the binary representation of the input int
     get_next_color() : int
         returns what color the next disk to be stringed should be
     string_disk(int) : bool
@@ -28,35 +27,38 @@ class Stringer:
         """creates a new instance of Stringer with a goal_int
 
         @param goal_int  integer whose binary representation will be stringed
-        @pre @code{len(pattern) > 0 and (forall i; 0 <= i < len(pattern); A)}
-            where @code{A = pattern[i] == 0 or pattern[i] == 1}
-        @raises ValueError  if {@code goal_int < 0}
+        @pre {@code 0 <= goal_int <= 255}
+        @raises ValueError  if {@code goal_int < 0 or goal_int > 255}
         """
-        if goal_int < 0:
-            raise ValueError("Input number should be positive")
+
+        if goal_int < 0 or goal_int > 255:
+            raise ValueError("Input number should be at least 0,"
+                             " and at most 255.")
         self.pattern = self.__to_bin(goal_int)
         self.stringed_disks = []
 
     def __to_bin(self, goal_int):
-        """returns an array containing the binary representation goal_int
+        """returns an array of length 8,
+        containing the binary representation goal_int
 
-        @pre @code{self.goalInt >= 0}
-        @modifies self.goalBin
-        @post @code{(sum i; 0 <= i < len(goal_bin); A) == old(goal_int)}
-            where @code{A = goal_bin[i]*2**(len(goal_bin) - 1 - i)}
+        @pre @code{0 <= goal_int <= 255}
+        @post @code{(sum i; 0 <= i < 8; A) == old(goal_int) and goal_bin}
+            where @code{A = goal_bin[i]*2**(7 - i)}
         """
 
         goal_bin = []
-        if goal_int == 0:
-            goal_bin = [0]
-        else:
-            while goal_int > 0:
-                if goal_int % 2 == 1:
-                    goal_bin.insert(0, 1)
-                    goal_int = goal_int // 2
-                else:
-                    goal_bin.insert(0, 0)
-                    goal_int = goal_int // 2
+        # Convert to binary
+        while goal_int > 0:
+            if goal_int % 2 == 1:
+                goal_bin.insert(0, 1)
+                goal_int = goal_int // 2
+            else:
+                goal_bin.insert(0, 0)
+                goal_int = goal_int // 2
+        # Add required leading 0s
+        while len(goal_bin) < 8:
+            goal_bin.insert(0, 0)
+
         return goal_bin
 
     def get_next_color(self):
@@ -66,6 +68,7 @@ class Stringer:
         @post @code{result == self.pattern[A]}
             where @code{A = len(self.stringed_disks) % len(self.pattern)}
         """
+
         if self.is_complete():
             raise Exception("No next color, Stringer is complete")
         pattern_index = len(self.pattern) - 1 - len(self.stringed_disks)
@@ -94,7 +97,7 @@ class Stringer:
         return color == correct_color
 
     def is_complete(self):
-        """returns whether at least one iteration has been completed
+        """returns whether the pattern has been completely stringed
 
         @post @code{result == (len(self.stringed_disks)
                               // len(self.pattern) > 0)}
