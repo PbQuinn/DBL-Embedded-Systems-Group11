@@ -51,32 +51,63 @@ class TestInit(TestCase):
         self.assertEqual(self.processor.process(b"Black Detected"), [b"Push", b"Retract Blocker"])
 
     def test_process_blocker_extended(self):
-        # TODO
-        self.assertEqual(True, False)
+        # Not yet expected
+        self.processor = Processor(Stringer(0), ProtocolHandler(), ExpectationHandler())
+        self.assertEqual(self.processor.process(b"Blocker Extended"), [b"Unexpected Message"])
+        # Expected
+        self.processor.process(b"Motion Detected")
+        self.assertEqual(self.processor.process(b"Blocker Extended"), [b"Scan Color"])
+        # No longer expected
+        self.assertEqual(self.processor.process(b"Blocker Extended"), [b"Unexpected Message"])
 
     def test_process_blocker_retracted(self):
-        # TODO
-        self.assertEqual(True, False)
+        # Not yet expected
+        self.processor = Processor(Stringer(0), ProtocolHandler(), ExpectationHandler())
+        self.assertEqual(self.processor.process(b"Blocker Retracted"), [b"Unexpected Message"])
+        # Expected
+        self.processor.process(b"Motion Detected")
+        self.processor.process(b"Blocker Extended")
+        self.processor.process(b"White Detected")
+        self.assertEqual(self.processor.process(b"Blocker Retracted"), [b"???"])
+        # No longer expected
+        self.assertEqual(self.processor.process(b"Blocker Retracted"), [b"Unexpected Message"])
 
     def test_process_pusher_pushed(self):
-        # TODO
-        self.assertEqual(True, False)
+        # Not yet expected
+        self.processor = Processor(Stringer(0), ProtocolHandler(), ExpectationHandler())
+        self.assertEqual(self.processor.process(b"Pusher Pushed"), [b"Unexpected Message"])
+        # Expected
+        self.processor.process(b"Motion Detected")
+        self.processor.process(b"Blocker Extended")
+        self.processor.process(b"White Detected")
+        self.assertEqual(self.processor.process(b"Pusher Pushed"), [b"???"])
+        # No longer expected
+        self.assertEqual(self.processor.process(b"Pusher Pushed"), [b"Unexpected Message"])
 
     def test_process_disk_stringed(self):
-        # TODO
-        self.assertEqual(True, False)
+        # Not yet expected
+        self.processor = Processor(Stringer(0), ProtocolHandler(), ExpectationHandler())
+        self.assertEqual(self.processor.process(b"Disk Stringed"), [b"Unexpected Message"])
+        # Expected
+        self.processor.process(b"Motion Detected")
+        self.processor.process(b"Blocker Extended")
+        self.processor.process(b"White Detected")
+        self.processor.process(b"Pusher Pushed")
+        self.assertEqual(self.processor.process(b"Disk Stringed"), [b"???"])
+        # No longer expected
+        self.assertEqual(self.processor.process(b"Disk Stringed"), [b"Unexpected Message"])
 
     def test_process_white_set(self):
-        # TODO
-        self.assertEqual(True, False)
+        self.processor = Processor(Stringer(0), ProtocolHandler(), ExpectationHandler())
+        self.assertEqual(self.processor.process(b"White Set"), [b"???"])
 
     def test_process_black_set(self):
-        # TODO
-        self.assertEqual(True, False)
+        self.processor = Processor(Stringer(0), ProtocolHandler(), ExpectationHandler())
+        self.assertEqual(self.processor.process(b"Black Set"), [b"???"])
 
     def test_process_error(self):
-        # TODO
-        self.assertEqual(True, False)
+        self.processor = Processor(Stringer(0), ProtocolHandler(), ExpectationHandler())
+        self.assertEqual(self.processor.process(b"Error Occurred"), [b"???"])
 
     def test_process_unknown(self):
         self.processor = Processor(Stringer(69), ProtocolHandler(), ExpectationHandler())
