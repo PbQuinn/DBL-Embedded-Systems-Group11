@@ -15,9 +15,6 @@ class Processor:
 
     Methods
     _______
-    set_stringer() : void
-        Sets the stringer instance
-
     process(string) : string[*]
         Takes input, processes it, and returns output
 
@@ -31,18 +28,10 @@ class Processor:
         Upon corresponding input, returns output
     """
 
-    def __init__(self, protocol_handler, expectation_handler):
+    def __init__(self, stringer, protocol_handler, expectation_handler):
+        self.__stringer = stringer
         self.__protocol_handler = protocol_handler
         self.__expectation_handler = expectation_handler
-        self.__stringer = None
-
-    def set_stringer(self, stringer):
-        """
-        Sets the stringer for this processor object.
-        @param stringer  Stringer to be set
-        """
-
-        self.__stringer = stringer
 
     def process(self, input):
         """
