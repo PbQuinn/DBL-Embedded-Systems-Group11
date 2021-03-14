@@ -33,19 +33,19 @@ class Processor:
         self.__protocol_handler = protocol_handler
         self.__expectation_handler = expectation_handler
 
-    def process(self, input):
+    def process(self, input_):
         """
         Returns output after processing passed input.
         @param input  The input to be processed
         """
 
-        if input == b"Ping":
+        if input_ == b"Ping":
             return self.__ping()
-        elif input == b"Motion Detected":
+        elif input_ == b"Motion Detected":
             return self.__motion_detected()
-        elif input == b"White Detected":
+        elif input_ == b"White Detected":
             return self.__color_detected(0)
-        elif input == b"Black Detected":
+        elif input_ == b"Black Detected":
             return self.__color_detected(1)
         else:
             return [b"Unknown Message"]
