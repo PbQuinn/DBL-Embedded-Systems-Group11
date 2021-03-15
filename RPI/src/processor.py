@@ -89,9 +89,11 @@ class Processor:
 
     def __color_detected(self, color):
         """
-        Returns output in case of color.
+        Removes expectation and returns output in case of color.
         @param color  The color that was detected.
         """
+
+        self.__expectation_handler.remove(b"Color Detected")
 
         if not self.__stringer.should_pickup(color):
             # We do not want the color
@@ -99,22 +101,41 @@ class Processor:
             return [b"Retract Blocker"]
         elif not self.__protocol_handler.can_pickup():
             # We are not allowed to pick up a disk
+            self.__expectation_handler.add(b"Blocker Retracted", [b"Extend Blocker"], 10)
             return [b"Retract Blocker"]
         else:
             # We want the color and we are allowed to pick up a disk
-            return [b"Push", b"Retract Blocker"]
+            self.__expectation_handler.add(b"Pusher Pushed", [], 10)
+            return [b"Push"]
 
     def __blocker_extended(self):
-        if not self.__expectation_handler.is_expecting(b"Blocker Extended"):
-            return [b"Unexpected Message"]
-        else:
-            return [b"Scan Color"]
+        """
+        Removes expectation and returns output in case of blocker extended.
+        """
+
+        self.__expectation_handler.remove(b"Blocker Extended")
+        self.__expectation_handler.add(b"Color Detected", [], 10)
+        return [b"Scan Color"]
 
     def __blocker_retracted(self):
-        pass    # TODO implement
+        """
+        Removes expectation in case of blocker retracted.
+        """
+
+        self.__expectation_handler.remove(b"Blocker Retracted")
 
     def __pusher_pushed(self):
-        pass    # TODO implement
+        """
+        Removes expectation and returns output in case of pusher pushed.
+        """
+
+        self.__expectation_handler.remove(b"Pusher Pushed")
+        self.__expectation_handler.add(b"Blocker Retracted", [b"Extend Blocker"])
+        return [b"Retract Blocker"]
 
     def __disk_stringed(self):
-        pass    # TODO implement
+        """
+        Removes expectation in case of disk stringed.
+        """
+
+        self.__expectation_handler.remove(b"Disk Stringed")
