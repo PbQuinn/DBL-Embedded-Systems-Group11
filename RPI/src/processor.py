@@ -48,13 +48,13 @@ class Processor:
             return self.__color_detected(0)
         elif input_ == b"Black Detected":
             return self.__color_detected(1)
-        elif input_ == b"Blocker Extended":
+        elif input_ == b"Confirm Blocker Extended":
             return self.__blocker_extended()
-        elif input_ == b"Blocker Retracted":
+        elif input_ == b"Confirm Blocker Retracted":
             return self.__blocker_retracted()
-        elif input_ == b"Pusher Pushed":
+        elif input_ == b"Confirm Pusher Push":
             return self.__pusher_pushed()
-        elif input_ == b"Disk Stringed":
+        elif input_ == b"Confirm Stringer Push":
             return self.__disk_stringed()
 
         # Startup interactions:
@@ -81,7 +81,8 @@ class Processor:
 
         if not self.__stringer.is_complete():
             # The stringer still needs disks
-            self.__expectation_handler.add(b"Confirm Extend Blocker", [b"Retract Blocker"], 10)
+            self.__expectation_handler.add(b"Confirm Blocker Extended",
+                                           [b"Retract Blocker"], 10)
             return [b"Extend Blocker"]
         else:
             # The stringer does not need disks
@@ -97,15 +98,17 @@ class Processor:
 
         if not self.__stringer.should_pickup(color):
             # We do not want the color
-            self.__expectation_handler.add(b"Blocker Retracted", [b"Extend Blocker"], 10)
+            self.__expectation_handler.add(b"Confirm Blocker Retracted",
+                                           [b"Extend Blocker"], 10)
             return [b"Retract Blocker"]
         elif not self.__protocol_handler.can_pickup():
             # We are not allowed to pick up a disk
-            self.__expectation_handler.add(b"Blocker Retracted", [b"Extend Blocker"], 10)
+            self.__expectation_handler.add(b"Confirm Blocker Retracted",
+                                           [b"Extend Blocker"], 10)
             return [b"Retract Blocker"]
         else:
             # We want the color and we are allowed to pick up a disk
-            self.__expectation_handler.add(b"Pusher Pushed", [], 10)
+            self.__expectation_handler.add(b"Confirm Pusher Push", [], 10)
             return [b"Push"]
 
     def __blocker_extended(self):
@@ -113,7 +116,7 @@ class Processor:
         Removes expectation and returns output in case of blocker extended.
         """
 
-        self.__expectation_handler.remove(b"Blocker Extended")
+        self.__expectation_handler.remove(b"Confirm Blocker Extended")
         self.__expectation_handler.add(b"Color Detected", [], 10)
         return [b"Scan Color"]
 
@@ -122,15 +125,15 @@ class Processor:
         Removes expectation in case of blocker retracted.
         """
 
-        self.__expectation_handler.remove(b"Blocker Retracted")
+        self.__expectation_handler.remove(b"Confirm Blocker Retracted")
 
     def __pusher_pushed(self):
         """
         Removes expectation and returns output in case of pusher pushed.
         """
 
-        self.__expectation_handler.remove(b"Pusher Pushed")
-        self.__expectation_handler.add(b"Blocker Retracted", [b"Extend Blocker"])
+        self.__expectation_handler.remove(b"Confirm Pusher Push")
+        self.__expectation_handler.add(b"Confirm Blocker Retracted", [b"Extend Blocker"])
         return [b"Retract Blocker"]
 
     def __disk_stringed(self):
@@ -138,4 +141,4 @@ class Processor:
         Removes expectation in case of disk stringed.
         """
 
-        self.__expectation_handler.remove(b"Disk Stringed")
+        self.__expectation_handler.remove(b"Confirm Stringer Push")
