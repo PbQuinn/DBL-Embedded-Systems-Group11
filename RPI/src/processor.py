@@ -81,6 +81,7 @@ class Processor:
         """Returns output in case of ping."""
 
         self.__expectation_handler.ping()
+        self.__protocol_handler.inform_alive()
         expired_outputs = self.__expectation_handler.get_expired_outputs()
         return ["Pong"] + expired_outputs
 
@@ -119,7 +120,8 @@ class Processor:
             self.__expectation_handler.add("Confirm Pusher Push", [], 10)                          # TODO adjust timer
             self.__expectation_handler.add("Secondary Color Detected " + str(color), [], 10)     # TODO adjust timer
             # Inform protocol that we are about to pickup a disk
-            self.__protocol_handler.inform_pickup(color)
+            self.__protocol_handler.inform_pickup()
+            self.__protocol_handler.inform_color(color)
             return ["Push Pusher"]
 
     def __secondary_color_detected(self, color):
