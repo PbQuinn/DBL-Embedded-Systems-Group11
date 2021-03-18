@@ -20,8 +20,8 @@ class TestInit(TestCase):
 
     def test_inform_color(self):
         self.protocol = ProtocolHandler()
-        self.protocol.inform_color(0)  # Black - Might want to flip this since it's different for us!?
-        self.protocol.inform_color(1)  # White - Might want to flip this since it's different for us!?
+        self.protocol.inform_color(1)  # Black
+        self.protocol.inform_color(0)  # White
 
     def test_inform_alive(self):
         self.protocol = ProtocolHandler()

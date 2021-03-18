@@ -70,6 +70,12 @@ class ProtocolHandler:
         @param color  the color of the retrieved disk
         """
 
+        # Invert color, as protocol uses them differently
+        if color == 0:
+            color = 1
+        elif color == 1:
+            color = 0
+
         response = requests.post(
             "https://brokenprotocol.xyz/Device/DeterminedObject",
             json={"Color": color},
