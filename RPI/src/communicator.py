@@ -5,14 +5,9 @@ import zmq
 class Communicator(ABC):
     """Abstract communicator class."""
 
-    """The processor the communicator will use to process received messages."""
-    _processor = None
-
-    """Whether the communicator is running."""
-    _running = False
-
     def __init__(self, processor):
         self._processor = processor
+        self._running = False
 
     def start(self):
         """Start communicating."""
@@ -48,19 +43,19 @@ class CommunicatorSimulation(Communicator):
 
         # Create and bind socket
         context = zmq.Context()
-        self.socket = context.socket(zmq.REP)
-        self.socket.bind("tcp://*:5555")
+        self.__socket = context.socket(zmq.REP)
+        self.__socket.bind("tcp://*:5555")
 
     def _communicate(self):
         # Receive
-        input = self.socket.recv()
-        print("Received: %s" % input)
+        input_ = self.__socket.recv_string()
+        print("Received: %s" % input_)
 
         # Process
-        output = ",".join(self._processor.process(input))
+        output = ",".join(self._processor.process(input_)).encode()
 
         # Send
-        self.socket.send(output)
+        self.__socket.send(output)
         print("Sent: %s" % output)
 
 
