@@ -117,7 +117,9 @@ class Processor:
         else:
             # We want the color and we are allowed to pick up a disk
             self.__expectation_handler.add(b"Confirm Pusher Push", [], 10)                          # TODO adjust timer
-            self.__expectation_handler.add(b"Secondary Color Detected " + bytes(color), [], 10)       # TODO adjust timer
+            self.__expectation_handler.add(b"Secondary Color Detected " + bytes(color), [], 10)     # TODO adjust timer
+            # Inform protocol that we are about to pickup a disk
+            self.__protocol_handler.inform_pickup(color)
             return [b"Push Pusher"]
 
     def __secondary_color_detected(self, color):
