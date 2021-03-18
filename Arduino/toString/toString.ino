@@ -113,6 +113,10 @@ void messages() {
   }
 }
 
+void openGate(){
+  Serial.write(CONFIRM_OPEN_GATE);
+}
+
 
 //check the use cases 
 void check(int issuedCommand) {
@@ -220,7 +224,12 @@ boolean stateCheck(int message) {
 }
 
 void enterErrorState(){
-  
+  state = 2;
+  openGate();
+  while(state == 2){
+    Serial.write(ERRONG_PING);
+    delay(100);
+  }
 }
 
 
