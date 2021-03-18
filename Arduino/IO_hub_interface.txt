@@ -46,12 +46,13 @@
  * Extends the pushing part of the blocker.
  * Procedure:
  * 0). Call received.
- * 1). Blocker motor on until 2 (direction: close).
- * 2). Blocker touches front side button sensor.
- * 3). Start timer T.
- * 4). T expires specified time.
- * 5). Blocker motor off.
- * 6). Send confirm ping.
+ * 1). Start affirm disk
+ * 2). Blocker motor on until 2 (direction: close).
+ * 3). Blocker touches front side button sensor.
+ * 5). Start timer T.
+ * 6). T expires specified time.
+ * 7). Blocker motor off.
+ * 8). Send confirm ping.
  * 
  * Call nr: 30 (DO_PUSH)
  * Expected response: 31 (CONFIRM_DO_PUSH)
@@ -83,15 +84,16 @@
  * Procedure:
  * 0). Call received.
  * 1). Start scanning.
+ * 2). Start timer T.
  * 2). Determine value of disk.
- * 3). Fit value in range (black/white/neither)
- * 4). Send resulting range.
+ * 3). Fit value in range (black/white/neither).
+ * 4). If timer T expires without out vinding disk send NEITHER_AFFIRM.
+ * 5). Send resulting range.
  * 
- * Call nr: 40 (AFFIRM_DISK)
  * Expected response: one of the following:
- * - 21 (WHITE)
- * - 22 (BLACK)
- * - 23 (NEITHER)
+ * - 41 (WHITE_AFFIRM)
+ * - 42 (BLACK_AFFIRM)
+ * - 43 (NEITHER_AFFIRM)
  */
 
 /** string_disk()
