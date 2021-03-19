@@ -84,6 +84,6 @@ class ExpectationHandler:
 
         # Get output of each expired expectation
         for expectation in expired_expectations:
-            expired_outputs + expectation.get_output()
+            expired_outputs += expectation.get_output()
 
         return expired_outputs
