@@ -174,6 +174,8 @@ class Processor:
             # Inform protocol that we are about to pickup a disk
             self.__protocol_handler.inform_pickup()
             self.__protocol_handler.inform_color(color)
+            # Update Stringer
+            self.__stringer.string_disk(color)
 
             self.__expectation_handler.add("Confirm Pusher Pushed",
                                            ["Ignore"], 10)                      # TODO adjust timer
