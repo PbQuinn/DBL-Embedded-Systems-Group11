@@ -58,6 +58,9 @@ class CommunicatorSimulation(Communicator):
         self.__socket.send(output)
         print("Sent: %s" % output)
 
+        if output == b"Error Occurred":
+            input("When the error has been fixed, press [ENTER].")
+
 
 class CommunicatorRobot(Communicator):
     """Concrete communicator class for robot."""

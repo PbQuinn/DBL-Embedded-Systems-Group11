@@ -65,6 +65,16 @@ class Processor:
 
     def process(self, input_):
         """
+        After processing input and output, returns output.
+        @param input_  The input to be processed
+        """
+
+        output = self.__process_input(input_)
+        self.__process_output(input_, output)
+        return output
+
+    def __process_input(self, input_):
+        """
         Returns output after processing passed input.
         @param input_  The input to be processed
         """
@@ -77,6 +87,8 @@ class Processor:
                 return self.__primary_motion()
             elif input_ == "Secondary Motion":
                 return self.__secondary_motion()
+            elif input_ == "Tertiary Motion":
+                return self.__tertiary_motion()
             elif input_ == "Primary White":
                 return self.__primary_color_detected(0)
             elif input_ == "Primary Black":
@@ -91,22 +103,45 @@ class Processor:
                 return self.__blocker_retracted()
             elif input_ == "Confirm Pusher Pushed":
                 return self.__pusher_pushed()
-            elif input_ == "Tertiary Motion":
-                return self.__tertiary_motion()
-
             # Startup interactions:
             elif input_ == "White Set":
                 pass    # TODO implement
             elif input_ == "Black Set":
                 pass    # TODO implement
-
             # Error interactions:
             elif input_ == "Error Occurred":
                 pass    # TODO implement
             else:
                 return ["Unknown Message"]
         except ValueError as error:
-            return ["Error Occurred", error]
+            print(error)
+            return ["Error Occurred"]
+
+    def __process_output(self, input_, outputs):
+        """
+        Processes output, i.e. adds expectations for each output.
+        @param input_  The input
+        @param outputs  List of outputs to be processed
+        """
+
+        for output in outputs:
+            if output == "Extend Blocker":
+                self.__expectation_handler.add("Confirm Blocker Extended", ["Retract Blocker"], 10)  # TODO adjust timer
+            elif output == "Retract Blocker":
+                self.__expectation_handler.add("Confirm Blocker Retracted", ["Extend Blocker"], 10)  # TODO adjust timer
+            elif output == "Push Pusher":
+                self.__expectation_handler.add("Confirm Pusher Pushed", ["Ignore"], 10)  # TODO adjust timer
+
+                if input_ == "Primary White":
+                    self.__expectation_handler.add("Secondary White Detected", ["Ignore"], 10)  # TODO adjust timer
+                    self.__expectation_handler.add("Secondary Motion", ["Ignore"], 10)  # TODO adjust timer
+                elif input_ == "Primary Black":
+                    self.__expectation_handler.add("Secondary Black Detected", ["Ignore"], 10)  # TODO adjust timer
+                    self.__expectation_handler.add("Secondary Motion", ["Ignore"], 10)  # TODO adjust timer
+            elif output == "Push Stringer":
+                self.__expectation_handler.add("Confirm Tertiary Motion", ["Ignore"], 10)  # TODO adjust timer
+            elif output == "Scan Primary Color":
+                self.__expectation_handler.add("Primary Color Detected", ["Ignore"], 10)  # TODO adjust timer
 
     def __ping(self):
         """
@@ -128,8 +163,6 @@ class Processor:
 
         if not self.__stringer.is_complete():
             # The stringer still needs disks
-            self.__expectation_handler.add("Confirm Blocker Extended",
-                                           ["Retract Blocker"], 10)    # TODO adjust timer
             return ["Extend Blocker"]
         else:
             # The stringer does not need disks
@@ -143,6 +176,14 @@ class Processor:
         self.__expectation_handler.remove("Secondary Motion")
         return ["Scan Secondary Color"]
 
+    def __tertiary_motion(self):
+        """
+        Removes expectation in case of tertiary motion.
+        """
+
+        self.__expectation_handler.remove("Confirm Tertiary Motion")
+        return ["Ignore"]
+
     def __primary_color_detected(self, color):
         """
         Removes expectation and returns output in case of color.
@@ -153,32 +194,17 @@ class Processor:
 
         if not self.__stringer.should_pickup(color):
             # We do not want the color
-            self.__expectation_handler.add("Confirm Blocker Retracted",
-                                           ["Extend Blocker"], 10)              # TODO adjust timer
             return ["Retract Blocker"]
         elif not self.__protocol_handler.can_pickup():
             # We are not allowed to pick up a disk
-            self.__expectation_handler.add("Confirm Blocker Retracted",
-                                           ["Extend Blocker"], 10)              # TODO adjust timer
             return ["Retract Blocker"]
         else:
             # We want the color and we are allowed to pick up a disk
-            if color == 1:
-                color_name = "Black"
-            else:
-                color_name = "White"
-            # Add expectation for secondary color, including color name
-            self.__expectation_handler.add("Secondary " + color_name +
-                                           " Detected", ["Ignore"], 10)         # TODO adjust timer
-            self.__expectation_handler.add("Secondary Motion", ["Ignore"], 10)  # TODO adjust timer
-            # Inform protocol that we are about to pickup a disk
+            # Inform protocol that we are about to pick up a disk
             self.__protocol_handler.inform_pickup()
             self.__protocol_handler.inform_color(color)
             # Update Stringer
             self.__stringer.string_disk(color)
-
-            self.__expectation_handler.add("Confirm Pusher Pushed",
-                                           ["Ignore"], 10)                      # TODO adjust timer
             return ["Push Pusher"]
 
     def __secondary_color_detected(self, color):
@@ -197,8 +223,6 @@ class Processor:
         self.__expectation_handler.remove("Secondary " + color_name +
                                           " Detected")
         # No error thrown, so string disk
-        self.__expectation_handler.add("Confirm Tertiary Motion",
-                                       ["Ignore"], 10)                          # TODO adjust timer
         return ["Push Stringer"]
 
     def __blocker_extended(self):
@@ -207,8 +231,6 @@ class Processor:
         """
 
         self.__expectation_handler.remove("Confirm Blocker Extended")
-        self.__expectation_handler.add("Primary Color Detected",
-                                       ["Ignore"], 10)                          # TODO adjust timer
         return ["Scan Primary Color"]
 
     def __blocker_retracted(self):
@@ -225,14 +247,4 @@ class Processor:
         """
 
         self.__expectation_handler.remove("Confirm Pusher Pushed")
-        self.__expectation_handler.add("Confirm Blocker Retracted",
-                                       ["Extend Blocker"], 10)              # TODO adjust timer
         return ["Retract Blocker"]
-
-    def __tertiary_motion(self):
-        """
-        Removes expectation in case of tertiary motion.
-        """
-
-        self.__expectation_handler.remove("Confirm Tertiary Motion")
-        return ["Ignore"]
