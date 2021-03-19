@@ -105,9 +105,8 @@ class Processor:
                 pass    # TODO implement
             else:
                 return ["Unknown Message"]
-        except Exception:
-            # TODO add error handling code
-            pass
+        except ValueError as error:
+            return ["Error Occurred", error]
 
     def __ping(self):
         """
