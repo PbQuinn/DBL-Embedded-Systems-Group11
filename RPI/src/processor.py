@@ -197,7 +197,7 @@ class Processor:
         self.__expectation_handler.remove("Secondary " + color_name +
                                           " Detected")
         # No error thrown, so string disk
-        self.__expectation_handler.add("Confirm Tertiary Motion",
+        self.__expectation_handler.add("Tertiary Motion",
                                        ["Ignore"], 10)                          # TODO adjust timer
         return ["Push Stringer"]
 
@@ -234,5 +234,5 @@ class Processor:
         Removes expectation in case of tertiary motion.
         """
 
-        self.__expectation_handler.remove("Confirm Tertiary Motion")
+        self.__expectation_handler.remove("Tertiary Motion")
         return ["Ignore"]
