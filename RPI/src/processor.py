@@ -57,9 +57,9 @@ class Processor:
                 return self.__blocker_extended()
             elif input_ == "Confirm Blocker Retracted":
                 return self.__blocker_retracted()
-            elif input_ == "Confirm Pusher Push":
+            elif input_ == "Confirm Pusher Pushed":
                 return self.__pusher_pushed()
-            elif input_ == "Confirm Stringer Push":
+            elif input_ == "Confirm Stringer Pushed":
                 return self.__disk_stringed()
 
             # Startup interactions:
@@ -117,7 +117,7 @@ class Processor:
             return ["Retract Blocker"]
         else:
             # We want the color and we are allowed to pick up a disk
-            self.__expectation_handler.add("Confirm Pusher Push", [], 10)                          # TODO adjust timer
+            self.__expectation_handler.add("Confirm Pusher Pushed", [], 10)                          # TODO adjust timer
             self.__expectation_handler.add("Secondary Color Detected " + str(color), [], 10)     # TODO adjust timer
             # Inform protocol that we are about to pickup a disk
             self.__protocol_handler.inform_pickup()
@@ -134,7 +134,7 @@ class Processor:
         # this expectation will not be present and thus an error will be thrown
         self.__expectation_handler.remove("Secondary Color Detected " + str(color))
         # No error thrown, so string disk
-        self.__expectation_handler.remove("Confirm Stringer Push", [], 10)                         # TODO adjust timer
+        self.__expectation_handler.remove("Confirm Stringer Pushed", [], 10)                         # TODO adjust timer
         return ["Push Stringer"]
 
     def __blocker_extended(self):
@@ -158,7 +158,7 @@ class Processor:
         Removes expectation and returns output in case of pusher pushed.
         """
 
-        self.__expectation_handler.remove("Confirm Pusher Push")
+        self.__expectation_handler.remove("Confirm Pusher Pushed")
         self.__expectation_handler.add("Confirm Blocker Retracted", ["Extend Blocker"], 10)   # TODO adjust timer
         self.__expectation_handler.add("Secondary Color Detected", [], 10)                     # TODO adjust timer
         return ["Retract Blocker"]
@@ -168,4 +168,4 @@ class Processor:
         Removes expectation in case of disk stringed.
         """
 
-        self.__expectation_handler.remove("Confirm Stringer Push")
+        self.__expectation_handler.remove("Confirm Stringer Pushed")
