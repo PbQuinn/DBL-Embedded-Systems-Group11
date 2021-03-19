@@ -40,8 +40,10 @@ class Expectation:
 
         self.__pings -= 1
 
+        output_string = "".join(self.__output)
+
         if self.has_expired():
-            print("Expectation for input " + self.__input + " has expired, " + self.__output + " will be output.")
+            print("Expectation for input " + self.__input + " has expired, " + output_string + " will be output.")
 
     def get_input(self):
         """
