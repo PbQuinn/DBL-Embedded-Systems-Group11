@@ -10,51 +10,106 @@ class TestInit(TestCase):
 
     def test_process_ping(self):
         # No expired outputs
-        self.processor = Processor(ProtocolHandler(), ExpectationHandler())
-        self.processor.set_stringer(Stringer(0))
-        self.processor.process(b"Motion Detected")
+        self.processor = Processor(Stringer(0), ProtocolHandler(), ExpectationHandler())
+        self.processor.process("Motion Detected")
         for _ in range(9):
-            self.assertEqual(self.processor.process(b"Ping"), [b"Pong"])
+            self.assertEqual(self.processor.process("Ping"), ["Pong"])
         # Expired outputs
-        self.assertEqual(self.processor.process(b"Ping"), [[b"Retract Blocker"]])
+        self.assertEqual(self.processor.process("Ping"), ["Pong", ["Retract Blocker"]])
 
-    def test_process_motion(self):
+    def test_process_motion_detected(self):
         # Uncompleted stringer
-        self.processor = Processor(ProtocolHandler(), ExpectationHandler())
         self.stringer = Stringer(0)
-        self.processor.set_stringer(self.stringer)
-        self.assertEqual(self.processor.process(b"Motion Detected"), [b"Extend Blocker", b"Scan Color"])
+        self.processor = Processor(self.stringer, ProtocolHandler(), ExpectationHandler())
+        self.assertEqual(self.processor.process("Motion Detected"), ["Extend Blocker"])
         # Completed stringer
-        self.stringer.stringed_disks = [0]
-        self.assertEqual(self.processor.process(b"Motion Detected"), [b"Ignore"])
+        self.stringer.stringed_disks = [0] * 8
+        self.assertEqual(self.processor.process("Motion Detected"), ["Ignore"])
 
-    def test_process_white(self):
+    def test_process_white_detected(self):
         # Unwanted color
-        self.protocol = DummyProtocolHandler(False)
-        self.processor = Processor(self.protocol, ExpectationHandler())
-        self.processor.set_stringer(Stringer(1))
-        self.assertEqual(self.processor.process(b"White Detected"), [b"Retract Blocker"])
+        self.processor = Processor(Stringer(1), ProtocolHandler(), ExpectationHandler())
+        self.assertEqual(self.processor.process("White Detected"), ["Retract Blocker"])
         # No permission from protocol
-        self.processor.set_stringer(Stringer(0))
-        self.assertEqual(self.processor.process(b"White Detected"), [b"Retract Blocker"])
+        self.protocol = DummyProtocolHandler(False)
+        self.processor = Processor(Stringer(0), self.protocol, ExpectationHandler())
+        self.assertEqual(self.processor.process("White Detected"), ["Retract Blocker"])
         # Wanted and permission
         self.protocol.set_allowance(True)
-        self.assertEqual(self.processor.process(b"White Detected"), [b"Push", b"Retract Blocker"])
+        self.assertEqual(self.processor.process("White Detected"), ["Push", "Retract Blocker"])
 
-    def test_process_black(self):
+    def test_process_black_detected(self):
         # Unwanted color
-        self.protocol = DummyProtocolHandler(False)
-        self.processor = Processor(self.protocol, ExpectationHandler())
-        self.processor.set_stringer(Stringer(0))
-        self.assertEqual(self.processor.process(b"Black Detected"), [b"Retract Blocker"])
+        self.processor = Processor(Stringer(0), ProtocolHandler(), ExpectationHandler())
+        self.assertEqual(self.processor.process("Black Detected"), ["Retract Blocker"])
         # No permission from protocol
-        self.processor.set_stringer(Stringer(1))
-        self.assertEqual(self.processor.process(b"Black Detected"), [b"Retract Blocker"])
+        self.protocol = DummyProtocolHandler(False)
+        self.processor = Processor(Stringer(1), self.protocol, ExpectationHandler())
+        self.assertEqual(self.processor.process("Black Detected"), ["Retract Blocker"])
         # Wanted and permission
         self.protocol.set_allowance(True)
-        self.assertEqual(self.processor.process(b"Black Detected"), [b"Push", b"Retract Blocker"])
+        self.assertEqual(self.processor.process("Black Detected"), ["Push", "Retract Blocker"])
+
+    def test_process_blocker_extended(self):
+        # Not yet expected
+        self.processor = Processor(Stringer(0), ProtocolHandler(), ExpectationHandler())
+        self.assertEqual(self.processor.process("Blocker Extended"), ["Unexpected Message"])
+        # Expected
+        self.processor.process("Motion Detected")
+        self.assertEqual(self.processor.process("Blocker Extended"), ["Scan Color"])
+        # No longer expected
+        self.assertEqual(self.processor.process("Blocker Extended"), ["Unexpected Message"])
+
+    def test_process_blocker_retracted(self):
+        # Not yet expected
+        self.processor = Processor(Stringer(0), ProtocolHandler(), ExpectationHandler())
+        self.assertEqual(self.processor.process("Blocker Retracted"), ["Unexpected Message"])
+        # Expected
+        self.processor.process("Motion Detected")
+        self.processor.process("Blocker Extended")
+        self.processor.process("White Detected")
+        self.assertEqual(self.processor.process("Blocker Retracted"), ["???"])
+        # No longer expected
+        self.assertEqual(self.processor.process("Blocker Retracted"), ["Unexpected Message"])
+
+    def test_process_pusher_pushed(self):
+        # Not yet expected
+        self.processor = Processor(Stringer(0), ProtocolHandler(), ExpectationHandler())
+        self.assertEqual(self.processor.process("Pusher Pushed"), ["Unexpected Message"])
+        # Expected
+        self.processor.process("Motion Detected")
+        self.processor.process("Blocker Extended")
+        self.processor.process("White Detected")
+        self.assertEqual(self.processor.process("Pusher Pushed"), ["???"])
+        # No longer expected
+        self.assertEqual(self.processor.process("Pusher Pushed"), ["Unexpected Message"])
+
+    def test_process_disk_stringed(self):
+        # Not yet expected
+        self.processor = Processor(Stringer(0), ProtocolHandler(), ExpectationHandler())
+        self.assertEqual(self.processor.process("Disk Stringed"), ["Unexpected Message"])
+        # Expected
+        self.processor.process("Motion Detected")
+        self.processor.process("Blocker Extended")
+        self.processor.process("White Detected")
+        self.processor.process("Pusher Pushed")
+        self.assertEqual(self.processor.process("Disk Stringed"), ["???"])
+        # No longer expected
+        self.assertEqual(self.processor.process("Disk Stringed"), ["Unexpected Message"])
+
+    def test_process_white_set(self):
+        self.processor = Processor(Stringer(0), ProtocolHandler(), ExpectationHandler())
+        self.assertEqual(self.processor.process("White Set"), ["???"])
+
+    def test_process_black_set(self):
+        self.processor = Processor(Stringer(0), ProtocolHandler(), ExpectationHandler())
+        self.assertEqual(self.processor.process("Black Set"), ["???"])
+
+    def test_process_error(self):
+        self.processor = Processor(Stringer(0), ProtocolHandler(), ExpectationHandler())
+        self.assertEqual(self.processor.process("Error Occurred"), ["???"])
 
     def test_process_unknown(self):
-        self.processor = Processor(ProtocolHandler(), ExpectationHandler())
-        self.assertEqual(self.processor.process(b"Test"), [b"Unknown Message"])
-        self.assertEqual(self.processor.process(b"Gibberish"), [b"Unknown Message"])
+        self.processor = Processor(Stringer(69), ProtocolHandler(), ExpectationHandler())
+        self.assertEqual(self.processor.process("Test"), ["Unknown Message"])
+        self.assertEqual(self.processor.process("Gibberish"), ["Unknown Message"])

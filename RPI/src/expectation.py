@@ -28,8 +28,8 @@ class Expectation:
         Returns whether this expectation has expired
     """
 
-    def __init__(self, input, output, pings):
-        self.__input = input
+    def __init__(self, input_, output, pings):
+        self.__input = input_
         self.__output = output
         self.__pings = pings
 
@@ -41,9 +41,7 @@ class Expectation:
         self.__pings -= 1
 
         if self.has_expired():
-            input_string = self.__input.decode("utf-8")
-            output_string = b''.join(self.__output).decode("utf-8")
-            print("Expectation for input " + input_string + " has expired, " + output_string + " will be output.")
+            print("Expectation for input " + self.__input + " has expired, " + self.__output + " will be output.")
 
     def get_input(self):
         """
