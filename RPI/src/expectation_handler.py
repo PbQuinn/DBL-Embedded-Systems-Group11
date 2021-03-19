@@ -65,7 +65,7 @@ class ExpectationHandler:
             matching_expectations.pop()
 
             # Append the matching list with other expectations and update expectation list
-            self.__expectations = other_expectations.append(matching_expectations)
+            self.__expectations = other_expectations + matching_expectations
         else:
             raise ValueError("Unexpected input: " + input)
 
@@ -84,6 +84,6 @@ class ExpectationHandler:
 
         # Get output of each expired expectation
         for expectation in expired_expectations:
-            expired_outputs.append(expectation.get_output())
+            expired_outputs + expectation.get_output()
 
         return expired_outputs
