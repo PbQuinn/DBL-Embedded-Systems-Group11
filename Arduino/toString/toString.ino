@@ -1,7 +1,7 @@
 //====COMMAND NUMBERS====
 //Gate control:
-const int CLOSE_GATE = 10;
-const int OPEN_GATE = 50;
+const int CLOSE_BLOCKER = 10;
+const int OPEN_BLOCKER = 50;
 const int DO_PUSH = 30;
 //Sensor request:
 const int GET_COLOR = 20;
@@ -9,10 +9,25 @@ const int AFFIRM_DISK = 40;
 //Motor control:
 const int STRING_DISK = 60;
 //Program state control:
+const int SETUP_STATE = 0;
+const int WORKING_STATE = 1;
+const int ERROR_STATE = 2;
 const int PING = 100;
+const int SET_ERROR_STATE = 102;
+const int EXIT_ERROR_STATE = 104;
+const int GET_ERROR_STATE_INFO = 106;
 //Callibration control:
 const int SET_WHITE = 200;
 const int SET_BLACK = 202;
+const int EXIT_SETUP = 204;
+
+
+//working state possibilities
+int workmessages[] = {CLOSE_BLOCKER, OPEN_BLOCKER, DO_PUSH, GET_COLOR, AFFIRM_DISK, STRING_DISK, PING, SET_ERROR_STATE};
+int errormessages[] = {EXIT_ERROR_STATE, GET_ERROR_STATE_INFO, PING};
+int setupmessages[] = {SET_WHITE, SET_BLACK, EXIT_SETUP, PING};
+int all[] = {CLOSE_BLOCKER, OPEN_BLOCKER, DO_PUSH, GET_COLOR, AFFIRM_DISK, STRING_DISK,
+            PING, SET_ERROR_STATE,EXIT_ERROR_STATE, GET_ERROR_STATE_INFO, SET_WHITE, SET_BLACK, EXIT_SETUP};
 
 //====RESPONSE NUMBERS====
 //Action control:
@@ -21,15 +36,34 @@ const int CONFIRM_CLOSE_GATE = 11;
 const int CONFIRM_OPEN_GATE = 51;
 const int CONFIRM_DO_PUSH = 31;
 const int CONFIRM_STRING_DISK = 61;
+const int ERROR_STRING_DISK = 62;
 //Program state messages:
 const int UNEXPECTED_ERROR = -1;
+const int ILLEGAL_COMMAND = -2;
+const int UNKNOWN_COMMAND = -3;
 const int PONG = 101;
+const int ERRONG_PING = 103;
+const int CONFIRM_EXIT_ERROR_STATE = 105;
+const int START_MESSAGE = 107;
+const int END_MESSGE = 108;
 const int CONFIRM_SET_WHITE = 201;
 const int CONFIRM_SET_BLACK = 203;
+const int CONFIRM_EXIT_SETUP = 205;
 //For sensor requests:
 const int WHITE = 21;
 const int BLACK = 22;
 const int NEITHER = 23;
+// How often should we recieve Ping messages + some time to avoid false positives in ms.
+const int PING_TIME = 1500;
+// A timer to check if we are not disconnected
+unsigned long timer = 0;
+/* The current state we are in:
+ * 0: the initialisation state 
+ * 1: the working state
+ * 2: the error state
+ */
+int state = 0;
+
 
 void setup() {
   Serial.begin(9600);
@@ -41,8 +75,6 @@ void check(int issuedCommand) {
   switch (issuedCommand) {
     case PING:
       Serial.println(PONG);
-      // do some action
-      delay(100);
       break;
 
     case SET_WHITE:
@@ -57,13 +89,19 @@ void check(int issuedCommand) {
       delay(100);
       break;
 
-    case CLOSE_GATE:
+    case EXIT_SETUP:
+      state = WORKING_STATE;
+      Serial.println(CONFIRM_EXIT_SETUP);
+      delay(100);
+      break;
+      
+    case CLOSE_BLOCKER:
       Serial.println(CONFIRM_CLOSE_GATE);
       // do some action
       delay(100);
       break;
 
-    case OPEN_GATE:
+    case OPEN_BLOCKER:
       Serial.println(CONFIRM_OPEN_GATE);
       // do some action
       delay(100);
@@ -88,21 +126,75 @@ void check(int issuedCommand) {
       break;
 
     case STRING_DISK:
-      digitalWrite(16, HIGH);
+      Serial.println("Stringing disk...");
       delay(1000);
-      digitalWrite(11, LOW);
-      delay(100);
       Serial.println(CONFIRM_STRING_DISK);
+      // do some action
+      delay(100);
       break;
 
     default:
-      // we get something we did not understand
-      // we should normally send an error message but for now we just ignore it
-      Serial.print("unknown action! ");
+      // By the state check this default should not be reachable
       Serial.println(UNEXPECTED_ERROR);
       break;
   }
+  Serial.println("");
 }
+
+boolean in(int number, int commands[], int commandsLength){
+  for(int i = 0; i < commandsLength; i++){
+    if(number == commands[i]){
+      return true;
+    }
+  }
+  return false;    
+}
+
+boolean stateCheck(int message) {
+
+  int setupmessagesLength = sizeof(setupmessages) / sizeof(setupmessages[0]);
+  int workmessagesLength = sizeof(workmessages) / sizeof(workmessages[0]);
+  int errormessagesLength = sizeof(errormessages) / sizeof(errormessages[0]);
+  int allLength = sizeof(all) / sizeof(all[0]); 
+  
+  if(state == 0){
+    if(in(message,setupmessages, setupmessagesLength)){
+      return true;
+    }else if(in(message, all, allLength)){
+      Serial.println(ILLEGAL_COMMAND);
+      return false;
+    }else{
+      Serial.println(UNKNOWN_COMMAND);
+      return false;
+    }
+  }else if(state == 1){
+    if(in(message,workmessages, workmessagesLength)){
+      return true;
+    }else if(in(message, all, allLength)){
+      Serial.println(ILLEGAL_COMMAND);
+      return false;
+    }else{
+      Serial.println(UNKNOWN_COMMAND);
+      return false;
+    }
+  }else if(state == 2){
+    if(in(message, errormessages, errormessagesLength)){
+      return true;
+    }else if(in(message, all, allLength)){
+      Serial.println(ILLEGAL_COMMAND);
+      return false;
+    }else{
+      Serial.println(UNKNOWN_COMMAND);
+      return false;
+    }
+  }
+}
+
+void enterErrorState(){
+  
+}
+
+
 
 int value = 0;
 
@@ -113,7 +205,19 @@ void loop() {
 //handles the command.
 
 //Check if there is a command waiting for me
-  if (Serial.available() > 0) {
+
+
+//  if (Serial.available() > 0) {
+//    int message = Serial.read() - '0';
+//
+//    //first we need to check if the command is valid in the current state if so check it
+//    if(stateCheck(message)){
+//      check(message);
+//    }
+//  }
+
+
+if (Serial.available() > 0) {
     char nextChar = Serial.read();
     //Have I finished reading this command?
     if (nextChar == '\n') {
@@ -121,7 +225,9 @@ void loop() {
       Serial.println(value);
       Serial.print("RECEIVED: ");
       //Send the command
-      check(value);
+      if(stateCheck(value)){
+        check(value);
+      }
       value = 0;
       //Otherwise, continue constructing the command issued
     } else {
@@ -132,11 +238,18 @@ void loop() {
   }
 
 
+  // if we are working we should check the connection
+  // any further working state specific actions should also be placed here
+//  if(state == WORKING_STATE){
+//    if(millis() - PING_TIME > timer){
+//      enterErrorState();
+//    }
+//  }
 
 
   // TODO: Implement scanning to write to "diskFound"
   bool diskFound = false;
   if (diskFound) {
-    Serial.write(NOTIFY_DISK_PRESENCE);
+    Serial.println(NOTIFY_DISK_PRESENCE);
   }
 }
