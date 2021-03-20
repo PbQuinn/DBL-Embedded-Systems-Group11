@@ -4,14 +4,14 @@ class Processor:
 
     Attributes
     __________
+    __string_handler : StringHandler
+        An instance of a string handler to track the string status
+
     __protocol_handler : ProtocolHandler
         An instance of the protocol handler to communicate with protocol
 
     __expectation_handler : ExpectationHandler
         An instance of the expectation handler to track expected inputs
-
-    __stringer : Stringer
-        An instance of a stringer to track the string status
 
     __ping_counter : int
         The number of pings since protocol was last informed of our existence
@@ -19,6 +19,9 @@ class Processor:
     __PROTOCOL_PING_FREQUENCY : int
         The interval in pings at which the protocol will be notified
         of our existence
+
+    __is_stringing : int
+        Keeps track of whether we are currently stringing a disk
 
     Methods
     _______
@@ -57,8 +60,8 @@ class Processor:
     # PROTOCOL_PING_FREQUENCY th ping
     __PROTOCOL_PING_FREQUENCY = 10
 
-    def __init__(self, stringer, protocol_handler, expectation_handler):
-        self.__stringer = stringer
+    def __init__(self, string_handler, protocol_handler, expectation_handler):
+        self.__string_handler = string_handler
         self.__protocol_handler = protocol_handler
         self.__expectation_handler = expectation_handler
         self.__ping_counter = 0
@@ -162,7 +165,7 @@ class Processor:
         Returns output in case of primary motion.
         """
 
-        if not self.__stringer.is_complete() and not self.__is_stringing:
+        if not self.__string_handler.is_complete() and not self.__is_stringing:
             # The stringer still needs disks
             return ["Extend Blocker"]
         else:
@@ -194,7 +197,7 @@ class Processor:
 
         self.__expectation_handler.remove("Primary Color Detected")
 
-        if not self.__stringer.should_pickup(color):
+        if not self.__string_handler.should_pickup(color):
             # We do not want the color
             print('\033[93m' + "Stringer: the color of this disk is not wanted." + '\033[0m')
             return ["Retract Blocker"]
@@ -209,7 +212,7 @@ class Processor:
             self.__protocol_handler.inform_pickup()
             self.__protocol_handler.inform_color(color)
             # Update Stringer
-            self.__stringer.string_disk(color)
+            self.__string_handler.string_disk(color)
             return ["Push Pusher"]
 
     def __secondary_color_detected(self, color):

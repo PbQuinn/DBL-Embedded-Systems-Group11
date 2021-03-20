@@ -1,6 +1,6 @@
 from RPI.src.communicator import CommunicatorSimulation, CommunicatorRobot
 from RPI.src.processor import Processor
-from RPI.src.stringer import Stringer
+from RPI.src.string_handler import StringHandler
 from RPI.src.protocol_handler import ProtocolHandler
 from RPI.src.expectation_handler import ExpectationHandler
 
@@ -38,11 +38,11 @@ def get_mode():
 
 
 if __name__ == '__main__':
-    s = Stringer(get_number())
+    sh = StringHandler(get_number())
     ph = ProtocolHandler()
     eh = ExpectationHandler()
 
-    p = Processor(s, ph, eh)
+    p = Processor(sh, ph, eh)
 
     if get_mode():
         print("Starting communication with robot...\n")
