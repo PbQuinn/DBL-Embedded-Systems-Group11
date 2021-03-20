@@ -139,7 +139,7 @@ class Processor:
                     self.__expectation_handler.add("Secondary Black Detected", ["Ignore"], 10)  # TODO adjust timer
                     self.__expectation_handler.add("Secondary Motion", ["Ignore"], 10)  # TODO adjust timer
             elif output == "Push Stringer":
-                self.__expectation_handler.add("Confirm Tertiary Motion", ["Ignore"], 10)  # TODO adjust timer
+                self.__expectation_handler.add("Tertiary Motion", ["Ignore"], 10)  # TODO adjust timer
             elif output == "Scan Primary Color":
                 self.__expectation_handler.add("Primary Color Detected", ["Ignore"], 10)  # TODO adjust timer
 
@@ -181,7 +181,7 @@ class Processor:
         Removes expectation in case of tertiary motion.
         """
 
-        self.__expectation_handler.remove("Confirm Tertiary Motion")
+        self.__expectation_handler.remove("Tertiary Motion")
         return ["Ignore"]
 
     def __primary_color_detected(self, color):
