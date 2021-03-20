@@ -62,6 +62,7 @@ class Processor:
         self.__protocol_handler = protocol_handler
         self.__expectation_handler = expectation_handler
         self.__ping_counter = 0
+        self.__is_stringing = False
 
     def process(self, input_):
         """
@@ -161,7 +162,7 @@ class Processor:
         Returns output in case of primary motion.
         """
 
-        if not self.__stringer.is_complete():
+        if not self.__stringer.is_complete() and not self.__is_stringing:
             # The stringer still needs disks
             return ["Extend Blocker"]
         else:
@@ -181,6 +182,7 @@ class Processor:
         Removes expectation in case of tertiary motion.
         """
 
+        self.__is_stringing = False
         self.__expectation_handler.remove("Tertiary Motion")
         return ["Ignore"]
 
@@ -249,5 +251,6 @@ class Processor:
         Removes expectation and returns output in case of pusher pushed.
         """
 
+        self.__is_stringing = True
         self.__expectation_handler.remove("Confirm Pusher Pushed")
         return ["Retract Blocker"]
