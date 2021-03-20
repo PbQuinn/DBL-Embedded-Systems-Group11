@@ -49,17 +49,17 @@ class CommunicatorSimulation(Communicator):
     def _communicate(self):
         # Receive
         input_ = self.__socket.recv_string()
-        print("Received: %s" % input_)
+        print('\033[96m' + "Received: %s" % input_ + '\033[0m')
 
         # Process
         output = ",".join(self._processor.process(input_)).encode()
 
         # Send
         self.__socket.send(output)
-        print("Sent: %s" % output)
+        print('\033[95m' + "Sent: %s" % output + '\033[0m')
 
         if output == b"Error Occurred":
-            input("When the error has been fixed, press [ENTER].")
+            input('\033[91m' + "When the error has been fixed, press [ENTER]." + '\033[0m')
 
 
 class CommunicatorRobot(Communicator):

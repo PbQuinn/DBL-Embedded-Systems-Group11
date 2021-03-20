@@ -42,7 +42,8 @@ class Expectation:
 
         if self.has_expired():
             output_string = "".join(self.__output)
-            print("Expectation for input " + self.__input + " has expired, " + output_string + " will be output.")
+            print('\033[91m' + "Expectation for input " + self.__input +
+                  " has expired, " + output_string + " will be output." + '\033[0m')
 
     def get_input(self):
         """

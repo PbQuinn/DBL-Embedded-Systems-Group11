@@ -47,6 +47,7 @@ class ExpectationHandler:
         # Create new expectation and add it to the front of the list
         expectation = Expectation(input_, output, pings)
         self.__expectations.insert(0, expectation)
+        print('\033[92m' + "Added expectation: " + input_ + '\033[0m')
 
     def remove(self, input_):
         """
@@ -66,8 +67,9 @@ class ExpectationHandler:
 
             # Append the matching list with other expectations and update expectation list
             self.__expectations = other_expectations + matching_expectations
+            print('\033[92m' + "Removed expectation: " + input_ + '\033[0m')
         else:
-            raise ValueError("Unexpected input: " + input_)
+            raise ValueError('\033[91m' + "Unexpected input: " + input_ + '\033[0m')
 
     def get_expired_outputs(self):
         """

@@ -194,12 +194,15 @@ class Processor:
 
         if not self.__stringer.should_pickup(color):
             # We do not want the color
+            print('\033[93m' + "Stringer: the color of this disk is not wanted." + '\033[0m')
             return ["Retract Blocker"]
         elif not self.__protocol_handler.can_pickup():
             # We are not allowed to pick up a disk
+            print('\033[93m' + "Protocol: not allowed to pick up this disk." + '\033[0m')
             return ["Retract Blocker"]
         else:
             # We want the color and we are allowed to pick up a disk
+            print('\033[93m' + "Protocol and stringer: allowed to pick up this disk." + '\033[0m')
             # Inform protocol that we are about to pick up a disk
             self.__protocol_handler.inform_pickup()
             self.__protocol_handler.inform_color(color)
