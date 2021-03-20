@@ -152,6 +152,13 @@ class Processor:
                                                "We did not receive confirmation for pusher pushing.\n" +
                                                "Please make sure the pusher is not obstructed by any objects and "
                                                "that its sensors are in order.")
+                self.__expectation_handler.add("Secondary Motion", ["Ignore"], 10,  # TODO adjust timer
+                                               "We attempted to push a disk into the funnel, but it has not been " +
+                                               "detected by the secondary motion sensor.\n" +
+                                               "Please check whether the pusher and the funnel are in order.\n" +
+                                               "If something is blocking either of them, please fix it.\n" +
+                                               "Otherwise, please check whether the secondary motion sensor is " +
+                                               "in order.")
             elif output == "Push Stringer":
                 self.__expectation_handler.add("Tertiary Motion", ["Ignore"], 10,  # TODO adjust timer
                                                "We asked the stringer to push, but we did not receive confirmation " +
@@ -281,13 +288,6 @@ class Processor:
         """
         Removes expectation and returns output in case of pusher pushed.
         """
-
-        self.__expectation_handler.add("Secondary Motion", ["Ignore"], 10,  # TODO adjust timer
-                                       "We pushed a disk into the funnel, but it was not detected by the" +
-                                       "secondary motion sensor.\n" +
-                                       "Please check whether the funnel is in order.\n" +
-                                       "If something is blocking the funnel, please remove it.\n" +
-                                       "Otherwise, please check whether the sensors are in order.")
 
         self.__expectation_handler.remove("Confirm Pusher Pushed")
         return ["Retract Blocker"]
