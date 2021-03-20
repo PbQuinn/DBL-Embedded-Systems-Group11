@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import zmq
-
+# TODO import serial (https://pypi.org/project/pyserial/)
 
 class Communicator(ABC):
     """Abstract communicator class."""
@@ -104,16 +104,27 @@ class CommunicatorRobot(Communicator):
                  "Ignore": None
                  }
 
-    def __init__(self, processor):
+    def __init__(self, processor, device_name="VeryCoolName"):  # TODO add actual device name
         # Call super constructor
         Communicator.__init__(self, processor)
-
+        # Initialize serial
+        self.serial = serial.Serial(device_name, 9600, timeout=1)
+        self.serial.flush()
 
     def _communicate(self):
         # Receive
+        if self.serial.in_waiting > 0:
+            input_ = self.serial.readline().decode().rstrip()
+            # TODO check if valid input -> else raise exception
+            input_ = self.__inputs[input_]
+            print('\033[96m' + "Received: %s" % input_ + '\033[0m')
 
         # Process
+        output = self.processor.process(input_)
 
         # Send
-        
-        pass
+        self.serial.write(self.__outputs[output])
+        print('\033[95m' + "Sent: %s" % output + '\033[0m')
+
+        # TODO handle error output
+
