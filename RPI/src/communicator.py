@@ -65,8 +65,55 @@ class CommunicatorSimulation(Communicator):
 class CommunicatorRobot(Communicator):
     """Concrete communicator class for robot."""
 
+    __inputs = {101: "Ping",
+                103: "Ping",  # Error State Ping
+                1: "Primary Motion",
+                # 1: "Secondary Motion",
+                61: "Tertiary Motion",
+                62: "Error Occurred",  # Error String Disk
+                21: "Primary White",
+                22: "Primary Black",
+                23: "Primary Neither",
+                41: "Secondary White",
+                42: "Secondary Black",
+                43: "Secondary Neither",
+                11: "Confirm Blocker Extended",
+                51: "Confirm Blocker Retracted",
+                31: "Confirm Pusher Pushed",
+                201: "White Set",
+                203: "Black Set",
+                -1: "Error Occurred",  # Unexpected Error
+                -2: "Error Occurred",  # Illegal Command
+                -3: "Error Occurred",  # Unknown Command
+                -4: "Error Occurred",  # Buffer Full
+                107: "Start Error Message",
+                108: "End Error Message"}
+
+    __outputs = {"Pong": 100,
+                 "Scan Primary Color": 20,
+                 "Scan Secondary Color": 40,
+                 "Extend Blocker": 10,
+                 "Retract Blocker": 50,
+                 "Push Pusher": 30,
+                 "Push Stringer": 60,
+                 "Set White": 200,
+                 "Set Black": 202,
+                 "Enter Error State": 102,
+                 "Exit Error State": 104,
+                 "Get Error State Info": 106,
+                 "Ignore": None
+                 }
+
     def __init__(self, processor):
+        # Call super constructor
         Communicator.__init__(self, processor)
 
+
     def _communicate(self):
+        # Receive
+
+        # Process
+
+        # Send
+        
         pass
