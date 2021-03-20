@@ -39,7 +39,7 @@ class ExpectationHandler:
         for expectation in self.__expectations:
             expectation.ping()
 
-    def add(self, input_, output, pings):
+    def add(self, input_, output, pings, msg):
         """
         Creates and adds expectation with passed arguments
         @param input_  The input that is expected
@@ -48,7 +48,7 @@ class ExpectationHandler:
         """
 
         # Create new expectation and add it to the front of the list
-        expectation = Expectation(input_, output, pings)
+        expectation = Expectation(input_, output, pings, msg)
         self.__expectations.insert(0, expectation)
         print('\033[92m' + "Added expectation: " + input_ + '\033[0m')
 
@@ -87,8 +87,9 @@ class ExpectationHandler:
 
         expired_outputs = []
 
-        # Get output of each expired expectation
+        # Print message and get output of each expired expectation
         for expectation in expired_expectations:
+            print('\033[91m' + expectation.get_msg + '\033[0m')
             expired_outputs += expectation.get_output()
 
         return expired_outputs
