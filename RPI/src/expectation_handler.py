@@ -23,6 +23,9 @@ class ExpectationHandler:
 
     get_expired_outputs() : string[*]
         Upon corresponding input, returns output
+
+    flush() : void
+        Remove all expectations
     """
 
     def __init__(self):
@@ -89,3 +92,10 @@ class ExpectationHandler:
             expired_outputs += expectation.get_output()
 
         return expired_outputs
+
+    def flush(self):
+        """
+        Removes all expectations
+        """
+
+        self.__expectations = []
