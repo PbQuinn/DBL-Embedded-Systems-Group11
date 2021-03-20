@@ -45,6 +45,7 @@ class ExpectationHandler:
         @param input_  The input that is expected
         @param output  The output that should be returned upon expiration
         @param  pings  The number of pings until the expectation expires
+        @param  msg  The msg that will be printed when expectation expires
         """
 
         # Create new expectation and add it to the front of the list
@@ -89,7 +90,7 @@ class ExpectationHandler:
 
         # Print message and get output of each expired expectation
         for expectation in expired_expectations:
-            print('\033[91m' + expectation.get_msg + '\033[0m')
+            print('\033[91m' + expectation.get_msg() + '\033[0m')
             expired_outputs += expectation.get_output()
 
         return expired_outputs
