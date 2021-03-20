@@ -27,3 +27,9 @@ class DummyProtocolHandler:
         """Returns true iff next disk may be retrieved
         """
         return self.allowance
+
+    def inform_pickup(self):
+        return
+
+    def inform_color(self, color):
+        return
