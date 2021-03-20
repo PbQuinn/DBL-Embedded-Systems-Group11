@@ -225,7 +225,9 @@ boolean stateCheck(int message) {
 
 void enterErrorState(){
   state = 2;
+  //clear the buffer
   openGate();
+  readp = writep;
   while(state == 2){
     Serial.write(ERRONG_PING);
     delay(100);
