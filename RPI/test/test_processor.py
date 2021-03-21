@@ -137,3 +137,4 @@ class TestInit(TestCase):
         self.assertEqual(["Error Occurred"], self.processor.process("Primary Black"))
         self.assertEqual(["Error Occurred"], self.processor.process("Primary White"))
         self.assertEqual(["Error Occurred"], self.processor.process("Confirm Blocker Extended"))
+        
