@@ -38,6 +38,9 @@ class ProtocolHandler:
             headers={"Content-Type": "application/json"}
         )
         login_attempt.raise_for_status()
+        print("\033[93m" + "succesfully connected to protocol, time elapsed: " +
+              str(login_attempt.elapsed.total_seconds()) +
+              " seconds" + "\033[0m")
         self.token = login_attempt.json()["Token"]
 
     def can_pickup(self):
