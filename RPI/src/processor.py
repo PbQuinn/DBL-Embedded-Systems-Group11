@@ -190,13 +190,15 @@ class Processor:
         Returns output in case of ping.
         """
 
-        self.__expectation_handler.ping()
         self.__ping_counter += 1
+
         if self.__ping_counter % self.__PROTOCOL_PING_FREQUENCY == 0:
             self.__protocol_handler.inform_alive()
             self.__ping_counter = 0
-        expired_outputs = self.__expectation_handler.get_expired_outputs()
-        return ["Pong"] + expired_outputs
+
+        self.__expectation_handler.ping()
+
+        return ["Pong"]
 
     def __primary_motion(self):
         """
