@@ -15,7 +15,7 @@ class ExpectationHandler:
     ping() : void
         Pings each expectation
 
-    add(string, string[*], int) : void
+    add(string, int, string) : void
         Creates and adds expectation with passed arguments
 
     remove() : void
@@ -48,7 +48,7 @@ class ExpectationHandler:
 
         self.__expectations = []
 
-    def add(self, input_, output, pings, msg):
+    def add(self, input_, pings, msg):
         """
         Creates and adds expectation with passed arguments
         @param input_  The input that is expected
@@ -58,7 +58,7 @@ class ExpectationHandler:
         """
 
         # Create new expectation and add it to the front of the list
-        expectation = Expectation(input_, output, pings, msg)
+        expectation = Expectation(input_, pings, msg)
         self.__expectations.insert(0, expectation)
         print('\033[92m' + "Added expectation: " + input_ + '\033[0m')
 

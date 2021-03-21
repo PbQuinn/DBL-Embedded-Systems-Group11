@@ -7,9 +7,6 @@ class Expectation:
     __input : string
         The expected input
 
-    __output : string[*]
-        The output in case of expiration
-
     __pings : int
         The number of pings until expiration
 
@@ -24,16 +21,15 @@ class Expectation:
     get_input() : string
         Returns the input attribute
 
-    get_output() : string[*]
-        Returns the output attribute
+    get_msg() : string
+        Returns the msg attribute
 
     has_expired() : bool
         Returns whether this expectation has expired
     """
 
-    def __init__(self, input_, output, pings, msg):
-        self.__input = input_
-        self.__output = output
+    def __init__(self, input_, pings, msg):
+        self.__input_ = input_
         self.__pings = pings
         self.__msg = msg
 
@@ -49,14 +45,7 @@ class Expectation:
         Returns input attribute
         """
 
-        return self.__input
-
-    def get_output(self):
-        """
-        Returns output attribute
-        """
-
-        return self.__output
+        return self.__input_
 
     def get_msg(self):
         """
