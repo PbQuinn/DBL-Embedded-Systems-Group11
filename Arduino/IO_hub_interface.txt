@@ -166,19 +166,6 @@
  * Expected response: 105 (CONFIRM_EXIT_ERROR_STATE)
  */
 
-/** get_error_state_info()
- * Requests data from the IO hub abouth the error state.
- * Procedure:
- * 0). Call recieved.
- * 1). Check if in error state.
- * 2). Check shows that IO hub is in the error state.
- * 3). Send start message ping.
- * 4). Send information to the control software.
- * 5). Send end message ping.
- *
- * Send nr: 106 (GET_ERROR_STATE_INFO)
- * Expected response: 107 (START_MESSAGE), 108(END_MESSAGE)
- */
 
 //commands used in setup state 
 

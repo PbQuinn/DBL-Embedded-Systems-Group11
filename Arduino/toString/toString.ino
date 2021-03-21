@@ -15,7 +15,6 @@ const int STRING_DISK = 60;
 const int PONG = 100;
 const int SET_ERROR_STATE = 102;
 const int EXIT_ERROR_STATE = 104;
-const int GET_ERROR_STATE_INFO = 106;
 //Callibration control:
 const int SET_WHITE = 200;
 const int SET_BLACK = 202;
@@ -44,8 +43,6 @@ const int BUFFER_FULL = -4;
 const int PING = 101;
 const int ERRONG_PING = 103;
 const int CONFIRM_EXIT_ERROR_STATE = 105;
-const int START_MESSAGE = 107;
-const int END_MESSGE = 108;
 const int CONFIRM_SET_WHITE = 201;
 const int CONFIRM_SET_BLACK = 203;
 const int CONFIRM_EXIT_SETUP = 205;
@@ -229,7 +226,7 @@ boolean stateCheck(int message) {
 void enterErrorState(){
   state = 2;
   openGate();
-  Serial.write(ERRONG_PING);
+  
   //clear the buffer
   readp = writep;
   // clear the serial buffer
@@ -240,6 +237,7 @@ void enterErrorState(){
     }
   }
   while(state == 2){
+    Serial.write(ERRONG_PING);
     delay(100);
   }
 }
