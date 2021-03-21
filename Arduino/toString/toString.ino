@@ -92,8 +92,11 @@ void messages() {
       expected = false;
     }else if(message == SET_ERROR_STATE){
       enterErrorState();
+    }else if(message == EXIT_ERROR_STATE && state ==2){
+      state = 1;
+      Serial.write(CONFIRM_EXIT_ERROR_STATE);
     }else{
-      if(writep+ 1 == readp){
+      if((writep + 1) % 10== readp){
         Serial.write(BUFFER_FULL);
       }else{
         que[writep] = message;
@@ -121,10 +124,6 @@ void openGate(){
 //check the use cases 
 void check(int issuedCommand) {
   switch (issuedCommand) {
-    case PING:
-      
-      break;
-
     case SET_WHITE:
       Serial.println(CONFIRM_SET_WHITE);
       // do some action
@@ -225,11 +224,18 @@ boolean stateCheck(int message) {
 
 void enterErrorState(){
   state = 2;
-  //clear the buffer
   openGate();
+  Serial.write(ERRONG_PING);
+  //clear the buffer
   readp = writep;
+  // clear the serial buffer
+  while (Serial.available() > 0) {
+    int message = Serial.read() - '0';
+    if(message == EXIT_ERROR_STATE && state ==2){
+      state = 1;
+    }
+  }
   while(state == 2){
-    Serial.write(ERRONG_PING);
     delay(100);
   }
 }
