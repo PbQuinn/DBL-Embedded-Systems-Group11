@@ -38,7 +38,7 @@ class ProtocolHandler:
             headers={"Content-Type": "application/json"}
         )
         login_attempt.raise_for_status()
-        print("\033[93m" + "succesfully connected to protocol, time elapsed: " +
+        print("\033[93m" + "Successfully connected to protocol. Time elapsed: " +
               str(login_attempt.elapsed.total_seconds()) +
               " seconds" + "\033[0m")
         self.token = login_attempt.json()["Token"]

@@ -127,6 +127,7 @@ class Processor:
             else:
                 return ["Unknown Message"]
         except ValueError as error:
+            print('\033[91m' + "An error has occurred:" + '\033[0m')
             print(error)
             return ["Error Occurred"]
 
@@ -217,7 +218,10 @@ class Processor:
         Removes expectation and returns output in case of secondary motion
         """
 
-        self.__expectation_handler.remove("Secondary Motion")
+        self.__expectation_handler.remove("Secondary Motion",
+                                          "We received secondary motion, but did not expect it.\n" +
+                                          "Please, remove any objects from the secondary motion sensor\n" +
+                                          "If there are no objects there, please make sure the sensor is OK.")
         return ["Scan Secondary Color"]
 
     def __tertiary_motion(self):
@@ -226,7 +230,10 @@ class Processor:
         """
 
         self.__current_color = Color.Neither
-        self.__expectation_handler.remove("Tertiary Motion")
+        self.__expectation_handler.remove("Tertiary Motion",
+                                          "We received Tertiary Motion input, but did not expect it.\n" +
+                                          "Please, remove any objects from the tertiary motion sensor\n" +
+                                          "If there are no objects there, please make sure the sensor is OK.")
         return ["Ignore"]
 
     def __primary_color_detected(self, color):
@@ -235,7 +242,8 @@ class Processor:
         @param color  The color that was detected.
         """
 
-        self.__expectation_handler.remove("Primary Color Detected")
+        self.__expectation_handler.remove("Primary Color Detected",
+                                          "We received Primary Color Detected input, but we did not expect it.")
 
         if not self.__string_handler.should_pickup(color.value):
             # We do not want the color
@@ -266,7 +274,10 @@ class Processor:
 
         # Remove expectation. If secondary color != primary color,
         # this expectation will not be present and thus an error will be thrown
-        self.__expectation_handler.remove("Secondary " + str(color.name) + " Detected")
+        self.__expectation_handler.remove("Secondary " + str(color.name) + " Detected",
+                                          "We received Secondary Color Detected input for " + str(color.name) +
+                                          ", but we were expecting " + str(self.__current_color.name) + ".\n" +
+                                          "Please, check up on the secondary color sensor and remove any objects.")
         # No error thrown, so string disk
         return ["Push Stringer"]
 
@@ -275,7 +286,8 @@ class Processor:
         Removes expectation and returns output in case of blocker extended.
         """
 
-        self.__expectation_handler.remove("Confirm Blocker Extended")
+        self.__expectation_handler.remove("Confirm Blocker Extended",
+                                          "We received Confirm Blocker Extended input, but we did not expect it.")
         return ["Scan Primary Color"]
 
     def __blocker_retracted(self):
@@ -283,7 +295,8 @@ class Processor:
         Removes expectation in case of blocker retracted.
         """
 
-        self.__expectation_handler.remove("Confirm Blocker Retracted")
+        self.__expectation_handler.remove("Confirm Blocker Retracted",
+                                          "We received Confirm Blocker Retracted input, but we did not expect it.")
         return ["Ignore"]
 
     def __pusher_pushed(self):
@@ -291,5 +304,6 @@ class Processor:
         Removes expectation and returns output in case of pusher pushed.
         """
 
-        self.__expectation_handler.remove("Confirm Pusher Pushed")
+        self.__expectation_handler.remove("Confirm Pusher Pushed",
+                                          "We received Confirm Pusher Pushed input, but we did not expect it.")
         return ["Retract Blocker"]

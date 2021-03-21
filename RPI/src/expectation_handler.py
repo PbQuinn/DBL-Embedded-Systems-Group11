@@ -62,10 +62,11 @@ class ExpectationHandler:
         self.__expectations.insert(0, expectation)
         print('\033[92m' + "Added expectation: " + input_ + '\033[0m')
 
-    def remove(self, input_):
+    def remove(self, input_, msg):
         """
         Removes last expectation that matches with input or raises error when there is no such expectation
         @param input_  The input of the expectation that should be removed
+        @param msg  The message in case of error
         """
 
         # Take the matching expectations
@@ -82,7 +83,6 @@ class ExpectationHandler:
             self.__expectations = other_expectations + matching_expectations
             print('\033[92m' + "Removed expectation: " + input_ + '\033[0m')
         else:
-            msg = '\033[91m' + "Unexpected input: " + input_ + '\033[0m'
             raise ValueError(msg)
 
     def __check_expiration(self):
