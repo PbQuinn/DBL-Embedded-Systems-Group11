@@ -6,6 +6,7 @@
  * Error code, -2(ILLEGAL_COMMAND), will be send
  * If the command is unknown we send error code: -3(UNKNOWN_COMMAND).
  * Commands need to be placed in a buffer if this buffers overload we send error code: -4(BUFFER_FULL)
+ * If the setup does not give valid readings we send error code: -5(SETUP_FAIL)
  */
 
 // commands used in the working state 

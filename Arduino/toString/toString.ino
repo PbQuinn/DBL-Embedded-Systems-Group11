@@ -22,10 +22,10 @@ const int EXIT_SETUP = 204;
 
 //working state possibilities
 int workmessages[] = {CLOSE_BLOCKER, OPEN_BLOCKER, DO_PUSH, GET_COLOR, AFFIRM_DISK, STRING_DISK, PONG, SET_ERROR_STATE};
-int errormessages[] = {EXIT_ERROR_STATE, GET_ERROR_STATE_INFO, PONG};
+int errormessages[] = {EXIT_ERROR_STATE, PONG};
 int setupmessages[] = {SET_WHITE, SET_BLACK, EXIT_SETUP, PONG};
 int all[] = {CLOSE_BLOCKER, OPEN_BLOCKER, DO_PUSH, GET_COLOR, AFFIRM_DISK, STRING_DISK,
-            PONG, SET_ERROR_STATE,EXIT_ERROR_STATE, GET_ERROR_STATE_INFO, SET_WHITE, SET_BLACK, EXIT_SETUP};
+            PONG, SET_ERROR_STATE,EXIT_ERROR_STATE, SET_WHITE, SET_BLACK, EXIT_SETUP};
 
 //====RESPONSE NUMBERS====
 //Action control:
@@ -40,6 +40,7 @@ const int UNEXPECTED_ERROR = -1;
 const int ILLEGAL_COMMAND = -2;
 const int UNKNOWN_COMMAND = -3;
 const int BUFFER_FULL = -4;
+const int SETUP_FIAL = -5;
 const int PING = 101;
 const int ERRONG_PING = 103;
 const int CONFIRM_EXIT_ERROR_STATE = 105;
@@ -65,13 +66,41 @@ boolean expected = false;
 int que[10];
 int readp = 0;
 int writep = 0;
-
+// ints for color scanning 
+// The order of the colors neither, black, white.
+// the order of the bounds is first lowerbound and then uppperbound.
+int primaryRange[6];
 
 void setup() {
   Serial.begin(9600);
   //Serial.println("Successfully started IO hub");
   Timer1.initialize(100000); 
   Timer1.attachInterrupt( messages );
+}
+
+void rangemaker(int neither, int black, int white, int arrayrange[]) {
+  int neitherrange = (black - neither);
+  if(neitherrange < 20){
+    Serial.write(SETUP_FIAL);
+  }else if(neitherrange > 100){
+    arrayrange[0] = max(neither - neitherrange/5,0);
+    arrayrange[1] = neither + neitherrange/5;
+    arrayrange[2] = black - neitherrange/5;
+    arrayrange[3] = black + neitherrange/5;
+  }else{
+    arrayrange[0] = max(neither - 10,0);
+    arrayrange[1] = neither + 10;
+    arrayrange[2] = black - 10;
+    arrayrange[3] = black + 10;
+  }
+  int whiterange =  (white - black);
+  if(whiterange < 100 || whiterange < neitherrange){
+    Serial.write(SETUP_FIAL);
+  }else{
+    arrayrange[4] = white - whiterange/5;
+    arrayrange[5] = white + whiterange/5;
+  }
+  
 }
 
 
