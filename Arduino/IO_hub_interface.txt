@@ -127,7 +127,9 @@
  * Procedure:
  * 0). Call received.
  * 1). Enter the error state.
- * 2). Set reason_for_error_state to: 'outside signal'.
+ * 2). Clear the message buffer.
+ * 3). Send message to the control software, 103(ERROR_PING)
+ * 4). Set reason_for_error_state to: 'outside signal'.
  *
  * Call nr: 102 (SET_ERROR_STATE)
  */
@@ -152,17 +154,6 @@
  
 //commands used in the error state
 
- 
-/** ping_error_state()
- * Pings to the control software that the system is in an error state.
- * Procedure:
- * 0). Timer for error ping expired.
- * 0'). Message received that is not exit_error_state.
- * 1). Sent error ping.
- * 2). Reset timer for the error ping.
- *
- * Send nr: 103 (ERROR_PING)
- */
  
 /** exit_error_state()
  * Pings IO hub to exit the error state.
