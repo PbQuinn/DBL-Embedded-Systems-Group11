@@ -1,9 +1,9 @@
 from unittest import TestCase
 from RPI.src.processor import Processor
 from RPI.src.protocol_handler import ProtocolHandler
+from RPI.src.protocol_handler import DummyProtocolHandler
 from RPI.src.expectation_handler import ExpectationHandler
 from RPI.src.string_handler import StringHandler
-from RPI.test.dummy_protocol_handler import DummyProtocolHandler
 
 
 class TestInit(TestCase):
@@ -50,7 +50,7 @@ class TestInit(TestCase):
         self.expectations.add("Primary Color Detected", ["Irrelevant"], 10)
         self.assertEqual(["Retract Blocker"], self.processor.process("Primary White"))
         # Wanted and permission
-        self.protocol.set_allowance(True)
+        self.protocol = DummyProtocolHandler(True)
         self.expectations.add("Primary Color Detected", ["Irrelevant"], 10)
         self.assertEqual(["Push Pusher"], self.processor.process("Primary White"))
 
@@ -66,7 +66,7 @@ class TestInit(TestCase):
         self.expectations.add("Primary Color Detected", ["Irrelevant"], 10)
         self.assertEqual(["Retract Blocker"], self.processor.process("Primary Black"))
         # Wanted and permission
-        self.protocol.set_allowance(True)
+        self.protocol = DummyProtocolHandler(True)
         self.expectations.add("Primary Color Detected", ["Irrelevant"], 10)
         self.assertEqual(["Push Pusher"], self.processor.process("Primary Black"))
 
