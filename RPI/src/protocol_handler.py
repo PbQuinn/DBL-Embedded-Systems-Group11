@@ -52,7 +52,7 @@ class ProtocolHandler:
             headers={"auth": self.token}
         )
         permission.raise_for_status()
-        return permission.json()
+        return True  # permission.json()
 
     def inform_pickup(self):
         """Informs the protocol that a disk has been retrieved

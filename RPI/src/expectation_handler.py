@@ -31,6 +31,13 @@ class ExpectationHandler:
     def __init__(self):
         self.__expectations = []
 
+    def flush(self):
+        """
+        Removes all expectations
+        """
+
+        self.__expectations = []
+
     def ping(self):
         """
         Pings each expectation
@@ -40,13 +47,6 @@ class ExpectationHandler:
             expectation.ping()
 
         self.__check_expiration()
-
-    def flush(self):
-        """
-        Removes all expectations
-        """
-
-        self.__expectations = []
 
     def add(self, input_, pings, msg):
         """
@@ -83,7 +83,7 @@ class ExpectationHandler:
             self.__expectations = other_expectations + matching_expectations
             print('\033[92m' + "Removed expectation: " + input_ + '\033[0m')
         else:
-            raise ValueError(msg)
+            raise ValueError('\033[91m' + msg + '\033[0m')
 
     def __check_expiration(self):
         """

@@ -29,8 +29,8 @@ class Processor:
         The interval in pings at which the protocol will be notified
         of our existence
 
-    __is_stringing : int
-        Keeps track of whether we are currently stringing a disk
+    __current_color : Color
+        Keeps track of which color we are currently stringing
 
     Methods
     _______
@@ -74,6 +74,11 @@ class Processor:
         self.__protocol_handler = protocol_handler
         self.__expectation_handler = expectation_handler
         self.__ping_counter = 0
+        self.__current_color = Color.Neither
+        self.__error_mode = False
+
+    def flush(self):
+        self.__expectation_handler.flush()
         self.__current_color = Color.Neither
 
     def process(self, input_):
@@ -129,7 +134,8 @@ class Processor:
         except ValueError as error:
             print('\033[91m' + "An error has occurred:" + '\033[0m')
             print(error)
-            return ["Error Occurred"]
+            self.set_error_mode(True)
+            return ["Enter Error Mode"]
 
     def __process_output(self, outputs):
         """
@@ -168,7 +174,7 @@ class Processor:
             elif output == "Scan Primary Color":
                 self.__expectation_handler.add("Primary Color Detected", 10,  # TODO adjust timer
                                                "We asked the primary color sensor to scan a color, but we did not " +
-                                               "receive it.\n " +
+                                               "receive it.\n" +
                                                "Please check whether the primary color sensor is in order.")
             elif output == "Scan Secondary Color":
                 if self.__current_color == Color.White:
@@ -307,3 +313,17 @@ class Processor:
         self.__expectation_handler.remove("Confirm Pusher Pushed",
                                           "We received Confirm Pusher Pushed input, but we did not expect it.")
         return ["Retract Blocker"]
+
+    def get_error_mode(self):
+        """
+        Returns whether the processor is in error mode.
+        """
+
+        return self.__error_mode
+
+    def set_error_mode(self, error_mode):
+        """
+        Sets the error mode.
+        """
+
+        self.__error_mode = error_mode
