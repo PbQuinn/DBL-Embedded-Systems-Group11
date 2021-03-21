@@ -136,6 +136,10 @@ void check(int issuedCommand) {
       delay(100);
       break;
 
+    case EXIT_SETUP:
+      state = 1;
+      Serial.println(CONFIRM_EXIT_SETUP);
+
     case CLOSE_BLOCKER:
       Serial.println(CONFIRM_CLOSE_GATE);
       // do some action
