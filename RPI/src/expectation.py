@@ -13,6 +13,9 @@ class Expectation:
     __pings : int
         The number of pings until expiration
 
+    __msg : string
+        The message in case of expiration
+
     Methods
     _______
     ping() : void
@@ -28,10 +31,11 @@ class Expectation:
         Returns whether this expectation has expired
     """
 
-    def __init__(self, input_, output, pings):
+    def __init__(self, input_, output, pings, msg):
         self.__input = input_
         self.__output = output
         self.__pings = pings
+        self.__msg = msg
 
     def ping(self):
         """
@@ -39,10 +43,6 @@ class Expectation:
         """
 
         self.__pings -= 1
-
-        if self.has_expired():
-            output_string = "".join(self.__output)
-            print("Expectation for input " + self.__input + " has expired, " + output_string + " will be output.")
 
     def get_input(self):
         """
@@ -57,6 +57,13 @@ class Expectation:
         """
 
         return self.__output
+
+    def get_msg(self):
+        """
+        Returns msg attribute
+        """
+
+        return self.__msg
 
     def has_expired(self):
         """

@@ -23,6 +23,9 @@ class ExpectationHandler:
 
     get_expired_outputs() : string[*]
         Upon corresponding input, returns output
+
+    flush() : void
+        Remove all expectations
     """
 
     def __init__(self):
@@ -36,17 +39,19 @@ class ExpectationHandler:
         for expectation in self.__expectations:
             expectation.ping()
 
-    def add(self, input_, output, pings):
+    def add(self, input_, output, pings, msg):
         """
         Creates and adds expectation with passed arguments
         @param input_  The input that is expected
         @param output  The output that should be returned upon expiration
         @param  pings  The number of pings until the expectation expires
+        @param  msg  The msg that will be printed when expectation expires
         """
 
         # Create new expectation and add it to the front of the list
-        expectation = Expectation(input_, output, pings)
+        expectation = Expectation(input_, output, pings, msg)
         self.__expectations.insert(0, expectation)
+        print('\033[92m' + "Added expectation: " + input_ + '\033[0m')
 
     def remove(self, input_):
         """
@@ -66,8 +71,9 @@ class ExpectationHandler:
 
             # Append the matching list with other expectations and update expectation list
             self.__expectations = other_expectations + matching_expectations
+            print('\033[92m' + "Removed expectation: " + input_ + '\033[0m')
         else:
-            raise ValueError("Unexpected input: " + input_)
+            raise ValueError('\033[91m' + "Unexpected input: " + input_ + '\033[0m')
 
     def get_expired_outputs(self):
         """
@@ -82,8 +88,16 @@ class ExpectationHandler:
 
         expired_outputs = []
 
-        # Get output of each expired expectation
+        # Print message and get output of each expired expectation
         for expectation in expired_expectations:
+            print('\033[91m' + expectation.get_msg() + '\033[0m')
             expired_outputs += expectation.get_output()
 
         return expired_outputs
+
+    def flush(self):
+        """
+        Removes all expectations
+        """
+
+        self.__expectations = []
