@@ -69,7 +69,7 @@ class CommunicatorRobot(Communicator):
     __inputs = {101: "Ping",
                 103: "Ping",  # Error State Ping
                 1: "Primary Motion",
-                # 1: "Secondary Motion",
+                None: "Secondary Motion",  # TODO implement
                 61: "Tertiary Motion",
                 62: "Error Occurred",  # Error String Disk
                 21: "Primary White",
@@ -114,19 +114,34 @@ class CommunicatorRobot(Communicator):
         self.serial.flush()
 
     def _communicate(self):
+
         # Receive
         if self.serial.in_waiting > 0:
             input_ = self.serial.readline().decode().rstrip()
-            # TODO check if valid input -> else raise exception
-            input_ = self.__inputs[input_]
-            print('\033[96m' + "Received: %s" % input_ + '\033[0m')
+            if input_ not in self.__inputs:
+                print('\033[91m' + "Unexpected input received from Arduino: %s"
+                      % input_ + '\033[0m')
+                input_ = "Error Occurred"
+            else:
+                print('\033[96m' + "Received: %s" % input_ + "= %s"
+                      % self.__inputs[input_] + '\033[0m')
+                input_ = self.__inputs[input_]
 
-        # Process
-        output = self._processor.process(input_)
+            # Process
+            output = self._processor.process(input_)
 
-        # Send
-        self.serial.write(self.__outputs[output])
-        print('\033[95m' + "Sent: %s" % output + '\033[0m')
+            # Send
+            output = self.__outputs[output]
+            if output is not None:
+                self.serial.write(output)
+            print('\033[95m' + "Sent: %s" % output + '\033[0m')
 
-        # TODO handle error output
+    def initialize(self):
+        # TODO implement better
+        input("Place white disks in front of the color sensors to calibrate them."
+              "When the disks are in place, press [ENTER].")
+        self.serial.write(self.__outputs["Set White"])
 
+        input("Place black disks in front of the color sensors to calibrate them."
+              "When the disks are in place, press [ENTER].")
+        self.serial.write(self.__outputs["Set Black"])
