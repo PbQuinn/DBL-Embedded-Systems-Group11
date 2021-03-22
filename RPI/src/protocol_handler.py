@@ -1,3 +1,6 @@
+import requests
+
+
 class ProtocolHandler:
     """Class used as interface for communicating with the protocol
 
