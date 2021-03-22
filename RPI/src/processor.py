@@ -1,3 +1,12 @@
+from enum import Enum
+
+
+class Color(Enum):
+    Black = 1
+    White = 0
+    Neither = -1
+
+
 class Processor:
     """
     Processes input and returns output for the communicator.
@@ -65,7 +74,7 @@ class Processor:
         self.__protocol_handler = protocol_handler
         self.__expectation_handler = expectation_handler
         self.__ping_counter = 0
-        self.__is_stringing = False
+        self.__current_color = Color.Neither
 
     def process(self, input_):
         """
@@ -74,7 +83,7 @@ class Processor:
         """
 
         output = self.__process_input(input_)
-        self.__process_output(input_, output)
+        self.__process_output(output)
         return output
 
     def __process_input(self, input_):
@@ -94,13 +103,13 @@ class Processor:
             elif input_ == "Tertiary Motion":
                 return self.__tertiary_motion()
             elif input_ == "Primary White":
-                return self.__primary_color_detected(0)
+                return self.__primary_color_detected(Color.White)
             elif input_ == "Primary Black":
-                return self.__primary_color_detected(1)
+                return self.__primary_color_detected(Color.Black)
             elif input_ == "Secondary White":
-                return self.__secondary_color_detected(0)
+                return self.__secondary_color_detected(Color.White)
             elif input_ == "Secondary Black":
-                return self.__secondary_color_detected(1)
+                return self.__secondary_color_detected(Color.Black)
             elif input_ == "Confirm Blocker Extended":
                 return self.__blocker_extended()
             elif input_ == "Confirm Blocker Retracted":
@@ -121,58 +130,60 @@ class Processor:
             print(error)
             return ["Error Occurred"]
 
-    def __process_output(self, input_, outputs):
+    def __process_output(self, outputs):
         """
         Processes output, i.e. adds expectations for each output.
-        @param input_  The input
         @param outputs  List of outputs to be processed
         """
 
         for output in outputs:
             if output == "Extend Blocker":
                 self.__expectation_handler.add("Confirm Blocker Extended", ["Retract Blocker"], 10,  # TODO adjust timer
-                                               "We did not receive confirmation for blocker retracting. Please make " +
-                                               "sure the blocker is not obstructed by any objects and that its " +
-                                               "sensors are in order.")
+                                               "We did not receive confirmation for blocker retracting.\n" +
+                                               "Please make sure the blocker is not obstructed by any objects and " +
+                                               "that its sensors are in order.")
             elif output == "Retract Blocker":
                 self.__expectation_handler.add("Confirm Blocker Retracted", ["Extend Blocker"], 10,  # TODO adjust timer
-                                               "We did not receive confirmation for blocker extending. Please make " +
-                                               "sure the blocker is not obstructed by any objects and that its " +
-                                               "sensors are in order.")
+                                               "We did not receive confirmation for blocker extending.\n" +
+                                               " Please make  sure the blocker is not obstructed by any objects and " +
+                                               "that its sensors are in order.")
             elif output == "Push Pusher":
                 self.__expectation_handler.add("Confirm Pusher Pushed", ["Ignore"], 10,  # TODO adjust timer
-                                               "We did not receive confirmation for pusher pushing. Please make " +
-                                               "sure the pusher is not obstructed by any objects and that its " +
-                                               "sensors are in order.")
-                if input_ == "Primary White":
-                    self.__expectation_handler.add("Secondary White Detected", ["Ignore"], 10,  # TODO adjust timer
-                                                   "We pushed a white disk into the funnel, but it was not detected " +
-                                                   "by the secondary color sensor. Please check whether the funnel " +
-                                                   "is in order. If there is a black disk in the funnel, please " +
-                                                   "remove it. Otherwise, please check whether the sensors are in " +
-                                                   "order.")
-                    self.__expectation_handler.add("Secondary Motion", ["Ignore"], 10,  # TODO adjust timer
-                                                   "We pushed a white disk into the funnel, but it was not detected " +
-                                                   "by the secondary motion sensor. Please check whether the funnel " +
-                                                   "is in order. If something is blocking the funnel, please remove" +
-                                                   " it. Otherwise, please check whether the sensors are in order.")
-                elif input_ == "Primary Black":
-                    self.__expectation_handler.add("Secondary Black Detected", ["Ignore"], 10,  # TODO adjust timer
-                                                   "We pushed a black disk into the funnel, but it was not detected " +
-                                                   "by the secondary color sensor. Please check whether the funnel " +
-                                                   "is in order. If there is a white disk in the funnel, please " +
-                                                   "remove it. Otherwise, please check whether the sensors are in " +
-                                                   "order.")
-                    self.__expectation_handler.add("Secondary Motion", ["Ignore"], 10,  # TODO adjust timer
-                                                   "We pushed a black disk into the funnel, but it was not detected " +
-                                                   "by the secondary motion sensor. Please check whether the funnel " +
-                                                   "is in order. If something is blocking the funnel, please remove" +
-                                                   " it. Otherwise, please check whether the sensors are in order.")
+                                               "We did not receive confirmation for pusher pushing.\n" +
+                                               "Please make sure the pusher is not obstructed by any objects and "
+                                               "that its sensors are in order.")
+                self.__expectation_handler.add("Secondary Motion", ["Ignore"], 10,  # TODO adjust timer
+                                               "We attempted to push a disk into the funnel, but it has not been " +
+                                               "detected by the secondary motion sensor.\n" +
+                                               "Please check whether the pusher and the funnel are in order.\n" +
+                                               "If something is blocking either of them, please fix it.\n" +
+                                               "Otherwise, please check whether the secondary motion sensor is " +
+                                               "in order.")
             elif output == "Push Stringer":
                 self.__expectation_handler.add("Tertiary Motion", ["Ignore"], 10,  # TODO adjust timer
                                                "We asked the stringer to push, but we did not receive confirmation " +
-                                               "from the tertiary motion sensor. Please check whether the stringer " +
-                                               "is in order.")
+                                               "from the tertiary motion sensor.\n" +
+                                               " Please check whether the stringer is in order.")
+            elif output == "Scan Primary Color":
+                self.__expectation_handler.add("Primary Color Detected", ["Ignore"], 10,  # TODO adjust timer
+                                               "We asked the primary color sensor to scan a color, but we did not " +
+                                               "receive it.\n " +
+                                               "Please check whether the primary color sensor is in order.")
+            elif output == "Scan Secondary Color":
+                if self.__current_color == Color.White:
+                    self.__expectation_handler.add("Secondary White Detected", ["Ignore"], 10,  # TODO adjust timer
+                                                   "We pushed a white disk into the funnel, but it was not detected " +
+                                                   "by the secondary color sensor.\n" +
+                                                   "Please check whether the funnel is in order.\n" +
+                                                   "If there is a black disk in the funnel, please remove it.\n" +
+                                                   "Otherwise, please check whether the sensors are in order.")
+                elif self.__current_color == Color.Black:
+                    self.__expectation_handler.add("Secondary Black Detected", ["Ignore"], 10,  # TODO adjust timer
+                                                   "We pushed a black disk into the funnel, but it was not detected " +
+                                                   "by the secondary color sensor.\n" +
+                                                   "Please check whether the funnel is in order.\n" +
+                                                   "If there is a white disk in the funnel, please remove it.\n" +
+                                                   "Otherwise, please check whether the sensors are in order.")
 
     def __ping(self):
         """
@@ -192,7 +203,7 @@ class Processor:
         Returns output in case of primary motion.
         """
 
-        if not self.__string_handler.is_complete() and not self.__is_stringing:
+        if not self.__string_handler.is_complete() and self.__current_color == Color.Neither:
             # The stringer still needs disks
             return ["Extend Blocker"]
         else:
@@ -212,7 +223,7 @@ class Processor:
         Removes expectation in case of tertiary motion.
         """
 
-        self.__is_stringing = False
+        self.__current_color = Color.Neither
         self.__expectation_handler.remove("Tertiary Motion")
         return ["Ignore"]
 
@@ -224,7 +235,7 @@ class Processor:
 
         self.__expectation_handler.remove("Primary Color Detected")
 
-        if not self.__string_handler.should_pickup(color):
+        if not self.__string_handler.should_pickup(color.value):
             # We do not want the color
             print('\033[93m' + "Stringer: we should not pick up this disk." + '\033[0m')
             return ["Retract Blocker"]
@@ -237,9 +248,11 @@ class Processor:
             print('\033[93m' + "Stringer and protocol: we should and are allowed to pick up this disk." + '\033[0m')
             # Inform protocol that we are about to pick up a disk
             self.__protocol_handler.inform_pickup()
-            self.__protocol_handler.inform_color(color)
+            self.__protocol_handler.inform_color(color.value)
             # Update Stringer
-            self.__string_handler.string_disk(color)
+            self.__string_handler.string_disk(color.value)
+            # Update current color
+            self.__current_color = color
             return ["Push Pusher"]
 
     def __secondary_color_detected(self, color):
@@ -251,12 +264,7 @@ class Processor:
 
         # Remove expectation. If secondary color != primary color,
         # this expectation will not be present and thus an error will be thrown
-        if color == 1:
-            color_name = "Black"
-        else:
-            color_name = "White"
-        self.__expectation_handler.remove("Secondary " + color_name +
-                                          " Detected")
+        self.__expectation_handler.remove("Secondary " + str(color.name) + " Detected")
         # No error thrown, so string disk
         return ["Push Stringer"]
 
@@ -281,6 +289,5 @@ class Processor:
         Removes expectation and returns output in case of pusher pushed.
         """
 
-        self.__is_stringing = True
         self.__expectation_handler.remove("Confirm Pusher Pushed")
         return ["Retract Blocker"]

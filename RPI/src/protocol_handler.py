@@ -23,21 +23,30 @@ class ProtocolHandler:
             informs the protocol of the fact that this system is still alive
         """
 
-    def __init__(self, username="group11", password="0G1EH2HF28"):
+    def __init__(self):
         """Connects to the protocol and gets token upon initialization
+        """
+        self.token = None
+        self.login()
+
+    def login(self, username="group11", password="0G1EH2HF28"):
+        """Uses given username and password to obtain a token from te protocol
 
         @param username  the username to login with, 'group11' by default
         @param password  the password to login with, '0G1EH2HF28' by default
         @modifies self.token
         """
-
         credentials = {"User": username, "Password": password}
+        print("\033[93m" + "Connecting to protocol..." + "\033[0m")
         login_attempt = requests.post(
             "https://brokenprotocol.xyz/Authentication/Login",
             json=credentials,
             headers={"Content-Type": "application/json"}
         )
         login_attempt.raise_for_status()
+        print("\033[93m" + "Successfully connected to protocol, time elapsed: " +
+              str(login_attempt.elapsed.total_seconds()) +
+              " seconds" + "\033[0m")
         self.token = login_attempt.json()["Token"]
 
     def can_pickup(self):
@@ -96,3 +105,25 @@ class ProtocolHandler:
         )
         response.raise_for_status()
 
+
+class DummyProtocolHandler(ProtocolHandler):
+    """Dummy protocol handler for testing"""
+
+    def __init__(self, permission):
+        ProtocolHandler.__init__(self)
+        self.__permission = permission
+
+    def login(self, username="group11", password="0G1EH2HF28"):
+        pass
+
+    def can_pickup(self):
+        return self.__permission
+
+    def inform_pickup(self):
+        return self.__permission
+
+    def inform_color(self, color):
+        pass
+
+    def inform_alive(self):
+        pass
