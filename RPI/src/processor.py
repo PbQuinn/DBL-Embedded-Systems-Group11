@@ -83,7 +83,7 @@ class Processor:
         """
 
         output = self.__process_input(input_)
-        self.process_output(output)
+        self.__process_output(output)
         return output
 
     def __process_input(self, input_):
@@ -116,11 +116,6 @@ class Processor:
                 return self.__blocker_retracted()
             elif input_ == "Confirm Pusher Pushed":
                 return self.__pusher_pushed()
-            # Startup interactions:
-            elif input_ == "White Set":
-                pass    # TODO implement
-            elif input_ == "Black Set":
-                pass    # TODO implement
             # Error interactions:
             elif input_ == "Error Occurred":
                 pass    # TODO implement
@@ -130,7 +125,7 @@ class Processor:
             print(error)
             return ["Error Occurred"]
 
-    def process_output(self, outputs):
+    def __process_output(self, outputs):
         """
         Processes output, i.e. adds expectations for each output.
         @param outputs  List of outputs to be processed
@@ -184,14 +179,6 @@ class Processor:
                                                    "Please check whether the funnel is in order.\n" +
                                                    "If there is a white disk in the funnel, please remove it.\n" +
                                                    "Otherwise, please check whether the sensors are in order.")
-            elif output == "Set White":
-                self.__expectation_handler.add("White Set", ["Ignore"], 10,  # TODO adjust timer
-                                               "The Arduino did not confirm the calibration of the color sensors"
-                                               "within the expected time interval.")
-            elif output == "Set Black":
-                self.__expectation_handler.add("Black Set", ["Ignore"], 10,  # TODO adjust timer
-                                               "The Arduino did not confirm the calibration of the color sensors"
-                                               "within the expected time interval.")
 
     def __ping(self):
         """

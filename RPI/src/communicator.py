@@ -137,16 +137,32 @@ class CommunicatorRobot(Communicator):
             print('\033[95m' + "Sent: %s" % output + '\033[0m')
 
     def initialize(self):
-        # TODO implement better
-        input("Place white disks in front of the color sensors to calibrate them.\n" +
-              "When the disks are in place, press [ENTER].")
-        output = "Set White"
-        self._processor.process_output(output)
-        self.serial.write(self.__outputs[output])
+        initialized = False
+        while not initialized:
+            input("Place white disks in front of the color sensors to calibrate them.\n" +
+                  "When the disks are in place, press [ENTER].")
+            self.serial.write(self.__outputs["Set White"])
+            # wait for response
+            while self.serial.in_waiting == 0:
+                pass
+            # receive
+            input_ = self.serial.readline().decode().rstrip()
+            if not input_ == self.__inputs["White Set"]:
+                print('\033[95m' + "Something went wrong, initialization will restart." + '\033[0m')
+                continue
 
-        input("Place black disks in front of the color sensors to calibrate them.\n" +
-              "When the disks are in place, press [ENTER].")
-        self.serial.write(self.__outputs["Set Black"])
-        output = "Set Black"
-        self._processor.process_output(output)
-        self.serial.write(self.__outputs[output])
+            input("Place black disks in front of the color sensors to calibrate them.\n" +
+                  "When the disks are in place, press [ENTER].")
+            self.serial.write(self.__outputs["Set Black"])
+            # wait for response
+            while self.serial.in_waiting == 0:
+                pass
+            # receive
+            input_ = self.serial.readline().decode().rstrip()
+            if not input_ == self.__inputs["Black Set"]:
+                print('\033[95m' + "Something went wrong, initialization will restart." + '\033[0m')
+                continue
+
+            print("Initialization successfully completed, starting main process...")
+            initialized = True
+            self.start()
