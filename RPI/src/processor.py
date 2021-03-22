@@ -83,7 +83,7 @@ class Processor:
         """
 
         output = self.__process_input(input_)
-        self.__process_output(output)
+        self.process_output(output)
         return output
 
     def __process_input(self, input_):
@@ -130,7 +130,7 @@ class Processor:
             print(error)
             return ["Error Occurred"]
 
-    def __process_output(self, outputs):
+    def process_output(self, outputs):
         """
         Processes output, i.e. adds expectations for each output.
         @param outputs  List of outputs to be processed
@@ -184,6 +184,14 @@ class Processor:
                                                    "Please check whether the funnel is in order.\n" +
                                                    "If there is a white disk in the funnel, please remove it.\n" +
                                                    "Otherwise, please check whether the sensors are in order.")
+            elif output == "Set White":
+                self.__expectation_handler.add("White Set", ["Ignore"], 10,  # TODO adjust timer
+                                               "The Arduino did not confirm the calibration of the color sensors"
+                                               "within the expected time interval.")
+            elif output == "Set Black":
+                self.__expectation_handler.add("Black Set", ["Ignore"], 10,  # TODO adjust timer
+                                               "The Arduino did not confirm the calibration of the color sensors"
+                                               "within the expected time interval.")
 
     def __ping(self):
         """

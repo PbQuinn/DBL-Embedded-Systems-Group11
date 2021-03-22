@@ -138,10 +138,15 @@ class CommunicatorRobot(Communicator):
 
     def initialize(self):
         # TODO implement better
-        input("Place white disks in front of the color sensors to calibrate them."
+        input("Place white disks in front of the color sensors to calibrate them.\n" +
               "When the disks are in place, press [ENTER].")
-        self.serial.write(self.__outputs["Set White"])
+        output = "Set White"
+        self._processor.process_output(output)
+        self.serial.write(self.__outputs[output])
 
-        input("Place black disks in front of the color sensors to calibrate them."
+        input("Place black disks in front of the color sensors to calibrate them.\n" +
               "When the disks are in place, press [ENTER].")
         self.serial.write(self.__outputs["Set Black"])
+        output = "Set Black"
+        self._processor.process_output(output)
+        self.serial.write(self.__outputs[output])
