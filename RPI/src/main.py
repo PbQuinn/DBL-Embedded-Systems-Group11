@@ -2,6 +2,7 @@ from RPI.src.communicator import CommunicatorSimulation, CommunicatorRobot
 from RPI.src.processor import Processor
 from RPI.src.string_handler import StringHandler
 from RPI.src.protocol_handler import ProtocolHandler
+from RPI.src.protocol_handler import DummyProtocolHandler
 from RPI.src.expectation_handler import ExpectationHandler
 
 
@@ -55,9 +56,9 @@ def choose_protocol_handler():
 
 
 def setup_processor(protocol_handler):
-    s = Stringer(get_number())
+    s = StringHandler(get_number())
     ph = protocol_handler
-	eh = ExpectationHandler()
+    eh = ExpectationHandler()
     return Processor(s, ph, eh)
 
 

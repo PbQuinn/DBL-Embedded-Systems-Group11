@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import zmq
-# TODO import serial (https://pypi.org/project/pyserial/)
+import serial  # TODO import serial into virtual environment (https://pypi.org/project/pyserial/)
+
 
 class Communicator(ABC):
     """Abstract communicator class."""
@@ -86,8 +87,9 @@ class CommunicatorRobot(Communicator):
                 -2: "Error Occurred",  # Illegal Command
                 -3: "Error Occurred",  # Unknown Command
                 -4: "Error Occurred",  # Buffer Full
-                107: "Start Error Message",
-                108: "End Error Message"}
+                # 107: "Start Error Message",
+                # 108: "End Error Message"
+                }
 
     __outputs = {"Pong": 100,
                  "Scan Primary Color": 20,
@@ -120,7 +122,7 @@ class CommunicatorRobot(Communicator):
             print('\033[96m' + "Received: %s" % input_ + '\033[0m')
 
         # Process
-        output = self.processor.process(input_)
+        output = self._processor.process(input_)
 
         # Send
         self.serial.write(self.__outputs[output])
