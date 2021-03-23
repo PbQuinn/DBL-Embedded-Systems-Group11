@@ -60,8 +60,23 @@ class CommunicatorSimulation(Communicator):
         self.__socket.send(output)
         print('\033[95m' + "Sent: %s" % output + '\033[0m')
 
-        if output == b"Error Occurred":
-            input('\033[91m' + "When the error has been fixed, press [ENTER]." + '\033[0m')
+        if self._processor.get_error_mode():
+            # Wait for user input to indicate that the issue fixed
+            input('\033[91m' + "When the error has been fixed, press enter any key." + '\033[0m')
+
+            # Unset error mode
+            self._processor.set_error_mode(False)
+
+            # Flush processor
+            self._processor.flush()
+
+            # Close current socket
+            self.__socket.close()
+
+            # Create and bind new socket
+            context = zmq.Context()
+            self.__socket = context.socket(zmq.REP)
+            self.__socket.bind("tcp://*:5555")
 
 
 class CommunicatorRobot(Communicator):
