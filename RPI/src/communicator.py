@@ -87,23 +87,23 @@ class CommunicatorRobot(Communicator):
                 1: "Primary Motion",
                 None: "Secondary Motion",  # TODO implement
                 61: "Tertiary Motion",
-                62: "Error Occurred",  # Error String Disk
+                62: "Error String Disk",            # Error
                 21: "Primary White",
                 22: "Primary Black",
-                23: "Primary Neither",
+                23: "Primary Neither",              # Error
                 41: "Secondary White",
                 42: "Secondary Black",
-                43: "Secondary Neither",    # Error # TODO add error
+                43: "Secondary Neither",            # Error
                 11: "Confirm Blocker Extended",
                 51: "Confirm Blocker Retracted",
                 31: "Confirm Pusher Pushed",
                 201: "White Set",
                 203: "Black Set",
                 205: "Initialization Finished",
-                -1: "Error Occurred",       # Unexpected Error # TODO add error
-                -2: "Error Occurred",       # Illegal Command # TODO add error
-                -3: "Error Occurred",       # Unknown Command # TODO add error
-                -4: "Error Occurred",       # Buffer Full # TODO add error
+                -1: "Unexpected Error Occurred",    # Error
+                -2: "Illegal Command Sent",         # Error
+                -3: "Unknown Command Sent",         # Error
+                -4: "Message buffer full",          # Error
                 -5: "Initialization Error"
                 # 107: "Start Error Message",
                 # 108: "End Error Message"
@@ -154,6 +154,20 @@ class CommunicatorRobot(Communicator):
             if output is not None:
                 self.serial.write(output)
             print('\033[95m' + "Sent: %s" % output + '\033[0m')
+
+        # Check error mode
+        if self._processor.get_error_mode():
+            # Wait for user input to indicate that the issue fixed
+            input('\033[91m' + "When the error has been fixed, press [ENTER]." + '\033[0m')
+
+            # Unset error mode
+            self._processor.set_error_mode(False)
+
+            # Flush processor
+            self._processor.flush()
+
+            # Flush serial # TODO check if this is required
+            self.serial.flush()
 
     def initialize(self):
         """
