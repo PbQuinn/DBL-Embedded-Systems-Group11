@@ -76,13 +76,19 @@ int writep = 0;
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 Adafruit_DCMotor *StringerMotor = AFMS.getMotor(3);
 Adafruit_DCMotor *BlockerMotor = AFMS.getMotor(4);
+<<<<<<< Updated upstream
 
+=======
+Adafruit_DCMotor *BeltMotor = AFMS.getMotor(1);
+>>>>>>> Stashed changes
 
 int stringerPositionSensor = 6;
 int blockerPositionSensor = 3;
 int pusherSensor = 4;
-int primaryColorSensor = A0;
-int secondaryColorSensor = A1;
+
+int primaryColorSensor = A1;
+int secondaryColorSensor = A0;
+int tertiaryMotionSensor = A2;
 
 const int sampleSize = 10;
 const int consistencyLimit = 50;
@@ -101,6 +107,81 @@ int secondary_neither;
 void setup() {
   Serial.begin(9600);
   Serial.println("Successfully started IO hub");
+<<<<<<< Updated upstream
+=======
+  Timer1.initialize(100000); 
+  Timer1.attachInterrupt( messages );
+  
+  pinMode(stringerPositionSensor, INPUT);
+  pinMode(blockerPositionSensor, INPUT);
+  pinMode(pusherSensor, INPUT);
+
+  
+  AFMS.begin();
+  StringerMotor->setSpeed(200);
+  BlockerMotor->setSpeed(200);
+  BeltMotor->setSpeed(200);
+  BeltMotor->run(FORWARD);
+}
+
+
+int getMessage(){
+  int value = 0;
+  while(true){
+    if (Serial.available() > 0) {
+    char nextChar = Serial.read();
+    //Have I finished reading this command?
+    if (nextChar == '\n') {
+      Serial.print("SENT: ");
+      Serial.println(value);
+      Serial.print("RECEIVED: ");
+      //Send the command
+      return value;
+      //Otherwise, continue constructing the command issued
+    } else {
+      int intValue = nextChar - '0';
+      value = 10 * value;
+      value = value + intValue;
+    }
+  }
+  }
+}
+
+void messages() {
+  //we need to check the message pool
+  while (Serial.available() > 0) {
+    int message = getMessage();
+    //first we need to check if the command is pong or entering the error state.
+    //in those cases we need to handle them immediatly else we put the request in the que
+    if(message == PONG){
+      expected = false;
+    }else if(message == SET_ERROR_STATE){
+      enterErrorState();
+    }else{
+      if(writep+ 1 == readp){
+        Serial.println(BUFFER_FULL);
+      }else{
+        que[writep] = message;
+        writep = (writep + 1) % 10;
+      }      
+    }     
+  }
+
+  if(expected){
+    enterErrorState();
+  }
+  
+  // if we are working we should check the connection
+  // CAUTION: TURNED OFF TEMPORARILY!!!!
+  if(state == 1 && false){
+      Serial.println(PING);
+      expected = true;
+  }
+}
+
+void openGate(){
+  Serial.write(CONFIRM_OPEN_GATE);
+>>>>>>> Stashed changes
 }
 
 //Communicate to the RPI that we're still operational.
@@ -123,8 +204,15 @@ void check(int issuedCommand) {
       break;
 
     case EXIT_SETUP:
+<<<<<<< Updated upstream
       state = WORKING_STATE;
       Serial.println(CONFIRM_EXIT_SETUP);
+=======
+
+      state = 1;
+    
+      Serial.println(exitSetup());
+>>>>>>> Stashed changes
       delay(100);
       break;
       
@@ -232,6 +320,7 @@ void enterErrorState(){
 int value = 0;
 
 void loop() {
+<<<<<<< Updated upstream
 
 //This if-statement is responsible for taking input
 //from the serial monitor. The call to check() is what truly
@@ -278,11 +367,29 @@ if (Serial.available() > 0) {
 //      enterErrorState();
 //    }
 //  }
+=======
+delay(100);
+Serial.println(analogRead(tertiaryMotionSensor));
+//Check if there is a command to process
+  if(writep != readp){
+    int message = que[readp];
+    readp = (readp + 1) % 10;
+    if(stateCheck(message)){
+      check(message);
+    }      
+  }  
+>>>>>>> Stashed changes
 
 
   // TODO: Implement scanning to write to "diskFound"
-  bool diskFound = false;
-  if (diskFound) {
-    Serial.println(NOTIFY_DISK_PRESENCE);
+  if(state == 1){
+      if (checkPrimaryMotion()) {
+        Serial.println(NOTIFY_DISK_PRESENCE);
+        closeBlocker();
+        delay(1000);
+        openBlocker();
+        delay(1000);
+      }
   }
+
 }
