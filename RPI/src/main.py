@@ -2,6 +2,7 @@ from RPI.src.communicator import CommunicatorSimulation, CommunicatorRobot
 from RPI.src.processor import Processor
 from RPI.src.string_handler import StringHandler
 from RPI.src.protocol_handler import ProtocolHandler
+from RPI.src.protocol_handler import DummyProtocolHandler
 from RPI.src.expectation_handler import ExpectationHandler
 
 
@@ -37,18 +38,39 @@ def get_mode():
             print("Incorrect input: enter 'r' or 's'.")
 
 
-if __name__ == '__main__':
-    sh = StringHandler(get_number())
-    ph = ProtocolHandler()
-    eh = ExpectationHandler()
+def choose_protocol_handler():
+    while True:
+        try:
+            mode = str(input("Do you want to connect to the protocol or use a dummy? [p/d] "))
 
-    p = Processor(sh, ph, eh)
+            if mode == "p":
+                return ProtocolHandler()
+            elif mode == "d":
+                return DummyProtocolHandler(True)
+            else:
+                print("Incorrect input: enter 'p' or 'd'.")
+                continue
+
+        except ValueError:
+            print("Incorrect input: enter 'p' or 'd'.")
+
+
+def setup_processor(protocol_handler):
+    s = StringHandler(get_number())
+    ph = protocol_handler
+    eh = ExpectationHandler()
+    return Processor(s, ph, eh)
+
+
+if __name__ == '__main__':
 
     if get_mode():
+        p = setup_processor(choose_protocol_handler())
         print("Starting communication with robot...\n")
         cr = CommunicatorRobot(p)
         cr.start()
     else:
+        p = setup_processor(choose_protocol_handler())
         print("Starting communication with simulation...\n")
         cs = CommunicatorSimulation(p)
         cs.start()

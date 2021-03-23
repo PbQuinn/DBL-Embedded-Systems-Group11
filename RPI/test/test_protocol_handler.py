@@ -5,10 +5,10 @@ from RPI.src.protocol_handler import ProtocolHandler
 
 class TestInit(TestCase):
 
-    def test_constructor_exception(self):
-        self.assertRaises(HTTPError, ProtocolHandler, "group11", "x")
-        self.assertRaises(HTTPError, ProtocolHandler, "x", "0G1EH2HF28")
-        self.assertRaises(HTTPError, ProtocolHandler, "x", "x")
+    def test_login_exception(self):
+        self.assertRaises(HTTPError, ProtocolHandler().login, "group11", "x")
+        self.assertRaises(HTTPError, ProtocolHandler().login, "x", "0G1EH2HF28")
+        self.assertRaises(HTTPError, ProtocolHandler().login, "x", "x")
 
     def test_can_pickup(self):
         self.protocol = ProtocolHandler()
