@@ -70,6 +70,8 @@ int writep = 0;
 // The order of the colors neither, black, white.
 // the order of the bounds is first lowerbound and then uppperbound.
 int primaryRange[6];
+int secondaryRange[6];
+
 
 void setup() {
   Serial.begin(9600);
@@ -78,10 +80,11 @@ void setup() {
   Timer1.attachInterrupt( messages );
 }
 
-void rangemaker(int neither, int black, int white, int arrayrange[]) {
+boolean rangemaker(int neither, int black, int white, int arrayrange[]) {
   int neitherrange = (black - neither);
   if(neitherrange < 20){
     Serial.write(SETUP_FIAL);
+    return false;
   }else if(neitherrange > 100){
     arrayrange[0] = max(neither - neitherrange/5,0);
     arrayrange[1] = neither + neitherrange/5;
@@ -96,6 +99,7 @@ void rangemaker(int neither, int black, int white, int arrayrange[]) {
   int whiterange =  (white - black);
   if(whiterange < 100 || whiterange < neitherrange){
     Serial.write(SETUP_FIAL);
+    return false;
   }else{
     arrayrange[4] = white - whiterange/5;
     arrayrange[5] = white + whiterange/5;
@@ -163,8 +167,11 @@ void check(int issuedCommand) {
       break;
 
     case EXIT_SETUP:
-      state = 1;
-      Serial.println(CONFIRM_EXIT_SETUP);
+      if(){
+        state = 1;
+        Serial.println(CONFIRM_EXIT_SETUP);
+      }
+      
 
     case CLOSE_BLOCKER:
       Serial.println(CONFIRM_CLOSE_GATE);
