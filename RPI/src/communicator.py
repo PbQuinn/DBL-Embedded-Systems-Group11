@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import zmq
+import time
 import serial  # TODO import serial into virtual environment (https://pypi.org/project/pyserial/)
 
 
@@ -77,16 +78,18 @@ class CommunicatorRobot(Communicator):
                 23: "Primary Neither",
                 41: "Secondary White",
                 42: "Secondary Black",
-                43: "Secondary Neither",
+                43: "Secondary Neither",    # Error # TODO add error
                 11: "Confirm Blocker Extended",
                 51: "Confirm Blocker Retracted",
                 31: "Confirm Pusher Pushed",
                 201: "White Set",
                 203: "Black Set",
-                -1: "Error Occurred",  # Unexpected Error
-                -2: "Error Occurred",  # Illegal Command
-                -3: "Error Occurred",  # Unknown Command
-                -4: "Error Occurred",  # Buffer Full
+                205: "Initialization Finished",
+                -1: "Error Occurred",       # Unexpected Error # TODO add error
+                -2: "Error Occurred",       # Illegal Command # TODO add error
+                -3: "Error Occurred",       # Unknown Command # TODO add error
+                -4: "Error Occurred",       # Buffer Full # TODO add error
+                -5: "Initialization Error"
                 # 107: "Start Error Message",
                 # 108: "End Error Message"
                 }
@@ -100,6 +103,7 @@ class CommunicatorRobot(Communicator):
                  "Push Stringer": 60,
                  "Set White": 200,
                  "Set Black": 202,
+                 "Finish Initialization": 204,
                  "Enter Error State": 102,
                  "Exit Error State": 104,
                  "Get Error State Info": 106,
@@ -139,30 +143,59 @@ class CommunicatorRobot(Communicator):
     def initialize(self):
         initialized = False
         while not initialized:
+            # WHITE DISK
             input("Place white disks in front of the color sensors to calibrate them.\n" +
                   "When the disks are in place, press [ENTER].")
             self.serial.write(self.__outputs["Set White"])
             # wait for response
-            while self.serial.in_waiting == 0:
-                pass
-            # receive
-            input_ = self.serial.readline().decode().rstrip()
+            if self.__wait_for_serial(10):
+                # receive
+                input_ = self.serial.readline().decode().rstrip()
+            else:
+                continue
             if not input_ == self.__inputs["White Set"]:
-                print('\033[95m' + "Something went wrong, initialization will restart." + '\033[0m')
+                print('\033[95m' + "Unexpected input received, initialization will restart." + '\033[0m')
                 continue
 
+            # BLACK DISK
             input("Place black disks in front of the color sensors to calibrate them.\n" +
                   "When the disks are in place, press [ENTER].")
             self.serial.write(self.__outputs["Set Black"])
             # wait for response
-            while self.serial.in_waiting == 0:
-                pass
-            # receive
-            input_ = self.serial.readline().decode().rstrip()
+            if self.__wait_for_serial(10):
+                # receive
+                input_ = self.serial.readline().decode().rstrip()
+            else:
+                continue
             if not input_ == self.__inputs["Black Set"]:
-                print('\033[95m' + "Something went wrong, initialization will restart." + '\033[0m')
+                print('\033[95m' + "Unexpected input received, initialization will restart." + '\033[0m')
+                continue
+
+            # FINISH
+            self.serial.write(self.__outputs["Finish Initialization"])
+            # wait for response
+            if self.__wait_for_serial(10):
+                # receive
+                input_ = self.serial.readline().decode().rstrip()
+            else:
+                continue
+            if not input_ == self.__inputs["Initialization Finished"]:
+                print('\033[95m' + "Unexpected input received, initialization will restart." + '\033[0m')
                 continue
 
             print("Initialization successfully completed, starting main process...")
             initialized = True
             self.start()
+
+    def __wait_for_serial(self, time_out):
+        time_out = time_out
+        timer = 0
+        # wait for response
+        while self.serial.in_waiting == 0:
+            if timer > time_out:
+                print('\033[95m' + "No input received within expected time interval,"
+                                   " initialization will restart." + '\033[0m')
+                return False
+            time.sleep(0.1)
+            timer = timer + 1
+        return True
