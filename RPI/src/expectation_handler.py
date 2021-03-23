@@ -15,7 +15,7 @@ class ExpectationHandler:
     ping() : void
         Pings each expectation
 
-    add(string, string[*], int) : void
+    add(string, int, string) : void
         Creates and adds expectation with passed arguments
 
     remove() : void
@@ -31,6 +31,13 @@ class ExpectationHandler:
     def __init__(self):
         self.__expectations = []
 
+    def flush(self):
+        """
+        Removes all expectations
+        """
+
+        self.__expectations = []
+
     def ping(self):
         """
         Pings each expectation
@@ -39,7 +46,9 @@ class ExpectationHandler:
         for expectation in self.__expectations:
             expectation.ping()
 
-    def add(self, input_, output, pings, msg):
+        self.__check_expiration()
+
+    def add(self, input_, pings, msg):
         """
         Creates and adds expectation with passed arguments
         @param input_  The input that is expected
@@ -49,14 +58,15 @@ class ExpectationHandler:
         """
 
         # Create new expectation and add it to the front of the list
-        expectation = Expectation(input_, output, pings, msg)
+        expectation = Expectation(input_, pings, msg)
         self.__expectations.insert(0, expectation)
         print('\033[92m' + "Added expectation: " + input_ + '\033[0m')
 
-    def remove(self, input_):
+    def remove(self, input_, msg):
         """
-        Removes last expectation that matches with input
+        Removes last expectation that matches with input or raises error when there is no such expectation
         @param input_  The input of the expectation that should be removed
+        @param msg  The message in case of error
         """
 
         # Take the matching expectations
@@ -73,11 +83,11 @@ class ExpectationHandler:
             self.__expectations = other_expectations + matching_expectations
             print('\033[92m' + "Removed expectation: " + input_ + '\033[0m')
         else:
-            raise ValueError('\033[91m' + "Unexpected input: " + input_ + '\033[0m')
+            raise ValueError('\033[91m' + msg + '\033[0m')
 
-    def get_expired_outputs(self):
+    def __check_expiration(self):
         """
-        Removes expired expectations and returns their output values
+        Checks whether there are expired expectations, raises error if so
         """
 
         # Take expired expectations
@@ -86,18 +96,11 @@ class ExpectationHandler:
         # Remove expired expectations from expectations
         self.__expectations = [e for e in self.__expectations if not e.has_expired()]
 
-        expired_outputs = []
+        if expired_expectations:
+            msg = ""
 
-        # Print message and get output of each expired expectation
-        for expectation in expired_expectations:
-            print('\033[91m' + expectation.get_msg() + '\033[0m')
-            expired_outputs += expectation.get_output()
+            # Get message for each expired expectation
+            for expectation in expired_expectations:
+                msg += '\033[91m' + expectation.get_msg() + '\033[0m' + "\n"
 
-        return expired_outputs
-
-    def flush(self):
-        """
-        Removes all expectations
-        """
-
-        self.__expectations = []
+            raise ValueError(msg)
