@@ -80,29 +80,32 @@ void setup() {
   Timer1.attachInterrupt( messages );
 }
 
-boolean rangemaker(int neither, int black, int white, int arrayrange[]) {
-  int neitherrange = (black - neither);
-  if(neitherrange < 20){
+boolean rangemaker(int lowest, int middle, int highest, int arrayrange[]) {
+  int lowerrange = (lowest - middle);
+  if(lowerrange < 20){
     Serial.write(SETUP_FIAL);
     return false;
-  }else if(neitherrange > 100){
-    arrayrange[0] = max(neither - neitherrange/5,0);
-    arrayrange[1] = neither + neitherrange/5;
-    arrayrange[2] = black - neitherrange/5;
-    arrayrange[3] = black + neitherrange/5;
+  }else if(lowerrange > 100){
+    arrayrange[0] = max(lowest - lowerrange/5,0);
+    arrayrange[1] = lowest + lowerrange/5;
+    arrayrange[2] = middle - lowerrange/5;
+    arrayrange[3] = middle + lowerrange/5;
   }else{
-    arrayrange[0] = max(neither - 10,0);
-    arrayrange[1] = neither + 10;
-    arrayrange[2] = black - 10;
-    arrayrange[3] = black + 10;
+    arrayrange[0] = max(lowest - 10,0);
+    arrayrange[1] = lowest + 10;
+    arrayrange[2] = middle - 10;
+    arrayrange[3] = middle + 10;
   }
-  int whiterange =  (white - black);
-  if(whiterange < 100 || whiterange < neitherrange){
+  int upperrange =  (highest - middle);
+  if(upperrange < 20){
     Serial.write(SETUP_FIAL);
     return false;
+  }else if(upperrange > 100){
+    arrayrange[4] = highest - upperrange/5;
+    arrayrange[5] = highest + upperrange/5;
   }else{
-    arrayrange[4] = white - whiterange/5;
-    arrayrange[5] = white + whiterange/5;
+    arrayrange[4] = highest - 10;
+    arrayrange[5] = highest + 10;
   }
   
 }
@@ -167,10 +170,10 @@ void check(int issuedCommand) {
       break;
 
     case EXIT_SETUP:
-      if(){
+  /*    if(){
         state = 1;
         Serial.println(CONFIRM_EXIT_SETUP);
-      }
+      }*/
       
 
     case CLOSE_BLOCKER:
