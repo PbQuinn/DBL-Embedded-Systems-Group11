@@ -141,6 +141,9 @@ class CommunicatorRobot(Communicator):
             print('\033[95m' + "Sent: %s" % output + '\033[0m')
 
     def initialize(self):
+        """
+        Starts initialization process and calls self.start() when done
+        """
         initialized = False
         while not initialized:
             # WHITE DISK
@@ -153,8 +156,7 @@ class CommunicatorRobot(Communicator):
                 input_ = self.serial.readline().decode().rstrip()
             else:
                 continue
-            if not input_ == self.__inputs["White Set"]:
-                print('\033[95m' + "Unexpected input received, initialization will restart." + '\033[0m')
+            if not self.__is_correct_input(input_, "White Set"):
                 continue
 
             # BLACK DISK
@@ -167,8 +169,7 @@ class CommunicatorRobot(Communicator):
                 input_ = self.serial.readline().decode().rstrip()
             else:
                 continue
-            if not input_ == self.__inputs["Black Set"]:
-                print('\033[95m' + "Unexpected input received, initialization will restart." + '\033[0m')
+            if not self.__is_correct_input(input_, "Black Set"):
                 continue
 
             # FINISH
@@ -179,8 +180,7 @@ class CommunicatorRobot(Communicator):
                 input_ = self.serial.readline().decode().rstrip()
             else:
                 continue
-            if not input_ == self.__inputs["Initialization Finished"]:
-                print('\033[95m' + "Unexpected input received, initialization will restart." + '\033[0m')
+            if not self.__is_correct_input(input_, "Initialization Finished"):
                 continue
 
             print("Initialization successfully completed, starting main process...")
@@ -188,6 +188,13 @@ class CommunicatorRobot(Communicator):
             self.start()
 
     def __wait_for_serial(self, time_out):
+        """
+        Checks if there is a message available on serial within given time.
+
+        @param time_out  how many 1/10s of a second to wait before time out
+        @returns whether a message was found before time out
+        """
+
         time_out = time_out
         timer = 0
         # wait for response
@@ -199,3 +206,24 @@ class CommunicatorRobot(Communicator):
             time.sleep(0.1)
             timer = timer + 1
         return True
+
+    def __is_correct_input(self, input_, expected_input):
+        """
+        Returns whether expected input matches received input and prints error
+        if this is not the case.
+
+        @param input_  the received input
+        @param expected_input  the expected input
+        @returns @code{input_ == expected_input}
+        """
+        if input_ == self.__inputs["Initialization Error"]:
+            print('\033[95m' + "Could not significantly distinguish black from white. "
+                               "Please check whether the color sensors are in order "
+                               "and there is no external light source interfering."
+                               "Initialization process will restart." + '\033[0m')
+            return False
+        elif not input_ == self.__inputs[expected_input]:
+            if input_ in self.__inputs:
+                input_ = self.__inputs[input_]
+            print('\033[95m' + "Unexpected input received: %s" % input_ + "Initialization will restart." + '\033[0m')
+            return False
