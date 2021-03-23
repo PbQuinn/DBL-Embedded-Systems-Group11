@@ -63,6 +63,39 @@ unsigned long timer = 0;
  * 2: the error state
  */
 int state = 0;
+<<<<<<< Updated upstream
+=======
+//A boolean to check wheter we missed an expected response
+boolean expected = false;
+//make a circular buffer
+int que[10];
+int readp = 0;
+int writep = 0;
+
+
+Adafruit_MotorShield AFMS = Adafruit_MotorShield();
+Adafruit_DCMotor *StringerMotor = AFMS.getMotor(3);
+Adafruit_DCMotor *BlockerMotor = AFMS.getMotor(4);
+
+
+int stringerPositionSensor = 6;
+int blockerPositionSensor = 3;
+int pusherSensor = 4;
+int primaryColorSensor = A0;
+int secondaryColorSensor = A1;
+
+const int sampleSize = 10;
+const int consistencyLimit = 50;
+
+
+int primary_white;
+int primary_black;
+int primary_neither;
+
+int secondary_white;
+int secondary_black;
+int secondary_neither;
+>>>>>>> Stashed changes
 
 
 void setup() {
