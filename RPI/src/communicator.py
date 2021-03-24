@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import zmq
 import time
-import serial  # TODO import serial into virtual environment (https://pypi.org/project/pyserial/)
+import serial
 
 
 class Communicator(ABC):
