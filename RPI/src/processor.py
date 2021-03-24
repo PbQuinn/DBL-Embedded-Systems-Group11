@@ -273,8 +273,6 @@ class Processor:
             # Inform protocol that we are about to pick up a disk
             self.__protocol_handler.inform_pickup()
             self.__protocol_handler.inform_color(color.value)
-            # Update Stringer
-            self.__string_handler.string_disk(color.value)
             # Update current color
             self.__current_color = color
             return ["Push Pusher"]
@@ -293,6 +291,7 @@ class Processor:
                                           ", but we were expecting " + str(self.__current_color.name) + ".\n" +
                                           "Please, check up on the secondary color sensor and remove any objects.")
         # No error thrown, so string disk
+        self.__string_handler.string_disk(color.value)
         return ["Push Stringer"]
 
     def __blocker_extended(self):
