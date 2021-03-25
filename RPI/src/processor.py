@@ -243,6 +243,8 @@ class Processor:
         Removes expectation in case of tertiary motion.
         """
 
+        # No error thrown, so string disk
+        self.__string_handler.string_disk(self.__current_color.value)
         self.__current_color = Color.Neither
         self.__expectation_handler.remove("Tertiary Motion",
                                           "We received Tertiary Motion input, but did not expect it.\n" +
@@ -290,8 +292,6 @@ class Processor:
                                           "We received Secondary Color Detected input for " + str(color.name) +
                                           ", but we were expecting " + str(self.__current_color.name) + ".\n" +
                                           "Please, check up on the secondary color sensor and remove any objects.")
-        # No error thrown, so string disk
-        self.__string_handler.string_disk(color.value)
         return ["Push Stringer"]
 
     def __blocker_extended(self):
