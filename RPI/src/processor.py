@@ -134,7 +134,7 @@ class Processor:
                 self.__illegal_command_sent()
             elif input_ == "Unknown Command Sent":
                 self.__unknown_command_sent()
-            elif input_ == "Message buffer full":
+            elif input_ == "Message Buffer Full":
                 self.__message_buffer_full()
             else:
                 raise ValueError('\033[91m' + "Unknown message received:"
@@ -328,9 +328,9 @@ class Processor:
 
         raise ValueError('\033[91m' +
                          "The primary color sensor detected a color that was"
-                         "not recognized as black nor white.\n"
+                         " not recognized as black nor white.\n"
                          "Please ensure that there is no external light source"
-                         "interfering with the sensor,\n"
+                         " interfering with the sensor,\n"
                          "that there are only black and white disks on the belt,\n"
                          "and that the primary color sensor is in order." + '\033[0m')
 
@@ -341,11 +341,11 @@ class Processor:
 
         raise ValueError('\033[91m' +
                          "The secondary color sensor detected a color that was"
-                         "not recognized as black nor white.\n"
+                         " not recognized as black nor white.\n"
                          "Please ensure that there is no external light source"
-                         "interfering with the sensor,\n"
-                         "that there are only black and white disks in the "
-                         "funnel,\n"
+                         " interfering with the sensor,\n"
+                         "that there are only black and white disks in the"
+                         " funnel,\n"
                          "and that the secondary color sensor is in order."
                          + '\033[0m')
 
@@ -382,7 +382,7 @@ class Processor:
 
         raise ValueError('\033[91m' + "The Arduino received an unknown command"
                                       " from the RPI. Please check whether the"
-                                      "connection between the two is in order."
+                                      " connection between the two is in order."
                          + '\033[0m')
 
     def __message_buffer_full(self):
@@ -392,7 +392,7 @@ class Processor:
 
         raise ValueError('\033[91m' + "The message buffer of the Arduino is"
                                       " full. Please check whether the"
-                                      "connection between the two is in order."
+                                      " connection between the two is in order."
                          + '\033[0m')
 
     def get_error_mode(self):

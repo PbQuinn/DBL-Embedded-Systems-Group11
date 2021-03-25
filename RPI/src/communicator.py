@@ -103,7 +103,7 @@ class CommunicatorRobot(Communicator):
                 -1: "Unexpected Error Occurred",    # Error
                 -2: "Illegal Command Sent",         # Error
                 -3: "Unknown Command Sent",         # Error
-                -4: "Message buffer full",          # Error
+                -4: "Message Buffer Full",          # Error
                 -5: "Initialization Error"
                 # 107: "Start Error Message",
                 # 108: "End Error Message"
