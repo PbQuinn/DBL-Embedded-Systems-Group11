@@ -83,7 +83,7 @@ class CommunicatorRobot(Communicator):
     """Concrete communicator class for robot."""
 
     __inputs = {101: "Ping",
-                103: "Ping",  # Error State Ping
+                103: "Error Ping",  # Error State Ping
                 1: "Primary Motion",
                 None: "Secondary Motion",  # TODO implement
                 61: "Tertiary Motion",
