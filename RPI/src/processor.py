@@ -121,6 +121,8 @@ class Processor:
                 return self.__blocker_retracted()
             elif input_ == "Confirm Pusher Pushed":
                 return self.__pusher_pushed()
+            elif input_ == "Error Ping":
+                self.__error_ping()
             # Error interactions:
             elif input_ == "Primary Neither":
                 self.__primary_neither()
@@ -321,6 +323,15 @@ class Processor:
                                           "We received Confirm Pusher Pushed input, but we did not expect it.")
         return ["Retract Blocker"]
 
+    def __error_ping(self):
+        """
+        Raises error if called while not in error state
+        """
+        if not self.__error_mode:
+            raise ValueError('\033[91m' +
+                             "The Arduino sent a signal indicating that it has entered error mode."
+                             "The RPI was not expecting this." + '\033[0m')
+    
     def __primary_neither(self):
         """
         Raises error explaining what went wrong
