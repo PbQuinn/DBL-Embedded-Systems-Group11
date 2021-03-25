@@ -68,7 +68,7 @@ if __name__ == '__main__':
         p = setup_processor(choose_protocol_handler())
         print("Starting communication with robot...\n")
         cr = CommunicatorRobot(p)
-        cr.start()
+        cr.initialize()
     else:
         p = setup_processor(choose_protocol_handler())
         print("Starting communication with simulation...\n")
