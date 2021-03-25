@@ -72,42 +72,6 @@ class Processor:
 
     __secondary_color_detected(int) : string[1]
         Upon corresponding input, returns output
-
-    __blocker_extended() : string[1]
-        Upon corresponding input, returns output
-
-    __blocker_retracted() : string[1]
-        Upon corresponding input, returns output
-
-    __pusher_pushed() : string[1]
-        Upon corresponding input, returns output
-
-    __tertiary_motion() : string[1]
-        Upon corresponding input, returns output
-
-    __error_ping() : void
-        Raises error if called while not in error state
-
-    __primary_neither() : void
-        Raises error explaining what went wrong
-
-    __secondary_neither() : void
-        Raises error explaining what went wrong
-
-    __error_string_disk() : void
-        Raises error explaining what went wrong
-
-    __unexpected_error() : void
-        Raises error explaining what went wrong
-
-    __illegal_command_sent() : void
-        Raises error explaining what went wrong
-
-    __unknown_command_sent() : void
-        Raises error explaining what went wrong
-
-    __message_buffer_full() : void
-        Raises error explaining what went wrong
     """
 
     # The protocol will be notified of our existence every
@@ -164,28 +128,65 @@ class Processor:
             elif input_ == "Secondary Black":
                 return self.__secondary_color_detected(Color.Black)
             elif input_ == "Confirm Blocker Extended":
-                return self.__blocker_extended()
+                self.__expectation_handler.remove("Confirm Blocker Extended",
+                                                  "We received Confirm Blocker Extended input,"
+                                                  " but we did not expect it.")
+                return ["Scan Primary Color"]
             elif input_ == "Confirm Blocker Retracted":
-                return self.__blocker_retracted()
+                self.__expectation_handler.remove("Confirm Blocker Retracted",
+                                                  "We received Confirm Blocker Retracted input,"
+                                                  " but we did not expect it.")
+                return ["Ignore"]
             elif input_ == "Confirm Pusher Pushed":
-                return self.__pusher_pushed()
+                self.__expectation_handler.remove("Confirm Pusher Pushed",
+                                                  "We received Confirm Pusher Pushed input,"
+                                                  " but we did not expect it.")
+                return ["Retract Blocker"]
             elif input_ == "Error Ping":
-                self.__error_ping()
+                if not self.__error_mode:
+                    raise ValueError('\033[91m' +
+                                     "The Arduino sent a signal indicating that it has entered error mode."
+                                     "The RPI was not expecting this." + '\033[0m')
             # Error interactions:
             elif input_ == "Primary Neither":
-                self.__primary_neither()
+                raise ValueError('\033[91m' +
+                                 "The primary color sensor detected a color that was"
+                                 " not recognized as black nor white.\n"
+                                 "Please ensure that there is no external light source"
+                                 " interfering with the sensor,\n"
+                                 "that there are only black and white disks on the belt,\n"
+                                 "and that the primary color sensor is in order." + '\033[0m')
             elif input_ == "Secondary Neither":
-                self.__secondary_neither()
+                raise ValueError('\033[91m' +
+                                 "The secondary color sensor detected a color that was"
+                                 " not recognized as black nor white.\n"
+                                 "Please ensure that there is no external light source"
+                                 " interfering with the sensor,\n"
+                                 "that there are only black and white disks in the"
+                                 " funnel,\n"
+                                 "and that the secondary color sensor is in order."
+                                 + '\033[0m')
             elif input_ == "Error String Disk":
-                self.__error_string_disk()
+                raise ValueError('\033[91m' + "Something went wrong while stringing the"
+                                              " disk. Please check whether the stringer"
+                                              " and string are in order." + '\033[0m')
             elif input_ == "Unexpected Error Occurred":
-                self.__unexpected_error()
+                raise ValueError('\033[91m' + "An unexpected error occurred within the"
+                                              " Arduino code." + '\033[0m')
             elif input_ == "Illegal Command Sent":
-                self.__illegal_command_sent()
+                raise ValueError('\033[91m' + "The Arduino received a known but"
+                                              " unexpected command from the RPI."
+                                 + '\033[0m')
             elif input_ == "Unknown Command Sent":
-                self.__unknown_command_sent()
+                raise ValueError('\033[91m' + "The Arduino received an unknown command"
+                                              " from the RPI. Please check whether the"
+                                              " connection between the two is in order."
+                                 + '\033[0m')
             elif input_ == "Message Buffer Full":
-                self.__message_buffer_full()
+                raise ValueError('\033[91m' + "The message buffer of the Arduino is"
+                                              " full. Please check whether the"
+                                              " connection between the two is in order."
+                                 + '\033[0m')
             else:
                 raise ValueError('\033[91m' + "Unknown message received:"
                                               " %s" % input_ + '\033[0m')
@@ -343,117 +344,6 @@ class Processor:
                                           ", but we were expecting " + str(self.__current_color.name) + ".\n" +
                                           "Please, check up on the secondary color sensor and remove any objects.")
         return ["Push Stringer"]
-
-    def __blocker_extended(self):
-        """
-        Removes expectation and returns output in case of blocker extended.
-        """
-
-        self.__expectation_handler.remove("Confirm Blocker Extended",
-                                          "We received Confirm Blocker Extended input, but we did not expect it.")
-        return ["Scan Primary Color"]
-
-    def __blocker_retracted(self):
-        """
-        Removes expectation in case of blocker retracted.
-        """
-
-        self.__expectation_handler.remove("Confirm Blocker Retracted",
-                                          "We received Confirm Blocker Retracted input, but we did not expect it.")
-        return ["Ignore"]
-
-    def __pusher_pushed(self):
-        """
-        Removes expectation and returns output in case of pusher pushed.
-        """
-
-        self.__expectation_handler.remove("Confirm Pusher Pushed",
-                                          "We received Confirm Pusher Pushed input, but we did not expect it.")
-        return ["Retract Blocker"]
-
-    def __error_ping(self):
-        """
-        Raises error if called while not in error state
-        """
-
-        if not self.__error_mode:
-            raise ValueError('\033[91m' +
-                             "The Arduino sent a signal indicating that it has entered error mode."
-                             "The RPI was not expecting this." + '\033[0m')
-    
-    def __primary_neither(self):
-        """
-        Raises error explaining what went wrong
-        """
-
-        raise ValueError('\033[91m' +
-                         "The primary color sensor detected a color that was"
-                         " not recognized as black nor white.\n"
-                         "Please ensure that there is no external light source"
-                         " interfering with the sensor,\n"
-                         "that there are only black and white disks on the belt,\n"
-                         "and that the primary color sensor is in order." + '\033[0m')
-
-    def __secondary_neither(self):
-        """
-        Raises error explaining what went wrong
-        """
-
-        raise ValueError('\033[91m' +
-                         "The secondary color sensor detected a color that was"
-                         " not recognized as black nor white.\n"
-                         "Please ensure that there is no external light source"
-                         " interfering with the sensor,\n"
-                         "that there are only black and white disks in the"
-                         " funnel,\n"
-                         "and that the secondary color sensor is in order."
-                         + '\033[0m')
-
-    def __error_string_disk(self):
-        """
-        Raises error explaining what went wrong
-        """
-
-        raise ValueError('\033[91m' + "Something went wrong while stringing the"
-                                      " disk. Please check whether the stringer"
-                                      " and string are in order." + '\033[0m')
-
-    def __unexpected_error(self):
-        """
-        Raises error explaining what went wrong
-        """
-
-        raise ValueError('\033[91m' + "An unexpected error occurred within the"
-                                      " Arduino code." + '\033[0m')
-
-    def __illegal_command_sent(self):
-        """
-        Raises error explaining what went wrong
-        """
-
-        raise ValueError('\033[91m' + "The Arduino received a known but"
-                                      " unexpected command from the RPI."
-                         + '\033[0m')
-
-    def __unknown_command_sent(self):
-        """
-        Raises error explaining what went wrong
-        """
-
-        raise ValueError('\033[91m' + "The Arduino received an unknown command"
-                                      " from the RPI. Please check whether the"
-                                      " connection between the two is in order."
-                         + '\033[0m')
-
-    def __message_buffer_full(self):
-        """
-        Raises error explaining what went wrong
-        """
-
-        raise ValueError('\033[91m' + "The message buffer of the Arduino is"
-                                      " full. Please check whether the"
-                                      " connection between the two is in order."
-                         + '\033[0m')
 
     def get_error_mode(self):
         """
