@@ -85,7 +85,7 @@ class CommunicatorRobot(Communicator):
     __inputs = {101: "Ping",
                 103: "Error Ping",  # Error State Ping
                 1: "Primary Motion",
-                None: "Secondary Motion",  # TODO implement
+                2: "Secondary Motion",
                 61: "Tertiary Motion",
                 62: "Error String Disk",            # Error
                 21: "Primary White",

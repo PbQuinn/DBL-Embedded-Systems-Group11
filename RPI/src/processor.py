@@ -375,6 +375,7 @@ class Processor:
         """
         Raises error if called while not in error state
         """
+
         if not self.__error_mode:
             raise ValueError('\033[91m' +
                              "The Arduino sent a signal indicating that it has entered error mode."
