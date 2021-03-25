@@ -52,7 +52,6 @@ class ExpectationHandler:
         """
         Creates and adds expectation with passed arguments
         @param input_  The input that is expected
-        @param output  The output that should be returned upon expiration
         @param  pings  The number of pings until the expectation expires
         @param  msg  The msg that will be printed when expectation expires
         """

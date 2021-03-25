@@ -32,37 +32,82 @@ class Processor:
     __current_color : Color
         Keeps track of which color we are currently stringing
 
+    __error_mode: bool
+        Indicates whether the to_string() system is in error mode
+
     Methods
     _______
+    flush() : void
+        Flushes expectation handler and sets current color to neither
+
     process(string) : string[*]
         Takes input, processes it, and returns output
 
-    __ping() : string[*]
+    get_error_mode() : bool
+        Returns whether the processor is in error mode
+
+    set_error_mode(bool) : void
+        Sets the error mode
+
+    __process_input(string) : string[*]
+        Returns output after processing passed input
+
+    __process_output(string) : void
+        Processes output, i.e. adds expectations for each output.
+
+    __ping() : string[1]
         Upon corresponding input, pings expectation handler and returns output
 
-    __primary_motion() : string[*]
+    __primary_motion() : string[1]
         Upon corresponding input, returns output
 
-    __secondary_motion() : string[*]
+    __secondary_motion() : string[1]
         Upon corresponding input, returns output
 
-    __primary_color_detected(int) : string[*]
+    __tertiary_motion() : string[1]
         Upon corresponding input, returns output
 
-    __primary_color_detected(int) : string[*]
+    __primary_color_detected(int) : string[1]
         Upon corresponding input, returns output
 
-    __blocker_extended()
+    __secondary_color_detected(int) : string[1]
         Upon corresponding input, returns output
 
-    __blocker_retracted()
+    __blocker_extended() : string[1]
         Upon corresponding input, returns output
 
-    __pusher_pushed()
+    __blocker_retracted() : string[1]
         Upon corresponding input, returns output
 
-    __tertiary_motion()
+    __pusher_pushed() : string[1]
         Upon corresponding input, returns output
+
+    __tertiary_motion() : string[1]
+        Upon corresponding input, returns output
+
+    __error_ping() : void
+        Raises error if called while not in error state
+
+    __primary_neither() : void
+        Raises error explaining what went wrong
+
+    __secondary_neither() : void
+        Raises error explaining what went wrong
+
+    __error_string_disk() : void
+        Raises error explaining what went wrong
+
+    __unexpected_error() : void
+        Raises error explaining what went wrong
+
+    __illegal_command_sent() : void
+        Raises error explaining what went wrong
+
+    __unknown_command_sent() : void
+        Raises error explaining what went wrong
+
+    __message_buffer_full() : void
+        Raises error explaining what went wrong
     """
 
     # The protocol will be notified of our existence every
@@ -78,6 +123,9 @@ class Processor:
         self.__error_mode = False
 
     def flush(self):
+        """
+        Flushes expectation handler and set current color to neither
+        """
         self.__expectation_handler.flush()
         self.__current_color = Color.Neither
 
