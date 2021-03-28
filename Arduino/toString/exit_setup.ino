@@ -1,9 +1,9 @@
 
 int exitSetup(){
 
-  state = 1;
-
-  if(setNeither() > 0){
+  if(setNeither() > 0 && rangemaker(primary_neither, primary_black, primary_white, primary_ranges) && rangemaker(secondary_neither, secondary_black, secondary_white, secondary_ranges)){
+    BeltMotor->run(FORWARD);
+    state = 1;
     return CONFIRM_EXIT_SETUP;
   } else {
     return SETUP_FAIL;

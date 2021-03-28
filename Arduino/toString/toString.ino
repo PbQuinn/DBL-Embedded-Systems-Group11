@@ -1,3 +1,8 @@
+  
+//a libary used for interupts
+#include <TimerOne.h>
+#include <Adafruit_MotorShield.h>
+
 //====COMMAND NUMBERS====
 //Gate control:
 const int CLOSE_BLOCKER = 10;
@@ -9,29 +14,30 @@ const int AFFIRM_DISK = 40;
 //Motor control:
 const int STRING_DISK = 60;
 //Program state control:
-const int SETUP_STATE = 0;
-const int WORKING_STATE = 1;
-const int ERROR_STATE = 2;
-const int PING = 100;
+const int PONG = 100;
 const int SET_ERROR_STATE = 102;
 const int EXIT_ERROR_STATE = 104;
-const int GET_ERROR_STATE_INFO = 106;
 //Callibration control:
 const int SET_WHITE = 200;
 const int SET_BLACK = 202;
 const int EXIT_SETUP = 204;
 
-
 //working state possibilities
-int workmessages[] = {CLOSE_BLOCKER, OPEN_BLOCKER, DO_PUSH, GET_COLOR, AFFIRM_DISK, STRING_DISK, PING, SET_ERROR_STATE};
-int errormessages[] = {EXIT_ERROR_STATE, GET_ERROR_STATE_INFO, PING};
-int setupmessages[] = {SET_WHITE, SET_BLACK, EXIT_SETUP, PING};
+int workmessages[] = {CLOSE_BLOCKER, OPEN_BLOCKER, DO_PUSH, GET_COLOR, AFFIRM_DISK, STRING_DISK, PONG, SET_ERROR_STATE};
+int errormessages[] = {EXIT_ERROR_STATE, PONG};
+int setupmessages[] = {SET_WHITE, SET_BLACK, EXIT_SETUP, PONG};
 int all[] = {CLOSE_BLOCKER, OPEN_BLOCKER, DO_PUSH, GET_COLOR, AFFIRM_DISK, STRING_DISK,
-            PING, SET_ERROR_STATE,EXIT_ERROR_STATE, GET_ERROR_STATE_INFO, SET_WHITE, SET_BLACK, EXIT_SETUP};
+            PONG, SET_ERROR_STATE, EXIT_ERROR_STATE, SET_WHITE, SET_BLACK, EXIT_SETUP};
+
+int workmessagesLength = 8;
+int errormessagesLength = 2;
+int setupmessagesLength = 4;
+int allLength = 12;
 
 //====RESPONSE NUMBERS====
 //Action control:
 const int NOTIFY_DISK_PRESENCE = 1;
+const int NOTIFY_DISK_ARRIVAL = 2;
 const int CONFIRM_CLOSE_GATE = 11;
 const int CONFIRM_OPEN_GATE = 51;
 const int CONFIRM_DO_PUSH = 31;
@@ -41,11 +47,11 @@ const int ERROR_STRING_DISK = 62;
 const int UNEXPECTED_ERROR = -1;
 const int ILLEGAL_COMMAND = -2;
 const int UNKNOWN_COMMAND = -3;
-const int PONG = 101;
+const int BUFFER_FULL = -4;
+const int SETUP_FAIL = -5;
+const int PING = 101;
 const int ERRONG_PING = 103;
 const int CONFIRM_EXIT_ERROR_STATE = 105;
-const int START_MESSAGE = 107;
-const int END_MESSGE = 108;
 const int CONFIRM_SET_WHITE = 201;
 const int CONFIRM_SET_BLACK = 203;
 const int CONFIRM_EXIT_SETUP = 205;
@@ -53,8 +59,8 @@ const int CONFIRM_EXIT_SETUP = 205;
 const int WHITE = 21;
 const int BLACK = 22;
 const int NEITHER = 23;
-// How often should we recieve Ping messages + some time to avoid false positives in ms.
-const int PING_TIME = 1500;
+
+
 // A timer to check if we are not disconnected
 unsigned long timer = 0;
 /* The current state we are in:
@@ -63,8 +69,6 @@ unsigned long timer = 0;
  * 2: the error state
  */
 int state = 0;
-<<<<<<< Updated upstream
-=======
 //A boolean to check wheter we missed an expected response
 boolean expected = false;
 //make a circular buffer
@@ -76,14 +80,11 @@ int writep = 0;
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 Adafruit_DCMotor *StringerMotor = AFMS.getMotor(3);
 Adafruit_DCMotor *BlockerMotor = AFMS.getMotor(4);
-<<<<<<< Updated upstream
-
-=======
 Adafruit_DCMotor *BeltMotor = AFMS.getMotor(1);
->>>>>>> Stashed changes
 
 int stringerPositionSensor = 6;
-int blockerPositionSensor = 3;
+int blockerFrontSensor = 2;
+int blockerBackSensor = 3;
 int pusherSensor = 4;
 
 int primaryColorSensor = A1;
@@ -101,27 +102,28 @@ int primary_neither;
 int secondary_white;
 int secondary_black;
 int secondary_neither;
->>>>>>> Stashed changes
+
+int primary_ranges[6];
+int secondary_ranges[6];
+
+bool secondaryMotionFlagged;
 
 
 void setup() {
   Serial.begin(9600);
   Serial.println("Successfully started IO hub");
-<<<<<<< Updated upstream
-=======
   Timer1.initialize(100000); 
   Timer1.attachInterrupt( messages );
   
   pinMode(stringerPositionSensor, INPUT);
-  pinMode(blockerPositionSensor, INPUT);
+  pinMode(blockerBackSensor, INPUT);
   pinMode(pusherSensor, INPUT);
 
   
   AFMS.begin();
   StringerMotor->setSpeed(200);
-  BlockerMotor->setSpeed(200);
+  BlockerMotor->setSpeed(250);
   BeltMotor->setSpeed(200);
-  BeltMotor->run(FORWARD);
 }
 
 
@@ -150,6 +152,7 @@ int getMessage(){
 void messages() {
   //we need to check the message pool
   while (Serial.available() > 0) {
+    Serial.println("doing serial stuff");
     int message = getMessage();
     //first we need to check if the command is pong or entering the error state.
     //in those cases we need to handle them immediatly else we put the request in the que
@@ -181,10 +184,10 @@ void messages() {
 
 void openGate(){
   Serial.write(CONFIRM_OPEN_GATE);
->>>>>>> Stashed changes
 }
 
-//Communicate to the RPI that we're still operational.
+
+//check the use cases 
 void check(int issuedCommand) {
   switch (issuedCommand) {
     case PING:
@@ -192,50 +195,50 @@ void check(int issuedCommand) {
       break;
 
     case SET_WHITE:
-      Serial.println(CONFIRM_SET_WHITE);
+      Serial.println(setWhite());
       // do some action
       delay(100);
       break;
 
-    case SET_BLACK:
-      Serial.println(CONFIRM_SET_BLACK);
+    case SET_BLACK:    
+      Serial.println(setBlack());
       // do some action
       delay(100);
       break;
 
     case EXIT_SETUP:
-<<<<<<< Updated upstream
-      state = WORKING_STATE;
-      Serial.println(CONFIRM_EXIT_SETUP);
-=======
+      Serial.println(exitSetup());
+      delay(100);
+      break;
+
+
+    case EXIT_ERROR_STATE:
 
       state = 1;
     
-      Serial.println(exitSetup());
->>>>>>> Stashed changes
+      Serial.println(CONFIRM_EXIT_ERROR_STATE);
       delay(100);
       break;
-      
     case CLOSE_BLOCKER:
-      Serial.println(CONFIRM_CLOSE_GATE);
+      Serial.println(closeBlocker());
       // do some action
       delay(100);
       break;
 
     case OPEN_BLOCKER:
-      Serial.println(CONFIRM_OPEN_GATE);
+      Serial.println(openBlocker());
       // do some action
       delay(100);
       break;
 
     case DO_PUSH:
-      Serial.println(CONFIRM_DO_PUSH);
+      Serial.println(doPush());
       // do some action
       delay(100);
       break;
 
     case GET_COLOR:
-      Serial.println("SOME VALUE");
+      Serial.println(getColor(primaryColorSensor, primary_ranges));
       // do some action
       delay(100);
       break;
@@ -247,19 +250,17 @@ void check(int issuedCommand) {
       break;
 
     case STRING_DISK:
-      Serial.println("Stringing disk...");
-      delay(1000);
-      Serial.println(CONFIRM_STRING_DISK);
+      Serial.println(stringDisk());
       // do some action
       delay(100);
       break;
-
+      
+      
     default:
       // By the state check this default should not be reachable
-      Serial.println(UNEXPECTED_ERROR);
+      Serial.write(UNEXPECTED_ERROR);
       break;
   }
-  Serial.println("");
 }
 
 boolean in(int number, int commands[], int commandsLength){
@@ -272,14 +273,8 @@ boolean in(int number, int commands[], int commandsLength){
 }
 
 boolean stateCheck(int message) {
-
-  int setupmessagesLength = sizeof(setupmessages) / sizeof(setupmessages[0]);
-  int workmessagesLength = sizeof(workmessages) / sizeof(workmessages[0]);
-  int errormessagesLength = sizeof(errormessages) / sizeof(errormessages[0]);
-  int allLength = sizeof(all) / sizeof(all[0]); 
-  
   if(state == 0){
-    if(in(message,setupmessages, setupmessagesLength)){
+    if(in(message, setupmessages, setupmessagesLength)){
       return true;
     }else if(in(message, all, allLength)){
       Serial.println(ILLEGAL_COMMAND);
@@ -289,7 +284,7 @@ boolean stateCheck(int message) {
       return false;
     }
   }else if(state == 1){
-    if(in(message,workmessages, workmessagesLength)){
+    if(in(message, workmessages, workmessagesLength)){
       return true;
     }else if(in(message, all, allLength)){
       Serial.println(ILLEGAL_COMMAND);
@@ -305,71 +300,29 @@ boolean stateCheck(int message) {
       Serial.println(ILLEGAL_COMMAND);
       return false;
     }else{
-      Serial.println(UNKNOWN_COMMAND);
+      Serial.write(UNKNOWN_COMMAND);
       return false;
     }
   }
 }
 
 void enterErrorState(){
-  
+  state = 2;
+  //clear the buffer
+  openGate();
+  readp = writep;
+  while(state == 2){
+    Serial.println(ERRONG_PING);
+    delay(100);
+  }
+
 }
 
 
-
-int value = 0;
-
 void loop() {
-<<<<<<< Updated upstream
-
-//This if-statement is responsible for taking input
-//from the serial monitor. The call to check() is what truly
-//handles the command.
-
-//Check if there is a command waiting for me
-
-
-//  if (Serial.available() > 0) {
-//    int message = Serial.read() - '0';
-//
-//    //first we need to check if the command is valid in the current state if so check it
-//    if(stateCheck(message)){
-//      check(message);
-//    }
-//  }
-
-
-if (Serial.available() > 0) {
-    char nextChar = Serial.read();
-    //Have I finished reading this command?
-    if (nextChar == '\n') {
-      Serial.print("SENT: ");
-      Serial.println(value);
-      Serial.print("RECEIVED: ");
-      //Send the command
-      if(stateCheck(value)){
-        check(value);
-      }
-      value = 0;
-      //Otherwise, continue constructing the command issued
-    } else {
-      int intValue = nextChar - '0';
-      value = 10 * value;
-      value = value + intValue;
-    }
-  }
-
-
-  // if we are working we should check the connection
-  // any further working state specific actions should also be placed here
-//  if(state == WORKING_STATE){
-//    if(millis() - PING_TIME > timer){
-//      enterErrorState();
-//    }
-//  }
-=======
+//Serial.print(A0);  Serial.print(":");  Serial.print(analogRead(A0));  Serial.print("   ");  Serial.print(A1);  Serial.print(":");  Serial.print(analogRead(A1));  Serial.print("   ");  Serial.print(analogRead(A2));  Serial.print("   ");  Serial.print(analogRead(A3));  Serial.print("   ");  Serial.print(analogRead(A4));  Serial.print("   ");  Serial.print(analogRead(A5));  Serial.println("   ");
+//Serial.println(digitalRead(blockerFrontSensor));
 delay(100);
-Serial.println(analogRead(tertiaryMotionSensor));
 //Check if there is a command to process
   if(writep != readp){
     int message = que[readp];
@@ -378,17 +331,22 @@ Serial.println(analogRead(tertiaryMotionSensor));
       check(message);
     }      
   }  
->>>>>>> Stashed changes
+
+
 
 
   // TODO: Implement scanning to write to "diskFound"
   if(state == 1){
-      if (checkPrimaryMotion()) {
-        Serial.println(NOTIFY_DISK_PRESENCE);
-        closeBlocker();
+    //Serial.print("Primary: ");
+    //Serial.print(analogRead(primaryColorSensor));
+    //Serial.print(",      Secondary: ");
+    //Serial.println(analogRead(secondaryColorSensor));
+      if (checkSecondaryMotion() && !secondaryMotionFlagged) {
+        secondaryMotionFlagged = true;
+        Serial.println(NOTIFY_DISK_ARRIVAL);
         delay(1000);
-        openBlocker();
-        delay(1000);
+        stringDisk();
+       
       }
   }
 

@@ -1,13 +1,20 @@
 
 
 int setWhite(){
-  int primaryWhiteMeasured = setWhiteForSensor(primaryColorSensor);
-  int secondaryWhiteMeasured = setWhiteForSensor(secondaryColorSensor);
+    closeBlocker();
+    delay(3000);
+    BeltMotor->run(RELEASE);    
+    int primaryWhiteMeasured = setWhiteForSensor(primaryColorSensor);
+    int secondaryWhiteMeasured = setWhiteForSensor(secondaryColorSensor);
+    openBlocker();
+    stringDisk();
+    BeltMotor->run(FORWARD);
+    delay(1000);
+    BeltMotor->run(RELEASE);
   
   if(primaryWhiteMeasured > 0 && secondaryWhiteMeasured > 0){
-    primary_white = primaryWhiteMeasured;
-    secondary_white = secondaryWhiteMeasured;
-    doPush();
+       primary_white = primaryWhiteMeasured;
+       secondary_white = secondaryWhiteMeasured;
     return CONFIRM_SET_WHITE;
   } else {
     return SETUP_FAIL;

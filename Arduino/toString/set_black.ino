@@ -1,13 +1,20 @@
 
 
 int setBlack(){
-  int primaryBlackMeasured = setBlackForSensor(primaryColorSensor);
-  int secondaryBlackMeasured = setBlackForSensor(secondaryColorSensor);
+    closeBlocker();
+    delay(3000);
+    BeltMotor->run(RELEASE);    
+    int primaryBlackMeasured = setBlackForSensor(primaryColorSensor);
+    int secondaryBlackMeasured = setBlackForSensor(secondaryColorSensor);
+    openBlocker();
+    stringDisk();
+    BeltMotor->run(FORWARD);
+    delay(1000);
+    BeltMotor->run(RELEASE);
   
   if(primaryBlackMeasured > 0 && secondaryBlackMeasured > 0){
-    primary_black = primaryBlackMeasured;
-    secondary_black = secondaryBlackMeasured;
-    doPush();
+       primary_black = primaryBlackMeasured;
+       secondary_black = secondaryBlackMeasured;
     return CONFIRM_SET_BLACK;
   } else {
     return SETUP_FAIL;
