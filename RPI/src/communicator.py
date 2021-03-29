@@ -148,13 +148,14 @@ class CommunicatorRobot(Communicator):
                 input_ = self.__inputs[input_]
 
             # Process
-            output = self._processor.process(input_)
+            outputs = self._processor.process(input_)
 
             # Send
-            output = self.__outputs[output]
-            if output is not None:
-                self.serial.write((str(output)+"\n").encode('utf-8'))
-            print('\033[95m' + "Sent: %s" % output + '\033[0m')
+            for output in outputs:
+                output = self.__outputs[output]
+                if output is not None:
+                    self.serial.write((str(output)+"\n").encode('utf-8'))
+                print('\033[95m' + "Sent: %s" % output + '\033[0m')
 
         # Check error mode
         if self._processor.get_error_mode():
