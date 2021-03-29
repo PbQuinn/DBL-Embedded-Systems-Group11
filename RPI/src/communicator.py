@@ -136,7 +136,7 @@ class CommunicatorRobot(Communicator):
 
         # Receive
         if self.serial.in_waiting > 0:
-            input_ = self.serial.readline().decode().rstrip()
+            input_ = int.from_bytes(self.serial.read(), byteorder='big')
             if input_ not in self.__inputs:
                 print('\033[91m' + "Unexpected input received from Arduino: %s"
                       % input_ + '\033[0m')
@@ -182,7 +182,7 @@ class CommunicatorRobot(Communicator):
             # wait for response
             if self.__wait_for_serial(10):
                 # receive
-                input_ = self.serial.readline().decode().rstrip()
+                input_ = int.from_bytes(self.serial.read(), byteorder='big')
             else:
                 continue
             if not self.__is_correct_input(input_, 203):
@@ -195,7 +195,7 @@ class CommunicatorRobot(Communicator):
             # wait for response
             if self.__wait_for_serial(10):
                 # receive
-                input_ = self.serial.readline().decode().rstrip()
+                input_ = int.from_bytes(self.serial.read(), byteorder='big')
             else:
                 continue
             if not self.__is_correct_input(input_, 201):
@@ -206,7 +206,7 @@ class CommunicatorRobot(Communicator):
             # wait for response
             if self.__wait_for_serial(10):
                 # receive
-                input_ = self.serial.readline().decode().rstrip()
+                input_ = int.from_bytes(self.serial.read(), byteorder='big')
             else:
                 continue
             if not self.__is_correct_input(input_, "Initialization Finished"):
