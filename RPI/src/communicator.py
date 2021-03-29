@@ -3,6 +3,7 @@ import zmq
 import time
 import serial
 
+DEVICE_NAME = 'een emptry string'
 
 class Communicator(ABC):
     """Abstract communicator class."""
@@ -125,7 +126,7 @@ class CommunicatorRobot(Communicator):
                  "Ignore": None
                  }
 
-    def __init__(self, processor, device_name="VeryCoolName"):  # TODO add actual device name
+    def __init__(self, processor, device_name=DEVICE_NAME):  # TODO add actual device name
         # Call super constructor
         Communicator.__init__(self, processor)
         # Initialize serial
