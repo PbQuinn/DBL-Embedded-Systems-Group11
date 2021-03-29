@@ -231,7 +231,7 @@ class CommunicatorRobot(Communicator):
         while self.serial.in_waiting == 0:
             if timer > time_out:
                 print('\033[95m' + "No input received within expected time interval,"
-                                   " initialization will restart." + '\033[0m')
+                                   "\ninitialization process will restart." + '\033[0m')
                 return False
             time.sleep(0.1)
             timer = timer + 1
@@ -250,12 +250,13 @@ class CommunicatorRobot(Communicator):
             print('\033[95m' + "Could not significantly distinguish black from white. "
                                "Please check whether the color sensors are in order "
                                "and there is no external light source interfering."
-                               "Initialization process will restart." + '\033[0m')
+                               "\nInitialization process will restart." + '\033[0m')
             return False
         elif not input_ == expected_input:
             if input_ in self.__inputs:
                 input_ = self.__inputs[input_]
-            print('\033[95m' + "Unexpected input received: %s" % input_ + "Initialization will restart." + '\033[0m')
+            print('\033[95m' + "Unexpected input received: %s" % input_ +
+                  "\nInitialization process will restart." + '\033[0m')
             return False
         else:
             return True
