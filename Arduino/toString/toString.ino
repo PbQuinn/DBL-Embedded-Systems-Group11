@@ -90,6 +90,7 @@ int pusherSensor = 4;
 int primaryColorSensor = A1;
 int secondaryColorSensor = A0;
 int tertiaryMotionSensor = A2;
+int primaryMotionSensor = A3;
 
 const int sampleSize = 10;
 const int consistencyLimit = 50;
@@ -97,14 +98,13 @@ const int consistencyLimit = 50;
 
 int primary_white;
 int primary_black;
-int primary_neither;
 
 int secondary_white;
 int secondary_black;
-int secondary_neither;
 
 int primary_ranges[6];
 int secondary_ranges[6];
+int belt_range[2];
 
 bool secondaryMotionFlagged;
 
@@ -320,9 +320,9 @@ void enterErrorState(){
 
 
 void loop() {
-//Serial.print(A0);  Serial.print(":");  Serial.print(analogRead(A0));  Serial.print("   ");  Serial.print(A1);  Serial.print(":");  Serial.print(analogRead(A1));  Serial.print("   ");  Serial.print(analogRead(A2));  Serial.print("   ");  Serial.print(analogRead(A3));  Serial.print("   ");  Serial.print(analogRead(A4));  Serial.print("   ");  Serial.print(analogRead(A5));  Serial.println("   ");
+//Serial.print(analogRead(primaryColorSensor));  Serial.print("   ");  Serial.print(analogRead(secondaryColorSensor));  Serial.print("   ");  Serial.print(analogRead(A2));  Serial.print("   ");  Serial.print(analogRead(A3));  Serial.print("   ");  Serial.print(analogRead(A4));  Serial.print("   ");  Serial.print(analogRead(A5));  Serial.println("   ");
 //Serial.println(digitalRead(blockerFrontSensor));
-delay(100);
+delay(10);
 //Check if there is a command to process
   if(writep != readp){
     int message = que[readp];
@@ -341,6 +341,19 @@ delay(100);
     //Serial.print(analogRead(primaryColorSensor));
     //Serial.print(",      Secondary: ");
     //Serial.println(analogRead(secondaryColorSensor));
+
+      //Serial.println(analogRead(primaryMotionSensor));
+      if (checkPrimaryMotion()){
+        Serial.println("Yo");
+        closeBlocker();
+        delay(1500);
+        if(getColor(primaryColorSensor, primary_ranges) == WHITE){
+          doPush();
+        }
+        openBlocker();
+        delay(1000);
+      }
+      
       if (checkSecondaryMotion() && !secondaryMotionFlagged) {
         secondaryMotionFlagged = true;
         Serial.println(NOTIFY_DISK_ARRIVAL);

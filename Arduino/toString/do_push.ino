@@ -12,5 +12,6 @@ int doPush(){
     }  
   } 
   BeltMotor->run(FORWARD);
+  delay(2000);
   return CONFIRM_DO_PUSH;
 }

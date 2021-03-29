@@ -20,20 +20,20 @@ int getColor(int sensorPin, int colorRanges[]){
 
   //After extensive testing, we know that color values for primary sensor are in ascending order:
   //Neither - Black - White
-  if(averageValue > colorRanges[4] && averageValue <= colorRanges[5]){
+  Serial.print("Checking for range: ");
+  Serial.print(colorRanges[2]);
+  Serial.print(", ");
+  Serial.println(colorRanges[3]);
+  if(averageValue > colorRanges[2] && averageValue <= colorRanges[3]){
     Serial.println("Found white!");
     return WHITE;
   }
   
-  if(averageValue > colorRanges[2] && averageValue <= colorRanges[3]){
+  if(averageValue > colorRanges[0] && averageValue <= colorRanges[1]){
     Serial.println("Found black!");
     return BLACK;
   }
-
-  if(averageValue > colorRanges[0] && averageValue <= colorRanges[1]){
-    Serial.println("Found..... something else?");
-    return NEITHER;
-  }
+  Serial.println("Found something else");
 
   return NEITHER;
 

@@ -1,13 +1,15 @@
 
 
 bool checkPrimaryMotion(){
-  float readings[sampleSize];
-  float counterValue = 0;
-  
+  int strikes = 0;
+
+  int originalSample = analogRead(primaryMotionSensor);
   for(int i = 0; i < sampleSize; i++){
-    int sample = analogRead(primaryColorSensor);
-    
-    if(primary_neither - sample > 50 || primary_neither - sample < -50){
+    int sample = analogRead(primaryMotionSensor);
+    if(belt_range[0] > sample){
+      strikes++;
+    }
+    if(strikes >= 3){
       return true;
     }
   }
