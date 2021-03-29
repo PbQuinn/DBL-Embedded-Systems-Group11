@@ -80,34 +80,27 @@ void setup() {
   Timer1.attachInterrupt( messages );
 }
 
-boolean rangemaker(int lowest, int middle, int highest, int arrayrange[]) {
-  int lowerrange = (lowest - middle);
-  if(lowerrange < 20){
+boolean rangemaker(int lowest, int highest, int arrayrange[]) {
+  int difference = (highest - lowest);
+  if(difference < 20){
     Serial.write(SETUP_FIAL);
     return false;
-  }else if(lowerrange > 100){
-    arrayrange[0] = max(lowest - lowerrange/5,0);
-    arrayrange[1] = lowest + lowerrange/5;
-    arrayrange[2] = middle - lowerrange/5;
-    arrayrange[3] = middle + lowerrange/5;
-  }else{
-    arrayrange[0] = max(lowest - 10,0);
+  }else {
+    arrayrange[0] = lowest - 10;
     arrayrange[1] = lowest + 10;
-    arrayrange[2] = middle - 10;
-    arrayrange[3] = middle + 10;
-  }
-  int upperrange =  (highest - middle);
-  if(upperrange < 20){
-    Serial.write(SETUP_FIAL);
-    return false;
-  }else if(upperrange > 100){
-    arrayrange[4] = highest - upperrange/5;
-    arrayrange[5] = highest + upperrange/5;
+    arrayrange[2] = highest - 10;
+    arrayrange[3] = lowest  + 10;
+  }  
+}
+
+int inrange(int reading, int range[]){
+  if(reading >= range[0] && reading < range[1]){
+    return 1;
+  }else if(reading >= range[2] && reading < range[3]){
+    return 2;
   }else{
-    arrayrange[4] = highest - 10;
-    arrayrange[5] = highest + 10;
+    return 0;
   }
-  
 }
 
 
