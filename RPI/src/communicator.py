@@ -185,7 +185,7 @@ class CommunicatorRobot(Communicator):
                 input_ = self.serial.readline().decode().rstrip()
             else:
                 continue
-            if not self.__is_correct_input(input_, "White Set"):
+            if not self.__is_correct_input(input_, 203):
                 continue
 
             # BLACK DISK
@@ -198,7 +198,7 @@ class CommunicatorRobot(Communicator):
                 input_ = self.serial.readline().decode().rstrip()
             else:
                 continue
-            if not self.__is_correct_input(input_, "Black Set"):
+            if not self.__is_correct_input(input_, 201):
                 continue
 
             # FINISH
@@ -245,13 +245,13 @@ class CommunicatorRobot(Communicator):
         @param expected_input  the expected input
         @returns @code{input_ == expected_input}
         """
-        if input_ == self.__inputs["Initialization Error"]:
+        if input_ == -5:
             print('\033[95m' + "Could not significantly distinguish black from white. "
                                "Please check whether the color sensors are in order "
                                "and there is no external light source interfering."
                                "Initialization process will restart." + '\033[0m')
             return False
-        elif not input_ == self.__inputs[expected_input]:
+        elif not input_ == expected_input:
             if input_ in self.__inputs:
                 input_ = self.__inputs[input_]
             print('\033[95m' + "Unexpected input received: %s" % input_ + "Initialization will restart." + '\033[0m')
