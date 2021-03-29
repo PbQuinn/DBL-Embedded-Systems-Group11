@@ -210,7 +210,7 @@ class CommunicatorRobot(Communicator):
                 input_ = int.from_bytes(self.serial.read(), byteorder='big')
             else:
                 continue
-            if not self.__is_correct_input(input_, "Initialization Finished"):
+            if not self.__is_correct_input(input_, 205):
                 continue
 
             print("Initialization successfully completed, starting main process...")
@@ -246,6 +246,7 @@ class CommunicatorRobot(Communicator):
         @param expected_input  the expected input
         @returns @code{input_ == expected_input}
         """
+
         if input_ == 250:
             print('\033[95m' + "Could not significantly distinguish black from white. "
                                "Please check whether the color sensors are in order "
