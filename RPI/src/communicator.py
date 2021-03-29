@@ -181,7 +181,7 @@ class CommunicatorRobot(Communicator):
                   "When the disks are in place, press [ENTER].")
             self.serial.write((str(self.__outputs["Set White"]) + "\n").encode('utf-8'))
             # wait for response
-            if self.__wait_for_serial(10):
+            if self.__wait_for_serial(50):
                 # receive
                 input_ = int.from_bytes(self.serial.read(), byteorder='big')
             else:
@@ -194,7 +194,7 @@ class CommunicatorRobot(Communicator):
                   "When the disks are in place, press [ENTER].")
             self.serial.write((str(self.__outputs["Set Black"]) + "\n").encode('utf-8'))
             # wait for response
-            if self.__wait_for_serial(10):
+            if self.__wait_for_serial(50):
                 # receive
                 input_ = int.from_bytes(self.serial.read(), byteorder='big')
             else:
