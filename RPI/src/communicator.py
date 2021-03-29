@@ -100,11 +100,11 @@ class CommunicatorRobot(Communicator):
                 201: "White Set",
                 203: "Black Set",
                 205: "Initialization Finished",
-                -1: "Unexpected Error Occurred",    # Error
-                -2: "Illegal Command Sent",         # Error
-                -3: "Unknown Command Sent",         # Error
-                -4: "Message Buffer Full",          # Error
-                -5: "Initialization Error"
+                254: "Unexpected Error Occurred",    # Error
+                253: "Illegal Command Sent",         # Error
+                252: "Unknown Command Sent",         # Error
+                251: "Message Buffer Full",          # Error
+                250: "Initialization Error"
                 # 107: "Start Error Message",
                 # 108: "End Error Message"
                 }
@@ -245,7 +245,7 @@ class CommunicatorRobot(Communicator):
         @param expected_input  the expected input
         @returns @code{input_ == expected_input}
         """
-        if input_ == -5:
+        if input_ == 250:
             print('\033[95m' + "Could not significantly distinguish black from white. "
                                "Please check whether the color sensors are in order "
                                "and there is no external light source interfering."
