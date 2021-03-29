@@ -5,6 +5,7 @@ import serial
 
 DEVICE_NAME = 'een emptry string'
 
+
 class Communicator(ABC):
     """Abstract communicator class."""
 
@@ -120,8 +121,8 @@ class CommunicatorRobot(Communicator):
                  "Set White": 200,
                  "Set Black": 202,
                  "Finish Initialization": 204,
-                 "Enter Error State": 102,
-                 "Exit Error State": 104,
+                 "Enter Error Mode": 102,
+                 "Exit Error Mode": 104,
                  "Get Error State Info": 106,
                  "Ignore": None
                  }
@@ -171,10 +172,14 @@ class CommunicatorRobot(Communicator):
             # Flush serial # TODO check if this is required
             self.serial.flush()
 
+            # Exit Error Mode
+            self.serial.write((str(self.__outputs["Exit Error Mode"]) + "\n").encode('utf-8'))
+
     def initialize(self):
         """
         Starts initialization process and calls self.start() when done
         """
+
         initialized = False
         while not initialized:
             # WHITE DISK
