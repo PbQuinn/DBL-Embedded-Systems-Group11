@@ -181,20 +181,7 @@ class CommunicatorRobot(Communicator):
                   "When the disks are in place, press [ENTER].")
             self.serial.write((str(self.__outputs["Set White"]) + "\n").encode('utf-8'))
             # wait for response
-            if self.__wait_for_serial(50):
-                # receive
-                input_ = int.from_bytes(self.serial.read(), byteorder='big')
-            else:
-                continue
-            if not self.__is_correct_input(input_, 203):
-                continue
-
-            # BLACK DISK
-            input("Place black disks in front of the color sensors to calibrate them.\n" +
-                  "When the disks are in place, press [ENTER].")
-            self.serial.write((str(self.__outputs["Set Black"]) + "\n").encode('utf-8'))
-            # wait for response
-            if self.__wait_for_serial(50):
+            if self.__wait_for_serial(100):     # TODO adjust timer
                 # receive
                 input_ = int.from_bytes(self.serial.read(), byteorder='big')
             else:
@@ -202,10 +189,23 @@ class CommunicatorRobot(Communicator):
             if not self.__is_correct_input(input_, 201):
                 continue
 
+            # BLACK DISK
+            input("Place black disks in front of the color sensors to calibrate them.\n" +
+                  "When the disks are in place, press [ENTER].")
+            self.serial.write((str(self.__outputs["Set Black"]) + "\n").encode('utf-8'))
+            # wait for response
+            if self.__wait_for_serial(100):     # TODO adjust timer
+                # receive
+                input_ = int.from_bytes(self.serial.read(), byteorder='big')
+            else:
+                continue
+            if not self.__is_correct_input(input_, 203):
+                continue
+
             # FINISH
             self.serial.write((str(self.__outputs["Finish Initialization"]) + "\n").encode('utf-8'))
             # wait for response
-            if self.__wait_for_serial(10):
+            if self.__wait_for_serial(10):      # TODO adjust timer
                 # receive
                 input_ = int.from_bytes(self.serial.read(), byteorder='big')
             else:
@@ -257,3 +257,5 @@ class CommunicatorRobot(Communicator):
                 input_ = self.__inputs[input_]
             print('\033[95m' + "Unexpected input received: %s" % input_ + "Initialization will restart." + '\033[0m')
             return False
+        else:
+            return True
