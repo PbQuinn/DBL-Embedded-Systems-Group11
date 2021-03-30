@@ -14,7 +14,7 @@ The `Processor` is also responsible for deciding whether a disk should be picked
 Finally, the `Processor` has an instance of `ExpectationHandler`. Every time the `Processor` sends output to the `Communicator` to which a response will be expected, an `Expectation` for that response will be added to the `ExpectationHander`. Each `Expectation` has a variable in which it keeps track of how many times it can be pinged before it expires. Once this happens, an error with a descriptive message is raised by the `ExpectationHander`. This error is then caught by the `Processor` which will convey the message to the user by printing it to the console.
 
 ## The Arduino
-Text about Arduino code here
+To communicate and bring about physical interaction with the environment, an Arduino UNO with a number of connected sensors and actuators is used. This Arduino fulfulls the function of a so-called IO hub, independently executing readings and motor movents, only informing the RPI about the results of these actions. This communication is done over a Serial connection, where a predefined set of command numbers (and a set of corresponding expected return values) is used to express the desires of the RPI and the response produced by the Arduino.
 
 ## The Simulation
 Text about the code related to the Simulation here
