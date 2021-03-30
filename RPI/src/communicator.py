@@ -133,6 +133,8 @@ class CommunicatorRobot(Communicator):
         # Initialize serial
         self.serial = serial.Serial(device_name, 9600, timeout=1)
         self.serial.flush()
+        # Ping counter (mod 10)
+        self.ping_counter = 0
 
     def _communicate(self):
 
@@ -144,8 +146,15 @@ class CommunicatorRobot(Communicator):
                       % input_ + '\033[0m')
                 input_ = "Error Occurred"
             else:
-                print('\033[96m' + "Received: %s" % input_ + "= %s"
-                      % self.__inputs[input_] + '\033[0m')
+                if self.__inputs[input_] == "Ping":
+                    if self.ping_counter >= 10:
+                        self.ping_counter = 0
+                        print('\033[96m' + "Received: %s" % input_ + "= %s")
+                    else:
+                        self.ping_counter = self.ping_counter + 1
+                else:
+                    print('\033[96m' + "Received: %s" % input_ + "= %s"
+                          % self.__inputs[input_] + '\033[0m')
                 input_ = self.__inputs[input_]
 
             # Process
@@ -156,7 +165,8 @@ class CommunicatorRobot(Communicator):
                 output = self.__outputs[output]
                 if output is not None:
                     self.serial.write((str(output)+"\n").encode('utf-8'))
-                print('\033[95m' + "Sent: %s" % output + '\033[0m')
+                    if output != 100:
+                        print('\033[95m' + "Sent: %s" % output + '\033[0m')
 
         # Check error mode
         if self._processor.get_error_mode():
