@@ -106,9 +106,8 @@ class CommunicatorRobot(Communicator):
                 253: "Illegal Command Sent",         # Error
                 252: "Unknown Command Sent",         # Error
                 251: "Message Buffer Full",          # Error
-                250: "Initialization Error"
-                # 107: "Start Error Message",
-                # 108: "End Error Message"
+                250: "Initialization Error",
+                105: "Error Mode Exited"
                 }
 
     __outputs = {"Pong": 100,
@@ -123,7 +122,6 @@ class CommunicatorRobot(Communicator):
                  "Finish Initialization": 204,
                  "Enter Error Mode": 102,
                  "Exit Error Mode": 104,
-                 "Get Error State Info": 106,
                  "Ignore": None
                  }
 
