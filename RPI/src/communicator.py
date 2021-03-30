@@ -53,14 +53,16 @@ class CommunicatorSimulation(Communicator):
     def _communicate(self):
         # Receive
         input_ = self.__socket.recv_string()
-        print('\033[96m' + "Received: %s" % input_ + '\033[0m')
+        if input_ != "Ping":
+            print('\033[96m' + "Received: %s" % input_ + '\033[0m')
 
         # Process
         output = ",".join(self._processor.process(input_)).encode()
 
         # Send
         self.__socket.send(output)
-        print('\033[95m' + "Sent: %s" % output + '\033[0m')
+        if output != b"Pong":
+            print('\033[95m' + "Sent: %s" % output + '\033[0m')
 
         if self._processor.get_error_mode():
             # Wait for user input to indicate that the issue fixed
