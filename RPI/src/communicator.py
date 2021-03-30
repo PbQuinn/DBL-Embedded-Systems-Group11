@@ -3,7 +3,7 @@ import zmq
 import time
 import serial
 
-DEVICE_NAME = 'een emptry string'
+DEVICE_NAME = '[Enter Device Name Here]'    # TODO add actual device name
 
 
 class Communicator(ABC):
@@ -94,7 +94,7 @@ class CommunicatorRobot(Communicator):
                 62: "Error String Disk",            # Error
                 21: "Primary White",
                 22: "Primary Black",
-                23: "Primary Neither",              # Error
+                23: "Primary Neither",
                 41: "Secondary White",
                 42: "Secondary Black",
                 43: "Secondary Neither",            # Error
@@ -108,7 +108,7 @@ class CommunicatorRobot(Communicator):
                 253: "Illegal Command Sent",         # Error
                 252: "Unknown Command Sent",         # Error
                 251: "Message Buffer Full",          # Error
-                250: "Initialization Error",
+                250: "Initialization Error",         # Error
                 105: "Error Mode Exited"
                 }
 
@@ -127,7 +127,7 @@ class CommunicatorRobot(Communicator):
                  "Ignore": None
                  }
 
-    def __init__(self, processor, device_name=DEVICE_NAME):  # TODO add actual device name
+    def __init__(self, processor, device_name=DEVICE_NAME):
         # Call super constructor
         Communicator.__init__(self, processor)
         # Initialize serial
@@ -166,8 +166,8 @@ class CommunicatorRobot(Communicator):
             # Unset error mode
             self._processor.set_error_mode(False)
 
-            # Flush serial # TODO check if this is required
-            self.reset_input_buffer()
+            # Flush serial
+            self.__flush()
 
             # Exit Error Mode
             self.serial.write((str(self.__outputs["Exit Error Mode"]) + "\n").encode('utf-8'))
@@ -179,13 +179,13 @@ class CommunicatorRobot(Communicator):
 
         initialized = False
         while not initialized:
-            self.reset_input_buffer()
+            self.__flush()
             # WHITE DISK
             input("Place white disks in front of the color sensors to calibrate them.\n" +
                   "When the disks are in place, press [ENTER].")
             self.serial.write((str(self.__outputs["Set White"]) + "\n").encode('utf-8'))
             # wait for response
-            if self.__wait_for_serial(100):     # TODO adjust timer
+            if self.__wait_for_serial(100):
                 # receive
                 input_ = int.from_bytes(self.serial.read(), byteorder='big')
             else:
@@ -198,7 +198,7 @@ class CommunicatorRobot(Communicator):
                   "When the disks are in place, press [ENTER].")
             self.serial.write((str(self.__outputs["Set Black"]) + "\n").encode('utf-8'))
             # wait for response
-            if self.__wait_for_serial(100):     # TODO adjust timer
+            if self.__wait_for_serial(100):
                 # receive
                 input_ = int.from_bytes(self.serial.read(), byteorder='big')
             else:
@@ -209,7 +209,7 @@ class CommunicatorRobot(Communicator):
             # FINISH
             self.serial.write((str(self.__outputs["Finish Initialization"]) + "\n").encode('utf-8'))
             # wait for response
-            if self.__wait_for_serial(30):      # TODO adjust timer
+            if self.__wait_for_serial(30):
                 # receive
                 input_ = int.from_bytes(self.serial.read(), byteorder='big')
             else:
@@ -265,3 +265,12 @@ class CommunicatorRobot(Communicator):
             return False
         else:
             return True
+
+    def __flush(self):
+        """
+        Flushes the serial
+        """
+
+        while self.serial.in_waiting > 0:
+            input_ = int.from_bytes(self.serial.read(), byteorder='big')
+            print("disposed of:" + str(input_))
