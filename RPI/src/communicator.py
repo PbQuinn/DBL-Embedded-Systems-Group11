@@ -267,7 +267,7 @@ class CommunicatorRobot(Communicator):
                   "\nInitialization process will restart." + '\033[0m')
             return False
         else:
-            return
+            return True
 
     def __flush(self):
         """
