@@ -147,6 +147,8 @@ class Processor:
                     raise ValueError('\033[91m' +
                                      "The Arduino sent a signal indicating that it has entered error mode."
                                      "The RPI was not expecting this." + '\033[0m')
+            elif input_ == "Error Mode Exited":
+                pass    # TODO add proper implementation
             # Error interactions:
             elif input_ == "Primary Neither":
                 raise ValueError('\033[91m' +
