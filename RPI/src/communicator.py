@@ -166,9 +166,6 @@ class CommunicatorRobot(Communicator):
             # Unset error mode
             self._processor.set_error_mode(False)
 
-            # Flush processor
-            self._processor.flush()
-
             # Flush serial # TODO check if this is required
             self.reset_input_buffer()
 
@@ -212,7 +209,7 @@ class CommunicatorRobot(Communicator):
             # FINISH
             self.serial.write((str(self.__outputs["Finish Initialization"]) + "\n").encode('utf-8'))
             # wait for response
-            if self.__wait_for_serial(10):      # TODO adjust timer
+            if self.__wait_for_serial(30):      # TODO adjust timer
                 # receive
                 input_ = int.from_bytes(self.serial.read(), byteorder='big')
             else:
