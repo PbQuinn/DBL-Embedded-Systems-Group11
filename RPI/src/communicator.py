@@ -182,6 +182,7 @@ class CommunicatorRobot(Communicator):
 
         initialized = False
         while not initialized:
+            self.serial.flush()
             # WHITE DISK
             input("Place white disks in front of the color sensors to calibrate them.\n" +
                   "When the disks are in place, press [ENTER].")
