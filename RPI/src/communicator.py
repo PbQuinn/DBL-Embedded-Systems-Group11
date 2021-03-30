@@ -166,6 +166,9 @@ class CommunicatorRobot(Communicator):
             # Unset error mode
             self._processor.set_error_mode(False)
 
+            # Flush processor
+            self._processor.flush()
+
             # Flush serial
             self.__flush()
 
