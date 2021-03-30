@@ -149,7 +149,8 @@ class CommunicatorRobot(Communicator):
                 if self.__inputs[input_] == "Ping":
                     if self.ping_counter >= 10:
                         self.ping_counter = 0
-                        print('\033[96m' + "Received: %s" % input_ + "= %s")
+                        print('\033[96m' + "Received: %s" % input_ + "= %s"
+                              % self.__inputs[input_] + '\033[0m')
                     else:
                         self.ping_counter = self.ping_counter + 1
                 else:
