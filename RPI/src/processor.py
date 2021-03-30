@@ -255,7 +255,7 @@ class Processor:
         """
         Returns output in case of ping.
         """
-
+        print("Ping count (mod 10): " + str(self.__ping_counter))
         self.__ping_counter += 1
 
         if self.__ping_counter % self.__PROTOCOL_PING_FREQUENCY == 0:
