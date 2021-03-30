@@ -148,16 +148,17 @@ class Processor:
                                      "The Arduino sent a signal indicating that it has entered error mode."
                                      "The RPI was not expecting this." + '\033[0m')
             elif input_ == "Error Mode Exited":
-                pass    # TODO add proper implementation
+                return ["Ignore"]    # TODO add proper implementation
             # Error interactions:
             elif input_ == "Primary Neither":
-                raise ValueError('\033[91m' +
-                                 "The primary color sensor detected a color that was"
-                                 " not recognized as black nor white.\n"
-                                 "Please ensure that there is no external light source"
-                                 " interfering with the sensor,\n"
-                                 "that there are only black and white disks on the belt,\n"
-                                 "and that the primary color sensor is in order." + '\033[0m')
+                return self.__primary_color_detected(Color.Neither)
+            #    raise ValueError('\033[91m' +
+            #                     "The primary color sensor detected a color that was"
+            #                     " not recognized as black nor white.\n"
+            #                     "Please ensure that there is no external light source"
+            #                     " interfering with the sensor,\n"
+            #                     "that there are only black and white disks on the belt,\n"
+            #                     "and that the primary color sensor is in order." + '\033[0m')
             elif input_ == "Secondary Neither":
                 raise ValueError('\033[91m' +
                                  "The secondary color sensor detected a color that was"
