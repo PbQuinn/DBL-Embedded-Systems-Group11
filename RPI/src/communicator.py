@@ -155,6 +155,7 @@ class CommunicatorRobot(Communicator):
             for output in outputs:
                 output = self.__outputs[output]
                 if output is not None:
+                    print("We're writing! (yeaaaaaah)")
                     self.serial.write((str(output)+"\n").encode('utf-8'))
                 print('\033[95m' + "Sent: %s" % output + '\033[0m')
 
@@ -173,6 +174,7 @@ class CommunicatorRobot(Communicator):
             self.reset_input_buffer()
 
             # Exit Error Mode
+            print("We're writing! (yeaaaaaah)")
             self.serial.write((str(self.__outputs["Exit Error Mode"]) + "\n").encode('utf-8'))
 
     def initialize(self):
@@ -186,6 +188,7 @@ class CommunicatorRobot(Communicator):
             # WHITE DISK
             input("Place white disks in front of the color sensors to calibrate them.\n" +
                   "When the disks are in place, press [ENTER].")
+            print("We're writing! (yeaaaaaah)")
             self.serial.write((str(self.__outputs["Set White"]) + "\n").encode('utf-8'))
             # wait for response
             if self.__wait_for_serial(100):     # TODO adjust timer
@@ -199,6 +202,7 @@ class CommunicatorRobot(Communicator):
             # BLACK DISK
             input("Place black disks in front of the color sensors to calibrate them.\n" +
                   "When the disks are in place, press [ENTER].")
+            print("We're writing! (yeaaaaaah)")
             self.serial.write((str(self.__outputs["Set Black"]) + "\n").encode('utf-8'))
             # wait for response
             if self.__wait_for_serial(100):     # TODO adjust timer
@@ -210,6 +214,7 @@ class CommunicatorRobot(Communicator):
                 continue
 
             # FINISH
+            print("We're writing! (yeaaaaaah)")
             self.serial.write((str(self.__outputs["Finish Initialization"]) + "\n").encode('utf-8'))
             # wait for response
             if self.__wait_for_serial(10):      # TODO adjust timer
