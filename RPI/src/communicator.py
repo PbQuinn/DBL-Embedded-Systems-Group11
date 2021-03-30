@@ -170,7 +170,7 @@ class CommunicatorRobot(Communicator):
             self._processor.flush()
 
             # Flush serial # TODO check if this is required
-            self.serial.flush()
+            self.reset_input_buffer()
 
             # Exit Error Mode
             self.serial.write((str(self.__outputs["Exit Error Mode"]) + "\n").encode('utf-8'))
@@ -182,7 +182,7 @@ class CommunicatorRobot(Communicator):
 
         initialized = False
         while not initialized:
-            self.serial.flush()
+            self.reset_input_buffer()
             # WHITE DISK
             input("Place white disks in front of the color sensors to calibrate them.\n" +
                   "When the disks are in place, press [ENTER].")
