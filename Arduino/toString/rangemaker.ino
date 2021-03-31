@@ -1,4 +1,5 @@
-
+// make ranges in which we can sense objects 
+// if the difference is not significant we want need new readings
 boolean rangemaker(int lowest, int highest, int arrayrange[]) {
   int difference = (highest - lowest);
   if (difference < 20) {

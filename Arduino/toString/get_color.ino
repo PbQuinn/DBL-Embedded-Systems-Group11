@@ -4,7 +4,7 @@ int getColor(int sensorPin, int colorRanges[]){
   
   float readings[sampleSize];
   float counterValue = 0;
-  
+  // count values to make an average 
   for(int i = 0; i < sampleSize; i++){
     float readValue = analogRead(sensorPin);
     counterValue += readValue;

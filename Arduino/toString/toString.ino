@@ -78,12 +78,13 @@ int que[10];
 int readp = 0;
 int writep = 0;
 
-
+//initialise the motors
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 Adafruit_DCMotor *StringerMotor = AFMS.getMotor(3);
 Adafruit_DCMotor *BlockerMotor = AFMS.getMotor(4);
 Adafruit_DCMotor *BeltMotor = AFMS.getMotor(1);
 
+//define the positions of the sensors
 int stringerPositionSensor = 6;
 int blockerFrontSensor = 2;
 int blockerBackSensor = 3;
@@ -94,6 +95,7 @@ int secondaryColorSensor = A0;
 int tertiaryMotionSensor = A2;
 int primaryMotionSensor = A3;
 
+//values for the color sensor 
 const int sampleSize = 10;
 const int consistencyLimit = 50;
 
@@ -117,15 +119,17 @@ bool secondaryMotionFlagged;
 
 
 void setup() {
+  //setup the interupt
   Serial.begin(9600);
   Timer1.initialize(1000000);
   Timer1.attachInterrupt( interrupt );
-
+  
+  //setup the pins
   pinMode(stringerPositionSensor, INPUT);
   pinMode(blockerBackSensor, INPUT);
   pinMode(pusherSensor, INPUT);
 
-
+  //setup motors
   AFMS.begin();
   StringerMotor->setSpeed(200);
   BlockerMotor->setSpeed(250);
@@ -136,6 +140,7 @@ void setup() {
 
 int getMessage() {
   int value = 0;
+  //reading a value
   while (true) {
     if (Serial.available() > 0) {
       char nextChar = Serial.read();
@@ -161,8 +166,8 @@ void messages() {
   //handles the command.
   while (Serial.available() > 0) {
     int message = getMessage();
-    //first we need to check if the command is pong or entering the error state.
-    //in those cases we need to handle them immediatly else we put the request in the que
+    //first we need to check if the command is pong or entering or leaving the error state.
+    //in those cases we need to handle them immediatly else we put the request in the queue
     if (message == PONG) {
       expected = false;
     } else if (message == SET_ERROR_STATE) {
@@ -191,10 +196,11 @@ void messages() {
     Serial.write(PING);
     expected = true;
   }
-
+  // we do not have to read again
   flagRead = false;
 }
 
+// interrupt so that we read messages
 void interrupt() {
   flagRead = true;
 }
@@ -275,6 +281,7 @@ void check(int issuedCommand) {
 }
 
 boolean in(int number, int commands[], int commandsLength) {
+  // look if we are in the array
   for (int i = 0; i < commandsLength; i++) {
     if (number == commands[i]) {
       return true;
@@ -284,6 +291,7 @@ boolean in(int number, int commands[], int commandsLength) {
 }
 
 boolean stateCheck(int message) {
+  //are we in the rihgt state to recieve the message
   if (state == 0) {
     if (in(message, setupmessages, setupmessagesLength)) {
       return true;
@@ -331,6 +339,7 @@ void enterErrorState() {
 
 
 void checkInterrupt() {
+  //should we start reading
   if (flagRead) {
     messages();
   }
@@ -341,7 +350,6 @@ int lastSecondaryMotion = millis();
 int flagExpire = 5000;
 
 void loop() {
-  //Serial.println(analogRead(secondaryColorSensor));
   waitTime(10);
   //Check if there is a command to process
   if (writep != readp) {
@@ -351,8 +359,7 @@ void loop() {
       check(message);
     }
   }
-  //Serial.print(analogRead(primaryColorSensor));  Serial.print("   ");  Serial.print(analogRead(secondaryColorSensor));  Serial.print("   ");  Serial.print(analogRead(A2));  Serial.print("   ");  Serial.print(analogRead(A3));  Serial.print("   ");  Serial.print(analogRead(A4));  Serial.print("   ");  Serial.print(analogRead(A5));  Serial.println("   ");
-  
+ 
   if (state == 1) {
     //If the flag for primary motion has not been lowered for the past 5 seconds.
     int timeSinceLastPrimaryMotion = millis() - lastPrimaryMotion;
@@ -365,13 +372,13 @@ void loop() {
     if (secondaryMotionFlagged && timeSinceLastSecondaryMotion > flagExpire){
       secondaryMotionFlagged = false;
     }
-    
+    // chechk for disk presence on primary
     if (checkPrimaryMotion() && !primaryMotionFlagged) {
       lastPrimaryMotion = millis();
       primaryMotionFlagged = true;
       Serial.write(NOTIFY_DISK_PRESENCE);
     }
-
+    // check for disk presence on secondary
     if (checkSecondaryMotion() && !secondaryMotionFlagged) {
       lastSecondaryMotion = millis();
       secondaryMotionFlagged = true;

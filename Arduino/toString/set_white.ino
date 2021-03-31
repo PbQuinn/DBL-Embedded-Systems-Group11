@@ -1,6 +1,7 @@
 
 
 int setWhite(){
+    //set the white color and move the disks
     closeBlocker();
     waitTime(3000);   
     int primaryWhiteMeasured = setWhiteForSensor(primaryColorSensor);
@@ -23,7 +24,7 @@ int setWhite(){
 int setWhiteForSensor(int sensorPin){
   float readings[sampleSize];
   float counterValue = 0;
-  
+  make an average and set the values
   for(int i = 0; i < sampleSize; i++){
     float readValue = analogRead(sensorPin);
     counterValue += readValue;

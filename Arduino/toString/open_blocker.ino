@@ -1,7 +1,9 @@
 
 int openBlocker(){  
+  // turn of the motor for the belt to save power
   BeltMotor->run(RELEASE);
   BlockerMotor->run(BACKWARD);
+  //push untill we have opend
   while (true) {
     int readVal = digitalRead(blockerBackSensor);
     if (readVal == LOW) {
