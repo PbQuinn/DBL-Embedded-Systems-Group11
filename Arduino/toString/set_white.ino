@@ -2,14 +2,13 @@
 
 int setWhite(){
     closeBlocker();
-    delay(3000);
-    BeltMotor->run(RELEASE);    
+    waitTime(3000);   
     int primaryWhiteMeasured = setWhiteForSensor(primaryColorSensor);
     int secondaryWhiteMeasured = setWhiteForSensor(secondaryColorSensor);
     openBlocker();
     stringDisk();
     BeltMotor->run(FORWARD);
-    delay(1000);
+    waitTime(1000);
     BeltMotor->run(RELEASE);
   
   if(primaryWhiteMeasured > 0 && secondaryWhiteMeasured > 0){
@@ -26,32 +25,19 @@ int setWhiteForSensor(int sensorPin){
   float counterValue = 0;
   
   for(int i = 0; i < sampleSize; i++){
-    Serial.print("Pin ");
-    Serial.print(sensorPin);
-    Serial.print(" reading: ");
     float readValue = analogRead(sensorPin);
-    Serial.println(readValue);
     counterValue += readValue;
     readings[i] = readValue;
-    delay(10);
+    waitTime(10);
   }
 
   float averageValue = counterValue/sampleSize;
-  Serial.print("Read average ");
-  Serial.println(averageValue);
 
   for(int i = 0; i < sampleSize; i++){
     if(readings[i] - averageValue > consistencyLimit || readings[i] - averageValue < -consistencyLimit){
-      Serial.print("Pin ");
-      Serial.print(sensorPin);
-      Serial.println(" detected outlier, color set failed");
       return SETUP_FAIL;
     }
   }
-  Serial.print("No outliers detected, white assigned: " );
-  Serial.print(averageValue);
-  Serial.print(" for pin ");
-  Serial.println(sensorPin);
   
   return averageValue;
 }

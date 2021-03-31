@@ -1,16 +1,16 @@
 
 
 bool checkSecondaryMotion(){
-  float readings[sampleSize];
-  float counterValue = 0;
-  
-  for(int i = 0; i < sampleSize; i++){
+  int strikes = 0;
+
+  for(int i = 0; i < 5*sampleSize; i++){
     int sample = analogRead(secondaryColorSensor);
-    bool sampleIsBlack = sample > secondary_ranges[2] && sample < secondary_ranges[3];
-    bool sampleIsWhite = sample > secondary_ranges[4] && sample < secondary_ranges[5]; 
-    if(!(sampleIsBlack || sampleIsWhite)){
-      return false;
+    if(sample > funnel_range[1]){
+      strikes++;
+    }
+    if(strikes >= 4*sampleSize){
+      return true;
     }
   }
-  return true;
+  return false;
 }

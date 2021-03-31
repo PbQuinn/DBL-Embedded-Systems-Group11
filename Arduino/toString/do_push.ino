@@ -1,17 +1,29 @@
 
 
-int doPush(){  
+int doPush() {
   BeltMotor->run(RELEASE);
   BlockerMotor->run(FORWARD);
-  delay(100);
+  waitTime(2000);
   while (true) {
-    int readVal = digitalRead(pusherSensor);
-    if (readVal == HIGH) {
+    if (consistentlyPushed(pusherSensor)) {
       BlockerMotor->run(RELEASE);
       break;
-    }  
-  } 
+    }
+    
+  }
   BeltMotor->run(FORWARD);
-  delay(2000);
+  waitTime(2000);
   return CONFIRM_DO_PUSH;
+}
+
+bool consistentlyPushed(int sensor) {
+  for (int i = 0; i < 10; i++) {
+    int readVal = digitalRead(sensor);
+    if (readVal == LOW) {
+      return false;
+    }
+    waitTime(5);
+  }
+
+  return true;
 }

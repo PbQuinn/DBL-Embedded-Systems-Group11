@@ -12,5 +12,7 @@ int openBlocker(){
  
   
   BeltMotor->run(FORWARD);
+  //we can now start detecting motion again
+  primaryMotionFlagged = false;
   return CONFIRM_OPEN_GATE;
 }
