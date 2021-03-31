@@ -156,7 +156,7 @@ class CommunicatorRobot(Communicator):
                         self.ping_counter = self.ping_counter + 1
                 elif self.__inputs[input_] == "Print Message":
                     message = int.from_bytes(self.serial.read(), byteorder='big')
-                    print(message)
+                    print("Arduino: " + str(message))
                 else:
                     print('\033[96m' + "Received: %s" % input_ + "= %s"
                           % self.__inputs[input_] + '\033[0m')
@@ -294,5 +294,4 @@ class CommunicatorRobot(Communicator):
         """
 
         while self.serial.in_waiting > 0:
-            input_ = int.from_bytes(self.serial.read(), byteorder='big')
-            print("disposed of:" + str(input_))
+            int.from_bytes(self.serial.read(), byteorder='big')
