@@ -197,9 +197,8 @@ class CommunicatorRobot(Communicator):
         while not initialized:
             self.__flush()
             # WHITE DISK
-            test = input("Place white disks in front of the color sensors to calibrate them.\n" +
+            input("Place white disks in front of the color sensors to calibrate them.\n" +
                   "When the disks are in place, press [ENTER].")
-            print(test)
             self.serial.write((str(self.__outputs["Set White"]) + "\n").encode('utf-8'))
             # wait for response
             if self.__wait_for_serial(100):
@@ -234,7 +233,10 @@ class CommunicatorRobot(Communicator):
             if not self.__is_correct_input(input_, 205):
                 continue
 
-            print("Initialization successfully completed, starting main process...")
+            start_robot = input("Initialization successfully completed. Type 'r' to restart,"
+                                "\n or anything else to start te robot.")
+            if str(start_robot) == "r":
+                continue
             initialized = True
             self.start()
 
@@ -251,8 +253,8 @@ class CommunicatorRobot(Communicator):
         # wait for response
         while self.serial.in_waiting == 0:
             if timer > time_out:
-                print('\033[95m' + "No input received within expected time interval,"
-                                   "\ninitialization process will restart." + '\033[0m')
+                input('\033[95m' + "No input received within expected time interval,"
+                                   "\nPress [ENTER] to restart the calibration process." + '\033[0m')
                 return False
             time.sleep(0.1)
             timer = timer + 1
@@ -269,10 +271,10 @@ class CommunicatorRobot(Communicator):
         """
 
         if input_ == 250:
-            print('\033[95m' + "Could not significantly distinguish black from white. "
+            input('\033[95m' + "Could not significantly distinguish black from white. "
                                "Please check whether the color sensors are in order "
                                "and there is no external light source interfering."
-                               "\nInitialization process will restart." + '\033[0m')
+                               "\nPress [ENTER] to restart te calibration process." + '\033[0m')
             return False
         elif not input_ == expected_input:
             if input_ in self.__inputs:
