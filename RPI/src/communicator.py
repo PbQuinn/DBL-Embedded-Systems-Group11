@@ -140,11 +140,13 @@ class CommunicatorRobot(Communicator):
 
         # Receive
         if self.serial.in_waiting > 0:
+            print("Now reading:")
             input_ = int.from_bytes(self.serial.read(), byteorder='big')
+            print(input_)
             if input_ not in self.__inputs:
                 print('\033[91m' + "Unexpected input received from Arduino: %s"
                       % input_ + '\033[0m')
-                input_ = "Error Occurred"
+                input_ = "Unexpected Error Occurred"
             else:
                 if self.__inputs[input_] == "Ping":
                     if self.ping_counter >= 10:
@@ -157,6 +159,7 @@ class CommunicatorRobot(Communicator):
                     print('\033[96m' + "Received: %s" % input_ + "= %s"
                           % self.__inputs[input_] + '\033[0m')
                 input_ = self.__inputs[input_]
+                print(input_)
 
             # Process
             outputs = self._processor.process(input_)
