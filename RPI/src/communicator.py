@@ -223,7 +223,7 @@ class CommunicatorRobot(Communicator):
                 continue
 
             start_robot = input("Initialization successfully completed. Type 'r' to restart,"
-                                "\n or anything else to start te robot.")
+                                "\nor install the string and press anything else to start te robot.")
             if str(start_robot) == "r":
                 continue
 
