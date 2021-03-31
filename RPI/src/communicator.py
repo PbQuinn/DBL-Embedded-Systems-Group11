@@ -222,6 +222,11 @@ class CommunicatorRobot(Communicator):
             if not self.__is_correct_input(input_, 203):
                 continue
 
+            start_robot = input("Initialization successfully completed. Type 'r' to restart,"
+                                "\n or anything else to start te robot.")
+            if str(start_robot) == "r":
+                continue
+
             # FINISH
             self.serial.write((str(self.__outputs["Finish Initialization"]) + "\n").encode('utf-8'))
             # wait for response
@@ -233,10 +238,6 @@ class CommunicatorRobot(Communicator):
             if not self.__is_correct_input(input_, 205):
                 continue
 
-            start_robot = input("Initialization successfully completed. Type 'r' to restart,"
-                                "\n or anything else to start te robot.")
-            if str(start_robot) == "r":
-                continue
             initialized = True
             self.start()
 
