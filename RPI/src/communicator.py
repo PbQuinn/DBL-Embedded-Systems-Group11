@@ -3,7 +3,7 @@ import zmq
 import time
 import serial
 
-DEVICE_NAME = 'een emptry string'
+DEVICE_NAME = '[Enter Device Name Here]'    # TODO add actual device name
 
 
 class Communicator(ABC):
@@ -53,14 +53,16 @@ class CommunicatorSimulation(Communicator):
     def _communicate(self):
         # Receive
         input_ = self.__socket.recv_string()
-        print('\033[96m' + "Received: %s" % input_ + '\033[0m')
+        if input_ != "Ping":
+            print('\033[96m' + "Received: %s" % input_ + '\033[0m')
 
         # Process
         output = ",".join(self._processor.process(input_)).encode()
 
         # Send
         self.__socket.send(output)
-        print('\033[95m' + "Sent: %s" % output + '\033[0m')
+        if output != b"Pong":
+            print('\033[95m' + "Sent: %s" % output + '\033[0m')
 
         if self._processor.get_error_mode():
             # Wait for user input to indicate that the issue fixed
@@ -92,7 +94,7 @@ class CommunicatorRobot(Communicator):
                 62: "Error String Disk",            # Error
                 21: "Primary White",
                 22: "Primary Black",
-                23: "Primary Neither",              # Error
+                23: "Primary Neither",
                 41: "Secondary White",
                 42: "Secondary Black",
                 43: "Secondary Neither",            # Error
@@ -106,7 +108,7 @@ class CommunicatorRobot(Communicator):
                 253: "Illegal Command Sent",         # Error
                 252: "Unknown Command Sent",         # Error
                 251: "Message Buffer Full",          # Error
-                250: "Initialization Error",
+                250: "Initialization Error",         # Error
                 105: "Error Mode Exited"
                 }
 
@@ -125,12 +127,14 @@ class CommunicatorRobot(Communicator):
                  "Ignore": None
                  }
 
-    def __init__(self, processor, device_name=DEVICE_NAME):  # TODO add actual device name
+    def __init__(self, processor, device_name=DEVICE_NAME):
         # Call super constructor
         Communicator.__init__(self, processor)
         # Initialize serial
         self.serial = serial.Serial(device_name, 9600, timeout=1)
         self.serial.flush()
+        # Ping counter (mod 10)
+        self.ping_counter = 0
 
     def _communicate(self):
 
@@ -142,8 +146,16 @@ class CommunicatorRobot(Communicator):
                       % input_ + '\033[0m')
                 input_ = "Error Occurred"
             else:
-                print('\033[96m' + "Received: %s" % input_ + "= %s"
-                      % self.__inputs[input_] + '\033[0m')
+                if self.__inputs[input_] == "Ping":
+                    if self.ping_counter >= 10:
+                        self.ping_counter = 0
+                        print('\033[96m' + "Received: %s" % input_ + "= %s"
+                              % self.__inputs[input_] + '\033[0m')
+                    else:
+                        self.ping_counter = self.ping_counter + 1
+                else:
+                    print('\033[96m' + "Received: %s" % input_ + "= %s"
+                          % self.__inputs[input_] + '\033[0m')
                 input_ = self.__inputs[input_]
 
             # Process
@@ -153,9 +165,9 @@ class CommunicatorRobot(Communicator):
             for output in outputs:
                 output = self.__outputs[output]
                 if output is not None:
-                    print("We're writing! (Send output)")
                     self.serial.write((str(output)+"\n").encode('utf-8'))
-                print('\033[95m' + "Sent: %s" % output + '\033[0m')
+                    if output != 100:
+                        print('\033[95m' + "Sent: %s" % output + '\033[0m')
 
         # Check error mode
         if self._processor.get_error_mode():
@@ -165,11 +177,13 @@ class CommunicatorRobot(Communicator):
             # Unset error mode
             self._processor.set_error_mode(False)
 
+            # Flush processor
+            self._processor.flush()
+
             # Flush serial
             self.__flush()
 
             # Exit Error Mode
-            print("We're writing! (Exit Error Mode)")
             self.serial.write((str(self.__outputs["Exit Error Mode"]) + "\n").encode('utf-8'))
 
     def initialize(self):
@@ -183,10 +197,9 @@ class CommunicatorRobot(Communicator):
             # WHITE DISK
             input("Place white disks in front of the color sensors to calibrate them.\n" +
                   "When the disks are in place, press [ENTER].")
-            print("We're writing! (Set White)")
             self.serial.write((str(self.__outputs["Set White"]) + "\n").encode('utf-8'))
             # wait for response
-            if self.__wait_for_serial(100):     # TODO adjust timer
+            if self.__wait_for_serial(100):
                 # receive
                 input_ = int.from_bytes(self.serial.read(), byteorder='big')
             else:
@@ -197,10 +210,9 @@ class CommunicatorRobot(Communicator):
             # BLACK DISK
             input("Place black disks in front of the color sensors to calibrate them.\n" +
                   "When the disks are in place, press [ENTER].")
-            print("We're writing! (Set Black)")
             self.serial.write((str(self.__outputs["Set Black"]) + "\n").encode('utf-8'))
             # wait for response
-            if self.__wait_for_serial(100):     # TODO adjust timer
+            if self.__wait_for_serial(100):
                 # receive
                 input_ = int.from_bytes(self.serial.read(), byteorder='big')
             else:
@@ -209,10 +221,9 @@ class CommunicatorRobot(Communicator):
                 continue
 
             # FINISH
-            print("We're writing! (Finish Initialization)")
             self.serial.write((str(self.__outputs["Finish Initialization"]) + "\n").encode('utf-8'))
             # wait for response
-            if self.__wait_for_serial(30):      # TODO adjust timer
+            if self.__wait_for_serial(30):
                 # receive
                 input_ = int.from_bytes(self.serial.read(), byteorder='big')
             else:
