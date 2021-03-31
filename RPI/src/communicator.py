@@ -109,7 +109,8 @@ class CommunicatorRobot(Communicator):
                 252: "Unknown Command Sent",         # Error
                 251: "Message Buffer Full",          # Error
                 250: "Initialization Error",         # Error
-                105: "Error Mode Exited"
+                105: "Error Mode Exited",
+                123: "Print Message"
                 }
 
     __outputs = {"Pong": 100,
@@ -141,8 +142,6 @@ class CommunicatorRobot(Communicator):
         # Receive
         if self.serial.in_waiting > 0:
             input_ = int.from_bytes(self.serial.read(), byteorder='big')
-            if input_ == 1:
-                print("Received primary motion (test)")
             if input_ not in self.__inputs:
                 print('\033[91m' + "Unexpected input received from Arduino: %s"
                       % input_ + '\033[0m')
@@ -155,6 +154,9 @@ class CommunicatorRobot(Communicator):
                               % self.__inputs[input_] + '\033[0m')
                     else:
                         self.ping_counter = self.ping_counter + 1
+                elif self.__inputs[input_] == "Print Message":
+                    message = self.serial.readline().decode('utf-8').rstrip()
+                    print(message)
                 else:
                     print('\033[96m' + "Received: %s" % input_ + "= %s"
                           % self.__inputs[input_] + '\033[0m')

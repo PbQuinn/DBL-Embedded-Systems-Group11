@@ -151,6 +151,8 @@ class Processor:
                                      "The RPI was not expecting this." + '\033[0m')
             elif input_ == "Error Mode Exited":
                 return ["Ignore"]
+            elif input_ == "Print Message":
+                return ["Ignore"]
             # Error interactions:
             elif input_ == "Secondary Neither":
                 raise ValueError('\033[91m' +
