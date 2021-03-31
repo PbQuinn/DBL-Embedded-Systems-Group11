@@ -155,7 +155,7 @@ class CommunicatorRobot(Communicator):
                     else:
                         self.ping_counter = self.ping_counter + 1
                 elif self.__inputs[input_] == "Print Message":
-                    message = self.serial.readline().decode('utf-8').rstrip()
+                    message = int.from_bytes(self.serial.read(), byteorder='big')
                     print(message)
                 else:
                     print('\033[96m' + "Received: %s" % input_ + "= %s"
