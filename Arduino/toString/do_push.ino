@@ -7,7 +7,7 @@ int doPush() {
   waitTime(2000);
   while (true) {
     if (consistentlyPushed(pusherSensor)) {
-      wait till we push consistantly
+      //wait till we push consistantly
       BlockerMotor->run(RELEASE);
       break;
     }

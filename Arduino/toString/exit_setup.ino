@@ -6,9 +6,6 @@ int exitSetup(){
     setBeltRange();
     setFunnelRange();
     state = 1;
-    Serial.print(primary_black);
-    Serial.print(", ");
-    Serial.println(primary_white);
     return CONFIRM_EXIT_SETUP;
   } else {
     return SETUP_FAIL;

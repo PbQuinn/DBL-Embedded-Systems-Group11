@@ -15,7 +15,7 @@ int getColor(int sensorPin, int colorRanges[]){
   float averageValue = counterValue/sampleSize;
 
   //After extensive testing, we know that color values for primary sensor are in ascending order:
-  //Neither - Black - White
+  //Black - White
   if(averageValue > colorRanges[2] && averageValue <= colorRanges[3]){
     return WHITE;
   }
