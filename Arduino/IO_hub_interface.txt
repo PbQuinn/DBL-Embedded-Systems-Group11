@@ -1,5 +1,13 @@
 /**
  * Unexpected error occurrences are marked by error code: -1 (UNEXPECTED_ERROR).
+<<<<<<< Updated upstream
+=======
+ * After each message is received it will first be checked if the command
+ * can be executed in the current state. 
+ * If the command is used belongs to another state but not the current state we send an error message.
+ * Error code, -2 (ILLEGAL_COMMAND), will be sent.
+ * If the command is unknown we send error code: -3 (UNKNOWN_COMMAND).
+>>>>>>> Stashed changes
  */
 
 /** close_blocker()
@@ -91,9 +99,28 @@
  * Puts a disk lying in at the bottom of a funnel onto the string.
  * Procedure:
  * 0). Call received.
+<<<<<<< Updated upstream
  * 1). Pusher motor executed programmed routine.
  * 2). Send confirm ping.
  * 
+=======
+ * 1). Stringer motor on until 2 (direction: retract).
+ * 2). Stringer no longer touches button sensor.
+ * 3). Stringer motor on until 4 (direction: push)
+ * 4). Disk string confirmation sensor notices disk.
+ * 5). Start timer T.
+ * 6). Stringer motor on until 7 (direction: push)
+ * 7). Disk string confirmation sensor notices absense of disk (before timer T expires).
+ * 8). Stringer motor on until 9 (direction: retract)
+ * 9). Stringer touches button sensor.
+ * 10). Send confirm ping. 
+ *
+ * Alternative procedure:
+ * 7'). Timer T expires.
+ * 8'). Send error ping.
+ * 9'). Enter error state.
+ *
+>>>>>>> Stashed changes
  * Call nr: 60 (STRING_DISK)
  * Expected response: 61 (CONFIRM_STRING_DISK)
  */
