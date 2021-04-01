@@ -17,4 +17,4 @@ Finally, the `Processor` has an instance of `ExpectationHandler`. Every time the
 To communicate and bring about physical interaction with the environment, an Arduino UNO with a number of connected sensors and actuators is used. This Arduino fulfulls the function of a so-called IO hub, independently executing readings and motor movents, only informing the RPI about the results of these actions. This communication is done over a Serial connection, where a predefined set of command numbers (and a set of corresponding expected return values) is used to express the desires of the RPI and the response produced by the Arduino.
 
 ## The Simulation
-Text about the code related to the Simulation here
+The simulation was made using unity and can replace the physical robot (Arduino). To do this, open the simulation and run the python code. When the python asks if it should use the robot or the simulation, choose the simulation. Once this choice has been made, play the simulation. To place a black or white disk onto the conveyor press the left or right mouse button respectively.
