@@ -5,6 +5,7 @@ int doPush() {
   BlockerMotor->run(FORWARD);
   waitTime(2000);
   while (true) {
+    waitTime(5);    
     if (consistentlyPushed(pusherSensor)) {
       BlockerMotor->run(RELEASE);
       break;

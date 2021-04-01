@@ -3,6 +3,7 @@ int openBlocker(){
   BeltMotor->run(RELEASE);
   BlockerMotor->run(BACKWARD);
   while (true) {
+    waitTime(5);
     int readVal = digitalRead(blockerBackSensor);
     if (readVal == LOW) {
       break;

@@ -218,6 +218,14 @@ void check(int issuedCommand) {
     case EXIT_SETUP:
       Serial.write(exitSetup());
       waitTime(100);
+      Serial.write(123);
+      Serial.write(primary_ranges[0]);
+      Serial.write(123);
+      Serial.write(primary_ranges[1]);
+      Serial.write(123);
+      Serial.write(primary_ranges[2]);
+      Serial.write(123);
+      Serial.write(primary_ranges[3]);
       break;
 
 
@@ -261,7 +269,10 @@ void check(int issuedCommand) {
       break;
 
     case STRING_DISK:
-      Serial.write(stringDisk());
+      int stringReturn = stringDisk();
+      if (stringReturn > 0){
+        Serial.write(stringReturn);
+      }
       // do some action
       waitTime(100);
       break;
@@ -341,7 +352,6 @@ int lastSecondaryMotion = millis();
 int flagExpire = 5000;
 
 void loop() {
-  //Serial.println(analogRead(secondaryColorSensor));
   waitTime(10);
   //Check if there is a command to process
   if (writep != readp) {
