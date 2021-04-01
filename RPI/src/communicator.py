@@ -290,4 +290,4 @@ class CommunicatorRobot(Communicator):
         """
 
         while self.serial.in_waiting > 0:
-            input_ = int.from_bytes(self.serial.read(), byteorder='big')
+            int.from_bytes(self.serial.read(), byteorder='big')

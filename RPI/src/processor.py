@@ -76,7 +76,7 @@ class Processor:
 
     # The protocol will be notified of our existence every
     # PROTOCOL_PING_FREQUENCY th ping
-    __PROTOCOL_PING_FREQUENCY = 10
+    __PROTOCOL_PING_FREQUENCY = 2
 
     def __init__(self, string_handler, protocol_handler, expectation_handler):
         self.__string_handler = string_handler
